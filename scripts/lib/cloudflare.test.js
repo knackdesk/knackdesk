@@ -21,6 +21,15 @@ describe("planChanges", () => {
   });
 });
 
+describe("planChanges stale", () => {
+  it("reports records with the right type and name but wrong content as stale", () => {
+    const desired = desiredRecords("knackdesk.com", "knackdesk");
+    const existing = [{ id: "x1", type: "A", name: "knackdesk.com", content: "1.2.3.4" }, { id: "x2", type: "CNAME", name: "www.knackdesk.com", content: "parking.example" }];
+    const { stale } = planChanges(existing, desired, "knackdesk.com");
+    expect(stale.map((r) => r.id)).toEqual(["x1", "x2"]);
+  });
+});
+
 describe("ensureRecords", () => {
   it("lists then creates only missing records", async () => {
     const posts = [];
@@ -30,7 +39,7 @@ describe("ensureRecords", () => {
       return { status: 200, text: async () => JSON.stringify({ result: { id: "r" } }), headers: new Map() };
     });
     const out = await ensureRecords({ token: "t", zoneId: "z", domain: "knackdesk.com", ghOrg: "knackdesk", fetchImpl });
-    expect(out).toEqual({ created: 8, kept: 1 });
+    expect(out).toEqual({ created: 8, kept: 1, stale: [] });
     expect(posts).toHaveLength(8);
     expect(String(fetchImpl.mock.calls[0][0])).toContain("/zones/z/dns_records");
   });

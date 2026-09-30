@@ -53,19 +53,29 @@ export function createPolarClient({ token, orgId, fetchImpl = fetch }) {
     const etag = String(put.headers.get("etag") || "").replace(/"/g, "");
     await call(`/v1/files/${created.json.id}/uploaded`, {
       method: "POST",
-      body: { id: created.json.id, path: created.json.path, parts: [{ number: 1, checksum_etag: etag, checksum_sha256_base64: null }] },
+      body: { id: created.json.upload.id, path: created.json.upload.path, parts: [{ number: 1, checksum_etag: etag, checksum_sha256_base64: null }] },
     });
     return created.json.id;
   }
 
-  async function createDownloadableBenefit({ description, fileIds }) {
-    const { json } = await call("/v1/benefits/", { method: "POST", body: { type: "downloadables", description, organization_id: orgId, properties: { files: fileIds } } });
+  async function createDownloadableBenefit({ description, fileIds, slug }) {
+    const body = { type: "downloadables", description, organization_id: orgId, properties: { files: fileIds } };
+    if (slug) body.metadata = { slug };
+    const { json } = await call("/v1/benefits/", { method: "POST", body });
     return json.id;
+  }
+
+  async function upsertDownloadableBenefit({ slug, description, fileIds }) {
+    const all = await listAll("/v1/benefits/");
+    const existing = all.find((b) => b.type === "downloadables" && b.metadata?.slug === slug);
+    if (!existing) return createDownloadableBenefit({ description, fileIds, slug });
+    await call(`/v1/benefits/${existing.id}`, { method: "PATCH", body: { description, properties: { files: fileIds } } });
+    return existing.id;
   }
 
   async function attachBenefits(productId, benefitIds) {
     await call(`/v1/products/${productId}/benefits`, { method: "POST", body: { benefits: benefitIds } });
   }
 
-  return { listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, attachBenefits };
+  return { listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, upsertDownloadableBenefit, attachBenefits };
 }

@@ -21,13 +21,18 @@ export function renderLedger(head, rows) {
   return `${head}\n${header}\n${body}\n`;
 }
 
+const COUNTED = new Set(["paid", "partially_refunded"]);
+
 export function summarizeOrders(orders, productIdToSlug) {
   const out = {};
   for (const o of orders) {
     const slug = productIdToSlug[o.product_id];
-    if (!slug) continue;
+    if (!slug || !COUNTED.has(o.status)) continue;
+    const refunded = o.refunded_amount ?? 0;
+    const gross = (o.total_amount ?? 0) - refunded;
+    const net = (o.net_amount ?? 0) - (o.platform_fee_amount ?? 0) - refunded;
     const cur = out[slug] ?? { units: 0, gross_cents: 0, net_cents: 0 };
-    out[slug] = { units: cur.units + 1, gross_cents: cur.gross_cents + (o.total_amount ?? 0), net_cents: cur.net_cents + (o.net_amount ?? 0) };
+    out[slug] = { units: cur.units + 1, gross_cents: cur.gross_cents + gross, net_cents: cur.net_cents + net };
   }
   return out;
 }

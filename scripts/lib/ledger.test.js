@@ -18,13 +18,15 @@ describe("ledger", () => {
     expect(rows[0].slug).toBe("kit");
     expect(renderLedger(head, rows)).toBe(md);
   });
-  it("summarizes orders per slug in cents", () => {
+  it("summarizes paid orders per slug: gross net of refunds, net after platform fee and refunds", () => {
     const orders = [
-      { product_id: "p1", total_amount: 900, net_amount: 805 },
-      { product_id: "p1", total_amount: 900, net_amount: 805 },
-      { product_id: "p9", total_amount: 100, net_amount: 50 },
+      { product_id: "p1", status: "paid", total_amount: 900, net_amount: 900, platform_fee_amount: 95, refunded_amount: 0 },
+      { product_id: "p1", status: "partially_refunded", total_amount: 900, net_amount: 900, platform_fee_amount: 95, refunded_amount: 400 },
+      { product_id: "p1", status: "refunded", total_amount: 900, net_amount: 900, platform_fee_amount: 95, refunded_amount: 900 },
+      { product_id: "p1", status: "pending", total_amount: 900, net_amount: 900, platform_fee_amount: 95, refunded_amount: 0 },
+      { product_id: "p9", status: "paid", total_amount: 100, net_amount: 100, platform_fee_amount: 55, refunded_amount: 0 },
     ];
-    expect(summarizeOrders(orders, { p1: "kit" })).toEqual({ kit: { units: 2, gross_cents: 1800, net_cents: 1610 } });
+    expect(summarizeOrders(orders, { p1: "kit" })).toEqual({ kit: { units: 2, gross_cents: 1400, net_cents: 1210 } });
   });
   it("applies sales without dropping rows and zeroes unsold ones", () => {
     const { rows } = parseLedger(md);

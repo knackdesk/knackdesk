@@ -58,10 +58,32 @@ describe("upsertProduct", () => {
   });
 });
 
+describe("upsertDownloadableBenefit", () => {
+  it("creates a benefit tagged with the slug when none exists", async () => {
+    const { fetchImpl, calls } = mockFetch({
+      "GET /v1/benefits/": { body: { items: [], pagination: { max_page: 1 } } },
+      "POST /v1/benefits/": { status: 201, body: { id: "b1" } },
+    });
+    const c = createPolarClient({ ...base, fetchImpl });
+    expect(await c.upsertDownloadableBenefit({ slug: "kit", description: "Download Kit", fileIds: ["f1"] })).toBe("b1");
+    expect(calls.find((x) => x.method === "POST").body).toMatchObject({ type: "downloadables", metadata: { slug: "kit" }, properties: { files: ["f1"] } });
+  });
+  it("patches the existing benefit for the slug instead of creating another", async () => {
+    const { fetchImpl, calls } = mockFetch({
+      "GET /v1/benefits/": { body: { items: [{ id: "b9", type: "downloadables", metadata: { slug: "kit" } }], pagination: { max_page: 1 } } },
+      "PATCH /v1/benefits/b9": { body: { id: "b9" } },
+    });
+    const c = createPolarClient({ ...base, fetchImpl });
+    expect(await c.upsertDownloadableBenefit({ slug: "kit", description: "Download Kit", fileIds: ["f2"] })).toBe("b9");
+    expect(calls.some((x) => x.method === "POST")).toBe(false);
+    expect(calls.find((x) => x.method === "PATCH").body).toEqual({ description: "Download Kit", properties: { files: ["f2"] } });
+  });
+});
+
 describe("uploadFile + benefit", () => {
   it("creates file, PUTs bytes to the presigned url, completes with etag, creates benefit, attaches", async () => {
     const { fetchImpl, calls } = mockFetch({
-      "POST /v1/files/": { status: 201, body: { id: "f1", path: "org/f1.zip", upload: { parts: [{ number: 1, url: "https://s3.test/part1", headers: { "x-h": "1" } }] } } },
+      "POST /v1/files/": { status: 201, body: { id: "f1", path: "org/f1.zip", upload: { id: "mp-1", path: "org/f1.zip", parts: [{ number: 1, url: "https://s3.test/part1", headers: { "x-h": "1" } }] } } },
       "PUT /part1": { body: {}, headers: [["etag", '"abc"']] },
       "POST /v1/files/f1/uploaded": { body: { id: "f1", is_uploaded: true } },
       "POST /v1/benefits/": { status: 201, body: { id: "b1" } },
@@ -73,7 +95,7 @@ describe("uploadFile + benefit", () => {
     const create = calls.find((x) => x.url.endsWith("/v1/files/"));
     expect(create.body).toMatchObject({ name: "kit.zip", mime_type: "application/zip", size: 7, service: "downloadable", organization_id: "org-1", upload: { parts: [{ number: 1, chunk_start: 0, chunk_end: 7 }] } });
     const done = calls.find((x) => x.url.endsWith("/uploaded"));
-    expect(done.body).toEqual({ id: "f1", path: "org/f1.zip", parts: [{ number: 1, checksum_etag: "abc", checksum_sha256_base64: null }] });
+    expect(done.body).toEqual({ id: "mp-1", path: "org/f1.zip", parts: [{ number: 1, checksum_etag: "abc", checksum_sha256_base64: null }] });
     const benefitId = await c.createDownloadableBenefit({ description: "Download the kit", fileIds: ["f1"] });
     expect(benefitId).toBe("b1");
     await c.attachBenefits("p1", ["b1"]);

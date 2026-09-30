@@ -16,18 +16,23 @@ export function desiredRecords(domain, ghOrg) {
 const fqdn = (name, domain) => (name === "www" ? `www.${domain}` : name);
 const key = (r, domain) => `${r.type}|${fqdn(r.name, domain)}|${r.content}`;
 
+const nameKey = (r, domain) => `${r.type}|${fqdn(r.name, domain)}`;
+
 export function planChanges(existing, desired, domain) {
   const have = new Set(existing.map((r) => key(r, domain)));
+  const wanted = new Set(desired.map((r) => key(r, domain)));
+  const wantedNames = new Set(desired.map((r) => nameKey(r, domain)));
   const keep = desired.filter((r) => have.has(key(r, domain)));
   const create = desired.filter((r) => !have.has(key(r, domain)));
-  return { create, keep };
+  const stale = existing.filter((r) => wantedNames.has(nameKey(r, domain)) && !wanted.has(key(r, domain)));
+  return { create, keep, stale };
 }
 
 export async function ensureRecords({ token, zoneId, domain, ghOrg, fetchImpl = fetch }) {
   const headers = { Authorization: `Bearer ${token}` };
   const url = `${API}/zones/${zoneId}/dns_records`;
   const { json } = await request(`${url}?per_page=100`, { headers, fetchImpl });
-  const { create, keep } = planChanges(json.result ?? [], desiredRecords(domain, ghOrg), domain);
+  const { create, keep, stale } = planChanges(json.result ?? [], desiredRecords(domain, ghOrg), domain);
   for (const rec of create) await request(url, { method: "POST", headers, body: rec, fetchImpl });
-  return { created: create.length, kept: keep.length };
+  return { created: create.length, kept: keep.length, stale: stale.map((r) => ({ id: r.id, type: r.type, name: r.name, content: r.content })) };
 }
