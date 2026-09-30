@@ -1,5 +1,5 @@
 <!-- title: Break-Even Calculator -->
-<!-- description: Find how many units or sales you need to cover fixed costs, from price per unit and variable cost per unit, with contribution margin explained in plain language. -->
+<!-- description: Find how many units or sales you need to cover fixed costs, from price and variable cost per unit, with contribution margin explained. -->
 <h1>Break-Even Calculator</h1>
 <p>Enter your fixed costs for the period, the selling price per unit and the variable cost per unit. You get the number of units and the revenue needed to break even, and optionally to hit a profit target. Nothing is sent anywhere.</p>
 
@@ -15,6 +15,7 @@
 <script type="module">
 import { breakEven } from "./calc.js";
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -24,7 +25,7 @@ $("f").addEventListener("submit", (e) => {
     $("out").innerHTML = `<p><strong>You need to sell ${r.units.toLocaleString()} units</strong> (${fmt(r.revenue)} in revenue) to ${goal}.</p>
 <p>Each unit contributes ${fmt(r.contributionMargin)} towards fixed costs, a contribution margin ratio of ${r.contributionMarginRatio}%.</p>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>

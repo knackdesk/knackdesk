@@ -1,5 +1,5 @@
 <!-- title: Day Rate to Salary Calculator -->
-<!-- description: Convert a contractor day rate to the equivalent permanent salary, or a salary to the day rate a contractor would need, accounting for billable days and contractor overheads. -->
+<!-- description: Convert a contractor day rate to an equivalent salary, or a salary to the day rate you would need, allowing for billable days and overheads. -->
 <h1>Day Rate to Salary Calculator</h1>
 <p>Compare contracting and employment fairly. Convert a day rate into the salary it is roughly worth, or a salary into the day rate you would need to charge. Nothing is sent anywhere.</p>
 
@@ -10,10 +10,10 @@
       <option value="toRate">Salary → required day rate</option>
     </select>
   </label>
-  <label id="rateWrap">Day rate<br><input type="number" id="dayRate" min="0" step="1" value="500"></label>
-  <label id="salaryWrap" hidden>Salary per year<br><input type="number" id="salary" min="0" step="100" value="88000"></label>
+  <label id="rateWrap">Day rate<br><input type="number" id="dayRate" min="0" step="any" value="500"></label>
+  <label id="salaryWrap" hidden>Salary per year<br><input type="number" id="salary" min="0" step="any" value="88000"></label>
   <label>Billable days per year<br><input type="number" id="days" min="1" max="365" step="1" value="220" required></label>
-  <label>Contractor overhead (%) — benefits, pension, insurance, unpaid time, risk<br><input type="number" id="overhead" min="0" max="99" step="1" value="25" required></label>
+  <label>Contractor overhead (%) — benefits, pension, insurance, unpaid time, risk<br><input type="number" id="overhead" min="0" max="99" step="any" value="25" required></label>
   <label>Hours in a billable day<br><input type="number" id="hours" min="1" max="24" step="0.5" value="8"></label>
   <p><button class="primary" type="submit">Convert</button></p>
   <div id="out" aria-live="polite"></div>
@@ -22,6 +22,7 @@
 <script type="module">
 import { dayRateToSalary, salaryToDayRate } from "./calc.js";
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 $("mode").addEventListener("change", () => { const s = $("mode").value === "toRate"; $("salaryWrap").hidden = !s; $("rateWrap").hidden = s; });
 $("f").addEventListener("submit", (e) => {
@@ -30,13 +31,13 @@ $("f").addEventListener("submit", (e) => {
     const common = { billableDays: Number($("days").value), overheadPercent: Number($("overhead").value), hoursPerDay: Number($("hours").value) };
     if ($("mode").value === "toSalary") {
       const r = dayRateToSalary({ dayRate: Number($("dayRate").value), ...common });
-      $("out").innerHTML = `<p>A day rate of ${fmt(Number($("dayRate").value))} over ${$("days").value} billable days brings in <strong>${fmt(r.contractorRevenue)}</strong> a year (${fmt(r.hourlyRate)} per hour).</p><p>After a ${$("overhead").value}% allowance for the benefits, security and unpaid time an employee gets, that is roughly equivalent to a <strong>salary of ${fmt(r.equivalentSalary)}</strong>.</p>`;
+      $("out").innerHTML = `<p>A day rate of ${fmt(Number($("dayRate").value))} over ${$("days").value} billable days brings in <strong>${fmt(r.contractorRevenue)}</strong> a year (${fmt(r.hourlyRate)} per hour).</p><p>After a ${$("overhead").value}% allowance for the benefits and costs an employer would otherwise cover, that is roughly equivalent to a <strong>salary of ${fmt(r.equivalentSalary)}</strong>.</p>`;
     } else {
       const r = salaryToDayRate({ salary: Number($("salary").value), ...common });
       $("out").innerHTML = `<p>To match a salary of ${fmt(Number($("salary").value))} plus ${$("overhead").value}% overhead, you need revenue of <strong>${fmt(r.revenueNeeded)}</strong> a year.</p><p>Over ${$("days").value} billable days that is a <strong>day rate of ${fmt(r.dayRate)}</strong> (${fmt(r.hourlyRate)} per hour).</p>`;
     }
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
@@ -46,7 +47,7 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>The two adjustments this calculator makes</h2>
 <p><strong>Billable days.</strong> Start from 260 weekdays, subtract public holidays (about 10), holiday you intend to take (20 to 25), sick days (5), and time between contracts or on unpaid admin (10 to 20). That leaves roughly 210 to 225 billable days for a fully booked contractor. Use 200 if your market has real gaps between engagements.</p>
-<p><strong>Overhead percentage.</strong> This covers what the employer would have paid on top of salary: employer social contributions or payroll tax, pension contributions, health or other insurance, paid leave, training, equipment, and a premium for the risk of no notice period. Employer on-costs alone run 15% to 30% in most countries; adding the contractor's own business costs and risk, 25% to 40% is a common range. The default of 25% is deliberately conservative.</p>
+<p><strong>Overhead percentage.</strong> This covers what an employer would have paid on top of salary: employer social contributions or payroll tax, pension contributions, health or other insurance, training, equipment, and a premium for the risk of no notice period. Time off is already handled by the billable-days figure, so do not count it twice here. Employer on-costs vary widely by country, from well under 20% to over 40%; adding the contractor's own business costs and risk, 25% to 40% is a common working range. The default of 25% is deliberately conservative.</p>
 
 <h2>Reading the result</h2>
 <p>If you are a contractor, the "equivalent salary" is the permanent offer you should treat as a like-for-like match, not the headline revenue. If you are an employee considering contracting, the "required day rate" is your floor. Anything below it is a pay cut disguised as a bigger number. Our <a href="/hourly-rate-calculator/">hourly rate calculator</a> goes a step further and works from your actual costs and target income.</p>
@@ -54,10 +55,8 @@ $("f").addEventListener("submit", (e) => {
 <h2>Frequently asked questions</h2>
 <h3>Should I include tax?</h3>
 <p>No. Both salary and contractor revenue here are before personal income tax. Tax treatment differs by country and structure, so compare pre-tax figures and ask an accountant about the rest.</p>
-<h3>What about inside/outside IR35 or umbrella companies?</h3>
-<p>Those affect how much of the revenue you keep, not the comparison itself. Increase the overhead percentage to reflect any extra employment costs deducted from your rate.</p>
-<h3>Which billable days figure should hiring managers use?</h3>
-<p>Use the number of days the contract actually covers, since that is what you will pay for.</p>
+<h3>What about contractor tax status rules or umbrella companies?</h3>
+<p>Rules such as the UK's off-payroll working rules change how contract income is taxed and what is deducted before it reaches you. That is outside this calculator; ask an accountant, and increase the overhead percentage to reflect any deductions from your rate.</p>
 <h3>Is my data stored?</h3>
 <p>No. Everything runs in your browser.</p>
 

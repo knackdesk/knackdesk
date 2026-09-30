@@ -56,6 +56,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   }
   const urls = ["/", ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
+  if (adsenseId) writeFileSync(join(outDir, "ads.txt"), `google.com, ${adsenseId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
   writeFileSync(join(outDir, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://knackdesk.com/sitemap.xml\n");
   cpSync(join(rootDir, "site", "CNAME"), join(outDir, "CNAME"));
   cpSync(join(rootDir, "shared", "styles.css"), join(outDir, "styles.css"));

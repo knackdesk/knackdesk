@@ -25,3 +25,12 @@ describe("hourly rate", () => {
     expect(() => hourlyRate({ ...base, taxPercent: 100 })).toThrow(/tax/i);
   });
 });
+
+describe("hourly rate (review fixes)", () => {
+  const base = { targetIncome: 60000, annualExpenses: 6000, weeksOff: 6, hoursPerWeek: 40, billablePercent: 60, taxPercent: 0 };
+  it("rejects zero hours per day, billable over 100 and more than 168 hours a week", () => {
+    expect(() => hourlyRate({ ...base, hoursPerDay: 0 })).toThrow(/hours in a day/i);
+    expect(() => hourlyRate({ ...base, billablePercent: 101 })).toThrow(/billable/i);
+    expect(() => hourlyRate({ ...base, hoursPerWeek: 169 })).toThrow(/week/i);
+  });
+});

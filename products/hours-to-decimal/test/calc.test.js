@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { toDecimal, toHoursMinutes, sumEntries } from "../public/calc.js";
+import { toDecimal, toHoursMinutes, sumEntries, toMinutes } from "../public/calc.js";
 
 describe("hours to decimal", () => {
   it("1:30 is 1.5 and 0:20 is 0.33", () => {
@@ -26,5 +26,28 @@ describe("hours to decimal", () => {
   it("rejects garbage and minutes over 59", () => {
     expect(() => toDecimal("abc")).toThrow(/format/i);
     expect(() => toDecimal("1:75")).toThrow(/minutes/i);
+  });
+});
+
+describe("hours to decimal (review fixes)", () => {
+  it("sums in minutes so three 0:20 entries make exactly 1 hour", () => {
+    const r = sumEntries("0:20\n0:20\n0:20", 60);
+    expect(r.totalDecimal).toBe(1);
+    expect(r.totalHm).toBe("1:00");
+    expect(r.amount).toBe(60);
+  });
+  it("accepts 90m, 90 min, 1.5h, 2 hrs, 1h30 and a decimal comma", () => {
+    expect(toDecimal("90m")).toBe(1.5);
+    expect(toDecimal("90 min")).toBe(1.5);
+    expect(toDecimal("1.5h")).toBe(1.5);
+    expect(toDecimal("2 hrs")).toBe(2);
+    expect(toDecimal("1h30")).toBe(1.5);
+    expect(toDecimal("1,5")).toBe(1.5);
+  });
+  it("still rejects minutes over 59 in h:mm form", () => {
+    expect(() => toDecimal("1:75")).toThrow(/minutes/i);
+  });
+  it("exposes minutes for each entry", () => {
+    expect(toMinutes("1:30")).toBe(90);
   });
 });

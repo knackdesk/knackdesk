@@ -10,6 +10,10 @@ describe("renderPage", () => {
     expect(html).toContain('href="/privacy/"');
     expect(html).not.toContain("adsbygoogle");
   });
+  it("carries the not-advice disclaimer in the footer", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+    expect(html).toContain("not legal, tax or financial advice");
+  });
   it("adds the AdSense tag only when an id is given", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/", adsenseId: "ca-pub-1" });
     expect(html).toContain("client=ca-pub-1");

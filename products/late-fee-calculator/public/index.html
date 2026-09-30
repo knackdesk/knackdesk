@@ -22,6 +22,7 @@
 <script type="module">
 import { lateFee } from "./calc.js";
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 $("type").addEventListener("change", () => {
   const flat = $("type").value === "flat";
@@ -35,18 +36,18 @@ $("f").addEventListener("submit", (e) => {
     const perDay = r.perDay ? ` That is ${fmt(r.perDay)} per day late.` : "";
     $("out").innerHTML = `<p><strong>Late fee: ${fmt(r.fee)}</strong><br>New total owed: ${fmt(r.total)}.${perDay}</p>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
 
 <h2>How late fees are calculated</h2>
 <p>There are three common ways a contract describes a late fee. A <strong>flat fee</strong> is a fixed amount added once the invoice is overdue, such as 25 or 50, no matter how late it is. A <strong>monthly percentage</strong>, often written as "1.5% per month", is charged on the outstanding amount and prorated by the number of days late, so 15 days late costs half a month's fee. An <strong>annual rate</strong> works the same way but is quoted per year, which is how statutory interest is usually expressed.</p>
-<p>The formula for a monthly percentage is: amount × rate ÷ 100 × days late ÷ 30. For an annual rate, divide by 365 instead of 30. This calculator uses simple interest, which is what most freelancer contracts and most late-payment laws use. Compound interest, where the fee itself starts attracting interest, is rare in small business invoicing and usually needs to be spelled out in the contract.</p>
+<p>The formula for a monthly percentage is: amount × rate ÷ 100 × days late ÷ 30. For an annual rate, divide by 365 instead of 30. This calculator uses simple interest, which is what most freelancer contracts specify. Compound interest, where the fee itself starts attracting interest, is rare in small business invoicing and usually needs to be spelled out in the contract.</p>
 
 <h2>What you can actually charge</h2>
-<p>A late fee is only enforceable if the client agreed to it before the work started. That means it must be in your contract, your terms of business, or a written quote the client accepted. Adding "1.5% per month late fee" to the invoice for the first time after the due date has passed is unlikely to hold up, and it damages the relationship.</p>
-<p>Many countries set a default interest rate for late commercial payments that applies when the contract is silent. In the European Union and the United Kingdom, for example, businesses can claim statutory interest plus a fixed compensation amount on overdue business-to-business invoices. The rates change with central bank rates, so check the current figure for your country and enter it as an annual percentage. This tool does the arithmetic; it does not tell you what rate applies to you.</p>
+<p>Whether a late fee can be enforced depends on your contract and on local law. The safest position is to have it in your contract, your terms of business, or a written quote the client accepted before work started. Adding a late fee to an invoice for the first time after the due date has passed is a much weaker position and tends to damage the relationship. Some countries and states cap the interest or fees that can be charged, so a rate such as 1.5% per month may exceed a local limit; check before you rely on it.</p>
+<p>Many countries set a default interest rate for late commercial payments that applies when the contract is silent. In the European Union and the United Kingdom, for example, businesses can generally claim statutory interest and a fixed compensation amount on overdue business-to-business invoices, though the rules and amounts vary and change over time; check the official source for your country and enter the rate as an annual percentage. This tool does the arithmetic only; it does not tell you what rate applies to you, and it is not legal advice.</p>
 
 <h2>When to charge, and when not to</h2>
 <p>The point of a late fee is to change behaviour, not to earn money. Most freelancers find that simply having the clause in the contract, and mentioning it politely in the first reminder, is enough to get paid. Charging the fee is a decision, not an automatic step. For a good client who is a week late for the first time, a reminder is usually the better move. For a client who is repeatedly 60 days late, the fee is fair and the calculation above gives you the exact figure to put on the revised invoice.</p>

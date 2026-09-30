@@ -22,3 +22,9 @@ describe("markup and margin", () => {
     expect(() => solve({ cost: 10 })).toThrow(/two/i);
   });
 });
+
+describe("markup margin (review fixes)", () => {
+  it("rejects more than two filled values", () => {
+    expect(() => solve({ cost: 80, price: 100, markupPercent: 99 })).toThrow(/exactly two/i);
+  });
+});

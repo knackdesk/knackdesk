@@ -22,3 +22,15 @@ describe("deposit split", () => {
     expect(() => splitPayments({ total: 100, depositPercent: 10, milestones: 0, startDate: "2026-01-01", weeks: 1 })).toThrow(/milestone/i);
   });
 });
+
+describe("deposit split (review fixes)", () => {
+  it("rejects NaN, Infinity and impossible dates", () => {
+    expect(() => splitPayments({ total: Infinity, depositPercent: 10, milestones: 1, startDate: "2026-01-01", weeks: 1 })).toThrow(/total/i);
+    expect(() => splitPayments({ total: 100, depositPercent: NaN, milestones: 1, startDate: "2026-01-01", weeks: 1 })).toThrow(/deposit/i);
+    expect(() => splitPayments({ total: 100, depositPercent: 10, milestones: 1, startDate: "2026-02-30", weeks: 1 })).toThrow(/date/i);
+  });
+  it("a 100 percent deposit produces no milestone rows", () => {
+    const r = splitPayments({ total: 100, depositPercent: 100, milestones: 2, startDate: "2026-01-01", weeks: 1 });
+    expect(r.payments).toHaveLength(1);
+  });
+});

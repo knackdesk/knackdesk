@@ -1,10 +1,10 @@
 <!-- title: Hours to Decimal Converter -->
-<!-- description: Convert hours and minutes to decimal hours and back, add up a list of time entries, and multiply by a rate to get the invoice amount. -->
+<!-- description: Convert hours and minutes to decimal hours, total a list of time entries, and multiply by a rate for the invoice. -->
 <h1>Hours to Decimal Converter</h1>
-<p>Paste one time entry per line, such as <code>1:30</code>, <code>2h 15m</code> or <code>45m</code>. You get each entry in decimal hours, the total in both formats, and the invoice amount if you enter a rate. Nothing is sent anywhere.</p>
+<p>Paste one time entry per line, such as <code>1:30</code>, <code>2h 15m</code>, <code>90m</code> or <code>1.5h</code>. You get each entry in decimal hours, the total in both formats, and the invoice amount if you enter a rate. Nothing is sent anywhere.</p>
 
 <form class="tool" id="f">
-  <label>Time entries (one per line)<br><textarea id="entries" rows="6" style="width:100%;max-width:360px">1:30
+  <label>Time entries (one per line)<br><textarea id="entries" rows="6">1:30
 2h 15m
 0:45</textarea></label>
   <label>Hourly rate (optional)<br><input type="number" id="rate" min="0" step="0.01" value="80"></label>
@@ -14,7 +14,9 @@
 
 <script type="module">
 import { toDecimal, sumEntries } from "./calc.js";
+const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -22,11 +24,11 @@ $("f").addEventListener("submit", (e) => {
     const text = $("entries").value;
     const rate = Number($("rate").value) || 0;
     const r = sumEntries(text, rate);
-    const rows = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => `<tr><td>${l.replace(/</g, "&lt;")}</td><td>${toDecimal(l).toFixed(2)}</td></tr>`).join("");
+    const rows = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => `<tr><td>${esc(l)}</td><td>${toDecimal(l).toFixed(2)}</td></tr>`).join("");
     const amount = rate > 0 ? `<tr><td>Amount at ${fmt(rate)}/hour</td><td><strong>${fmt(r.amount)}</strong></td></tr>` : "";
     $("out").innerHTML = `<table><tr><th>Entry</th><th>Decimal hours</th></tr>${rows}<tr><td>Total (${r.count} entries)</td><td><strong>${r.totalDecimal.toFixed(2)}</strong> = ${r.totalHm}</td></tr>${amount}</table>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
@@ -47,11 +49,12 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Rounding rules for billing</h2>
 <p>Most freelancers round each entry to the nearest 6 minutes (a tenth of an hour) or 15 minutes (a quarter). Rounding up to the next quarter hour is common in legal and consulting work but should be stated in your terms, because clients notice when four 2-minute emails become an hour. A fairer default is to track to the minute and round only the daily or weekly total. Whatever rule you use, apply it consistently and say so on the invoice.</p>
+<p>Worked example: a week of 7:45, 8:10, 6:30, 8:00 and 4:20 is 34 hours 45 minutes, which is 34.75 decimal hours; at 80 per hour that is 2,780.</p>
 <p>Timesheet software usually exports decimal hours already. This tool is for the other cases: notes on paper, calendar blocks, phone timers, or a client who sends hours as 7:45 and wants to know what they will be charged.</p>
 
 <h2>Frequently asked questions</h2>
-<h3>Why does the total in h:mm sometimes differ from adding the decimals?</h3>
-<p>Each decimal is rounded to two places, so a list of entries with 20-minute blocks can drift by a minute. The total is computed from the rounded decimals, which is what will appear on the invoice.</p>
+<h3>Why does the total sometimes differ from adding the displayed decimals?</h3>
+<p>Each displayed decimal is rounded to two places, but the total is computed from the exact minutes, so three 20-minute entries total exactly 1:00 and 1.00 hours. The total is the figure to invoice.</p>
 <h3>Can I enter plain decimal numbers too?</h3>
 <p>Yes. A line like <code>1.75</code> is taken as decimal hours and passed through unchanged.</p>
 <h3>Does it handle more than 24 hours?</h3>

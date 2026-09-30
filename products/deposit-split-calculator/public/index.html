@@ -1,11 +1,11 @@
 <!-- title: Deposit and Milestone Split Calculator -->
-<!-- description: Split a fixed project fee into a deposit and milestone payments with due dates spread across the project timeline, so you get paid as you deliver. -->
+<!-- description: Split a fixed project fee into a deposit and milestone payments with due dates across the project, so you get paid as you deliver. -->
 <h1>Deposit and Milestone Split Calculator</h1>
 <p>Enter the project total, the deposit you want up front, how many milestone payments to spread the rest over, and the project dates. You get a payment schedule you can paste into a proposal. Nothing is sent anywhere.</p>
 
 <form class="tool" id="f">
   <label>Project total<br><input type="number" id="total" min="0.01" step="0.01" value="5000" required></label>
-  <label>Deposit (% of total, 0 for none)<br><input type="number" id="deposit" min="0" max="100" step="1" value="30"></label>
+  <label>Deposit (% of total, 0 for none)<br><input type="number" id="deposit" min="0" max="100" step="any" value="30"></label>
   <label>Number of milestone payments for the remainder<br><input type="number" id="milestones" min="1" max="24" step="1" value="2"></label>
   <label>Project start date<br><input type="date" id="start" required></label>
   <label>Project length (weeks)<br><input type="number" id="weeks" min="0.5" step="0.5" value="8"></label>
@@ -14,10 +14,11 @@
 </form>
 
 <script type="module">
-import { splitPayments } from "./calc.js";
+import { splitPayments, localIsoDate } from "./calc.js";
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-$("start").value = new Date().toISOString().slice(0, 10);
+$("start").value = localIsoDate();
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {
@@ -25,18 +26,18 @@ $("f").addEventListener("submit", (e) => {
     const rows = r.payments.map((p) => `<tr><td>${p.label}</td><td>${p.due}</td><td><strong>${fmt(p.amount)}</strong></td></tr>`).join("");
     $("out").innerHTML = `<table><tr><th>Payment</th><th>Due</th><th>Amount</th></tr>${rows}<tr><td>Total</td><td></td><td><strong>${fmt(Number($("total").value))}</strong></td></tr></table>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
 
-<h2>Why you should never do a fixed-price project without a deposit</h2>
-<p>A deposit does three things. It confirms the client is serious before you block out time. It covers your early costs and the work you do before anything is visible. And it changes the psychology of the project: a client who has paid is a client who responds to emails. Freelancers who ask for a deposit report far fewer projects that stall or vanish after kickoff.</p>
+<h2>Why a fixed-price project should start with a deposit</h2>
+<p>A deposit does three things. It confirms the client is serious before you block out time. It covers your early costs and the work you do before anything is visible. And it changes the psychology of the project: a client who has paid is a client who responds to emails. In practice, projects that start with a deposit are far less likely to stall or vanish after kickoff.</p>
 <p>Typical deposits run from 25% to 50%. Thirty percent is the most common figure for design, development and consulting work; fifty percent is normal for short projects, new clients, or work with high upfront costs. Some freelancers ask for 100% up front on very small jobs, where the admin of milestones is not worth it.</p>
 
 <h2>Spreading the rest across milestones</h2>
 <p>The remainder should be tied to things the client can see: a design approved, a first version delivered, the project handed over. This calculator spaces the milestone due dates evenly across the project length, which is a good starting point. Then move each date to match a real deliverable in your plan. Two or three milestones is enough for most projects up to three months; longer engagements are usually better as a monthly retainer or monthly billing.</p>
-<p>Keep the final payment meaningful but not huge. If 50% of the fee is due on final delivery, you have handed the client a large incentive to delay sign-off. A common pattern is 30% deposit, 40% at the midpoint, 30% on delivery, with the last invoice sent the day you hand over and due on receipt or net 7.</p>
+<p>Keep the final payment meaningful but not huge. If 50% of the fee is due on final delivery, you have handed the client a large incentive to delay sign-off. A common pattern is 30% deposit, 40% at the midpoint, 30% on delivery: build it here as a 30% deposit with two milestones, then adjust the two amounts by hand.</p>
 
 <h2>Putting the schedule in your proposal</h2>
 <p>Write the schedule as a table with the amount, the trigger and the due date for each payment, exactly like the one this tool produces. State that work starts when the deposit clears, that each milestone is invoiced when its deliverable is presented, and what the payment terms and late fee are. Use the <a href="/invoice-due-date/">invoice due date calculator</a> to set the terms and the <a href="/late-fee-calculator/">late fee calculator</a> if a payment slips. Clear schedules get signed faster because there is nothing to negotiate later.</p>

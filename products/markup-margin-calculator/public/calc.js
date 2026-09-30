@@ -7,7 +7,7 @@ function num(v, name) {
 
 export function solve(input) {
   const given = Object.entries(input).filter(([, v]) => v !== undefined && v !== null && v !== "");
-  if (given.length < 2) throw new Error("Enter any two values.");
+  if (given.length !== 2) throw new Error("Enter exactly two values and leave the other two empty.");
   const { cost, price, markupPercent, marginPercent } = Object.fromEntries(given);
   if (marginPercent !== undefined && num(marginPercent, "Margin") >= 100) throw new Error("Margin must be below 100 percent.");
   let c, p;

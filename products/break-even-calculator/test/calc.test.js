@@ -19,3 +19,10 @@ describe("break even", () => {
     expect(() => breakEven({ fixedCosts: 100, pricePerUnit: 10, variableCostPerUnit: 10 })).toThrow(/price/i);
   });
 });
+
+describe("break even (review fixes)", () => {
+  it("uses integer cents so float noise never adds a unit", () => {
+    // 0.1 + 0.2 style case: fixed 0.3, price 1.1, variable 1.0 -> margin 0.1 exactly -> 3 units
+    expect(breakEven({ fixedCosts: 0.3, pricePerUnit: 1.1, variableCostPerUnit: 1.0 }).units).toBe(3);
+  });
+});

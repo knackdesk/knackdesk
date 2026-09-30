@@ -67,6 +67,12 @@ description: d
     expect(sm).toContain("<loc>https://knackdesk.com/conv/</loc>");
     expect(readFileSync(join(out, "robots.txt"), "utf8")).toContain("Sitemap: https://knackdesk.com/sitemap.xml");
   });
+  it("writes ads.txt only when an AdSense id is configured", async () => {
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "ca-pub-123" });
+    expect(readFileSync(join(out, "ads.txt"), "utf8").trim()).toBe("google.com, pub-123, DIRECT, f08c47fec0942fa0");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    expect(existsSync(join(out, "ads.txt"))).toBe(false);
+  });
   it("wraps a tool page that declares title meta in the site layout, keeping other public files verbatim", async () => {
     mkdirSync(join(root, "products", "wrap", "public"), { recursive: true });
     writeFileSync(join(root, "products", "wrap", "public", "index.html"), "<!-- title: Wrap Tool -->\n<!-- description: wraps -->\n<h1>Wrap</h1>");

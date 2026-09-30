@@ -17,3 +17,9 @@ describe("day rate <-> salary", () => {
     expect(() => salaryToDayRate({ salary: 1, billableDays: 10, overheadPercent: 100 })).toThrow(/overhead/i);
   });
 });
+
+describe("day rate (review fixes)", () => {
+  it("rejects zero hours per day", () => {
+    expect(() => dayRateToSalary({ dayRate: 500, billableDays: 220, overheadPercent: 25, hoursPerDay: 0 })).toThrow(/hours/i);
+  });
+});

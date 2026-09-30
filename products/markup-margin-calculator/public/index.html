@@ -1,5 +1,5 @@
 <!-- title: Markup and Margin Calculator -->
-<!-- description: Enter any two of cost, price, markup or margin and get the other values instantly, with a plain-English explanation of the difference between markup and margin. -->
+<!-- description: Enter any two of cost, price, markup or margin and get the rest instantly, with the difference between markup and margin explained. -->
 <h1>Markup and Margin Calculator</h1>
 <p>Fill in any two fields and leave the others empty. The calculator works out the rest and shows the profit. Nothing is sent anywhere.</p>
 
@@ -8,22 +8,24 @@
   <label>Selling price<br><input type="number" id="price" min="0" step="0.01" placeholder="e.g. 100"></label>
   <label>Markup (%)<br><input type="number" id="markup" min="0" step="0.01" placeholder="e.g. 25"></label>
   <label>Margin (%)<br><input type="number" id="margin" min="0" max="99.99" step="0.01" placeholder="e.g. 20"></label>
-  <p><button class="primary" type="submit">Calculate</button> <button type="reset">Clear</button></p>
+  <p><button class="primary" type="submit">Calculate</button> <button type="reset" id="clear">Clear</button></p>
   <div id="out" aria-live="polite"></div>
 </form>
 
 <script type="module">
 import { solve } from "./calc.js";
 const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const val = (id) => ($(id).value === "" ? undefined : Number($(id).value));
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("reset", () => { $("out").replaceChildren(); });
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {
     const r = solve({ cost: val("cost"), price: val("price"), markupPercent: val("markup"), marginPercent: val("margin") });
     $("out").innerHTML = `<table><tr><td>Cost</td><td><strong>${fmt(r.cost)}</strong></td></tr><tr><td>Selling price</td><td><strong>${fmt(r.price)}</strong></td></tr><tr><td>Profit per unit</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Markup</td><td><strong>${r.markupPercent}%</strong> of cost</td></tr><tr><td>Margin</td><td><strong>${r.marginPercent}%</strong> of price</td></tr></table>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
@@ -49,7 +51,7 @@ $("f").addEventListener("submit", (e) => {
 <p>A quick reference: 25% markup is 20% margin, 50% markup is 33.3% margin, 100% markup is 50% margin, and 300% markup is 75% margin. A margin can never reach 100%, because that would mean the item cost nothing.</p>
 
 <h2>Which one should you use?</h2>
-<p>Use <strong>margin</strong> when you talk about the health of the business, because it relates directly to revenue: a 40% gross margin means 40 of every 100 in sales is left after direct costs. Accountants, investors and most reporting use margin. Use <strong>markup</strong> when you set prices from a cost list, because it is easier to apply: multiply cost by 1.5 for a 50% markup. Many industries have conventional markups, such as keystone (100% markup, 50% margin) in retail, and 10% to 20% markup on subcontracted work in construction and agencies.</p>
+<p>Use <strong>margin</strong> when you talk about the health of the business, because it relates directly to revenue: a 40% gross margin means 40 of every 100 in sales is left after direct costs. Accountants, investors and most reporting use margin. Use <strong>markup</strong> when you set prices from a cost list, because it is easier to apply: multiply cost by 1.5 for a 50% markup. Many industries have conventional markups, such as keystone (100% markup, 50% margin) in retail.</p>
 <p>If a client or supplier quotes a percentage, always ask which one they mean. "We add 20%" is a markup. "We keep 20%" is a margin.</p>
 
 <h2>Frequently asked questions</h2>

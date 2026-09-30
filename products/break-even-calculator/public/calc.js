@@ -10,9 +10,11 @@ export function breakEven({ fixedCosts, pricePerUnit, variableCostPerUnit, targe
   num(pricePerUnit, "Price per unit");
   num(variableCostPerUnit, "Variable cost per unit");
   num(targetProfit, "Target profit");
-  const contributionMargin = round2(pricePerUnit - variableCostPerUnit);
-  if (contributionMargin <= 0) throw new Error("Price per unit must be higher than the variable cost per unit, or you can never break even.");
-  const units = Math.ceil((fixedCosts + targetProfit) / contributionMargin);
+  const cents = (n) => Math.round(n * 100);
+  const marginCents = cents(pricePerUnit) - cents(variableCostPerUnit);
+  if (marginCents <= 0) throw new Error("Price per unit must be higher than the variable cost per unit, or you can never break even.");
+  const contributionMargin = marginCents / 100;
+  const units = Math.ceil((cents(fixedCosts) + cents(targetProfit)) / marginCents);
   return {
     contributionMargin,
     contributionMarginRatio: round2((contributionMargin / pricePerUnit) * 100),

@@ -31,3 +31,15 @@ describe("invoice due date", () => {
     expect(isWeekend(new Date("2026-03-09"))).toBe(false);
   });
 });
+
+describe("invoice due date (review fixes)", () => {
+  it("caps the term at 3650 days", () => {
+    expect(() => dueDate({ issueDate: "2026-01-01", termDays: 3651, mode: "calendar" })).toThrow(/3650/);
+  });
+  it("business-day arithmetic matches the loop for long terms and is fast", () => {
+    expect(formatIso(addBusinessDays(new Date("2026-01-16"), 3650))).toBe("2040-01-13");
+  });
+  it("accepts today as a local YYYY-MM-DD string", () => {
+    expect(dueDate({ issueDate: "2026-03-01", termDays: 10, mode: "calendar", today: "2026-03-01" }).daysFromToday).toBe(10);
+  });
+});

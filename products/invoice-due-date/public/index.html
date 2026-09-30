@@ -18,29 +18,32 @@
       <option value="custom">Custom number of days</option>
     </select>
   </label>
-  <label id="customWrap" hidden>Custom days<br><input type="number" id="custom" min="0" step="1" value="21"></label>
+  <label id="customWrap" hidden>Custom days<br><input type="number" id="custom" min="0" max="3650" step="1" value="21"></label>
+  <fieldset><legend>How to count the days</legend>
   <label><input type="radio" name="mode" value="calendar" checked> Count calendar days (standard)</label>
   <label><input type="radio" name="mode" value="business"> Count business days only (skip Saturday and Sunday)</label>
+  </fieldset>
   <label><input type="checkbox" id="roll"> If the due date lands on a weekend, move it to Monday</label>
   <p><button class="primary" type="submit">Calculate due date</button></p>
   <div id="out" aria-live="polite"></div>
 </form>
 
 <script type="module">
-import { dueDate } from "./calc.js";
+import { dueDate, localIsoDate } from "./calc.js";
 const $ = (id) => document.getElementById(id);
-$("issue").value = new Date().toISOString().slice(0, 10);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+$("issue").value = localIsoDate();
 $("term").addEventListener("change", () => { $("customWrap").hidden = $("term").value !== "custom"; });
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {
     const termDays = $("term").value === "custom" ? Number($("custom").value) : Number($("term").value);
     const mode = document.querySelector('input[name="mode"]:checked').value;
-    const r = dueDate({ issueDate: $("issue").value, termDays, mode, rollForward: $("roll").checked });
+    const r = dueDate({ issueDate: $("issue").value, termDays, mode, rollForward: $("roll").checked, today: localIsoDate() });
     const rel = r.daysFromToday === 0 ? "due today" : r.daysFromToday > 0 ? `${r.daysFromToday} days from today` : `${-r.daysFromToday} days overdue`;
     $("out").innerHTML = `<p><strong>Due date: ${r.weekday}, ${r.due}</strong><br>${rel}.</p>`;
   } catch (err) {
-    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+    showError($("out"), err.message);
   }
 });
 </script>
@@ -51,7 +54,7 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Why the issue date matters more than the send date</h2>
 <p>The clock starts from the date printed on the invoice, not the day you happen to email it. If you finish work on a Friday, write up the invoice on Monday and date it Monday, you have given the client three extra days. Date the invoice the day the work is complete or the day agreed in your contract, and send it the same day.</p>
-<p>Late invoices are the single biggest cause of late payment. Freelancers who invoice within 24 hours of finishing the work get paid, on average, more than a week faster than those who batch invoices at the end of the month. Use this tool the moment you write the invoice, put the due date on the invoice in words and numbers, and add it to your calendar.</p>
+<p>Invoicing late is one of the most common reasons for getting paid late: every day between finishing the work and sending the invoice is a day added to the wait. Use this tool the moment you write the invoice, put the due date on the invoice in words and numbers, and add it to your calendar.</p>
 
 <h2>Weekend and holiday due dates</h2>
 <p>When a due date lands on a Saturday, most clients will pay on the following Monday and nobody considers it late. Ticking the roll-forward option moves the due date to the next weekday so your records match what will really happen. Public holidays vary by country, so the calculator does not try to guess them; if a due date lands on a national holiday, move it by hand.</p>

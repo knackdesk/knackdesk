@@ -8,7 +8,9 @@ function num(v, name) {
 export function hourlyRate({ targetIncome, annualExpenses = 0, weeksOff = 0, hoursPerWeek, billablePercent, taxPercent = 0, hoursPerDay = 8 }) {
   num(targetIncome, "Target income");
   num(annualExpenses, "Expenses");
-  num(hoursPerWeek, "Hours per week");
+  if (num(hoursPerWeek, "Hours per week") > 168) throw new Error("Hours per week cannot exceed 168.");
+  if (num(hoursPerDay, "Hours per day") <= 0) throw new Error("Hours in a day must be above zero.");
+  if (num(billablePercent, "Billable percent") > 100) throw new Error("Billable percent cannot exceed 100.");
   if (num(taxPercent, "Tax") >= 100) throw new Error("Tax percent must be below 100.");
   const workingWeeks = 52 - num(weeksOff, "Weeks off");
   if (workingWeeks <= 0) throw new Error("Weeks off must leave at least one working week.");
