@@ -73,9 +73,20 @@ export function createPolarClient({ token, orgId, fetchImpl = fetch }) {
     return existing.id;
   }
 
+  async function ensureCheckoutLink({ slug, productId, label }) {
+    const links = await listAll("/v1/checkout-links/");
+    const existing = links.find((l) => l.metadata?.slug === slug);
+    if (existing) return existing.url;
+    const { json } = await call("/v1/checkout-links/", {
+      method: "POST",
+      body: { payment_processor: "stripe", products: [productId], label, metadata: { slug }, success_url: "https://knackdesk.com/thanks/", allow_discount_codes: true },
+    });
+    return json.url;
+  }
+
   async function attachBenefits(productId, benefitIds) {
     await call(`/v1/products/${productId}/benefits`, { method: "POST", body: { benefits: benefitIds } });
   }
 
-  return { listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, upsertDownloadableBenefit, attachBenefits };
+  return { listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, upsertDownloadableBenefit, attachBenefits, ensureCheckoutLink };
 }

@@ -80,6 +80,26 @@ describe("upsertDownloadableBenefit", () => {
   });
 });
 
+describe("ensureCheckoutLink", () => {
+  it("creates a stripe checkout link tagged with the slug and returns its url", async () => {
+    const { fetchImpl, calls } = mockFetch({
+      "GET /v1/checkout-links/": { body: { items: [], pagination: { max_page: 1 } } },
+      "POST /v1/checkout-links/": { status: 201, body: { id: "cl1", url: "https://buy.polar.sh/abc" } },
+    });
+    const c = createPolarClient({ ...base, fetchImpl });
+    expect(await c.ensureCheckoutLink({ slug: "kit", productId: "p1", label: "Kit" })).toBe("https://buy.polar.sh/abc");
+    expect(calls.find((x) => x.method === "POST").body).toMatchObject({ payment_processor: "stripe", products: ["p1"], label: "Kit", metadata: { slug: "kit" }, success_url: "https://knackdesk.com/thanks/" });
+  });
+  it("reuses an existing link for the slug", async () => {
+    const { fetchImpl, calls } = mockFetch({
+      "GET /v1/checkout-links/": { body: { items: [{ id: "cl9", url: "https://buy.polar.sh/old", metadata: { slug: "kit" } }], pagination: { max_page: 1 } } },
+    });
+    const c = createPolarClient({ ...base, fetchImpl });
+    expect(await c.ensureCheckoutLink({ slug: "kit", productId: "p1", label: "Kit" })).toBe("https://buy.polar.sh/old");
+    expect(calls.some((x) => x.method === "POST")).toBe(false);
+  });
+});
+
 describe("uploadFile + benefit", () => {
   it("creates file, PUTs bytes to the presigned url, completes with etag, creates benefit, attaches", async () => {
     const { fetchImpl, calls } = mockFetch({

@@ -25,6 +25,7 @@ const fakeClient = () => ({
   uploadFile: vi.fn(async () => "f1"),
   upsertDownloadableBenefit: vi.fn(async () => "b1"),
   attachBenefits: vi.fn(async () => {}),
+  ensureCheckoutLink: vi.fn(async () => "https://buy.polar.sh/abc"),
 });
 
 describe("runCreate", () => {
@@ -39,10 +40,11 @@ describe("runCreate", () => {
     const root = fixture("live");
     const client = fakeClient();
     const url = await runCreate({ slug: "kit", rootDir: root, client });
-    expect(url).toBe("https://polar.sh/knackdesk/products/p1");
+    expect(url).toBe("https://buy.polar.sh/abc");
+    expect(client.ensureCheckoutLink).toHaveBeenCalledWith({ slug: "kit", productId: "p1", label: "The Kit" });
     expect(client.upsertDownloadableBenefit).toHaveBeenCalledWith({ slug: "kit", description: "Download The Kit", fileIds: ["f1"] });
     const plan = (await import("node:fs")).readFileSync(join(root, "products", "kit", "PLAN.md"), "utf8");
-    expect(plan).toContain("polar_url: https://polar.sh/knackdesk/products/p1");
+    expect(plan).toContain("polar_url: https://buy.polar.sh/abc");
     rmSync(root, { recursive: true, force: true });
   });
 });

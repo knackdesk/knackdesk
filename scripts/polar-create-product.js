@@ -30,7 +30,7 @@ export async function runCreate({ slug, rootDir, client, log = () => {} }) {
   const benefitId = await client.upsertDownloadableBenefit({ slug, description: `Download ${data.name}`.slice(0, 42), fileIds });
   await client.attachBenefits(product.id, [benefitId]);
 
-  const url = `https://polar.sh/knackdesk/products/${product.id}`;
+  const url = await client.ensureCheckoutLink({ slug, productId: product.id, label: data.name });
   const updated = raw.includes("polar_url:")
     ? raw.replace(/polar_url:.*/, () => `polar_url: ${url}`)
     : raw.replace(/^---\r?\n/, () => `---\npolar_url: ${url}\n`);
