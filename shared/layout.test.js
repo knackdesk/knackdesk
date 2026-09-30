@@ -10,6 +10,10 @@ describe("renderPage", () => {
     expect(html).toContain('href="/privacy/"');
     expect(html).not.toContain("adsbygoogle");
   });
+  it("never mentions the parent company", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+    expect(html).not.toMatch(/smitheo/i);
+  });
   it("carries the not-advice disclaimer in the footer", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).toContain("not legal, tax or financial advice");

@@ -26,7 +26,7 @@ ${adsense(adsenseId)}
 <main>
 ${body}
 </main>
-<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footlinks"><span>© Knackdesk, a brand of Smitheo d.o.o.</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footlinks"><span>© Knackdesk</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
 </body>
 </html>`;
 }
