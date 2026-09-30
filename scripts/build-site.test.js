@@ -93,6 +93,12 @@ description: d
     expect(page).toContain("The Kit");
     expect(page).toContain("$12");
   });
+  it("copies site/public files verbatim to the site root", async () => {
+    mkdirSync(join(root, "site", "public"), { recursive: true });
+    writeFileSync(join(root, "site", "public", "abc123.txt"), "abc123");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    expect(readFileSync(join(out, "abc123.txt"), "utf8")).toBe("abc123");
+  });
   it("wraps a tool page that declares title meta in the site layout, keeping other public files verbatim", async () => {
     mkdirSync(join(root, "products", "wrap", "public"), { recursive: true });
     writeFileSync(join(root, "products", "wrap", "public", "index.html"), "<!-- title: Wrap Tool -->\n<!-- description: wraps -->\n<h1>Wrap</h1>");
