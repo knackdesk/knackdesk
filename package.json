@@ -1,0 +1,20 @@
+{
+  "name": "knackdesk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "workspaces": ["products/*"],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "node scripts/build-site.js",
+    "check-env": "node scripts/check-env.js",
+    "polar:create": "node scripts/polar-create-product.js",
+    "polar:sales": "node scripts/polar-sales.js",
+    "dns": "node scripts/cloudflare-dns.js"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0"
+  }
+}
