@@ -10,3 +10,9 @@ main{max-width:960px;margin:0 auto;padding:1rem 16px 4rem}h1{font-size:2rem;line
 .tool{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin:1.5rem 0}
 input,select,textarea,button{font:inherit;padding:.5rem .75rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
 button.primary{background:var(--accent);color:#fff;border-color:var(--accent);cursor:pointer}
+.tool label{display:block;margin:.6rem 0}.tool input[type=number],.tool input[type=date],.tool select{width:100%;max-width:360px;margin-top:.25rem}
+.tool input[type=radio],.tool input[type=checkbox]{width:auto;margin-right:.5rem}
+table{border-collapse:collapse;margin:1rem 0}td,th{border-bottom:1px solid var(--line);padding:.4rem .75rem;text-align:left}
+[role=alert]{color:#b42318}
+[hidden]{display:none!important}
+main a{color:var(--accent)}
