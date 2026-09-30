@@ -1,0 +1,70 @@
+<!-- title: Late Payment Fee Calculator -->
+<!-- description: Calculate the late fee or interest owed on an overdue invoice from a flat fee, a monthly percentage or an annual rate, prorated by the number of days late. -->
+<h1>Late Payment Fee Calculator</h1>
+<p>Enter the overdue amount, how many days late it is, and the fee your contract allows. You get the fee, the new total, and the cost per day. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Overdue invoice amount<br><input type="number" id="amount" min="0" step="0.01" value="1000" required></label>
+  <label>Days late<br><input type="number" id="days" min="0" step="1" value="15" required></label>
+  <label>Fee type<br>
+    <select id="type">
+      <option value="monthly" selected>Percentage per month (for example 1.5%)</option>
+      <option value="annual">Percentage per year (annual rate)</option>
+      <option value="flat">Flat fee</option>
+    </select>
+  </label>
+  <label id="rateWrap">Rate (%)<br><input type="number" id="rate" min="0" step="0.01" value="1.5"></label>
+  <label id="flatWrap" hidden>Flat fee amount<br><input type="number" id="flat" min="0" step="0.01" value="25"></label>
+  <p><button class="primary" type="submit">Calculate late fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { lateFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("type").addEventListener("change", () => {
+  const flat = $("type").value === "flat";
+  $("flatWrap").hidden = !flat;
+  $("rateWrap").hidden = flat;
+});
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = lateFee({ amount: Number($("amount").value), daysLate: Number($("days").value), type: $("type").value, flatFee: Number($("flat").value), ratePercent: Number($("rate").value) });
+    const perDay = r.perDay ? ` That is ${fmt(r.perDay)} per day late.` : "";
+    $("out").innerHTML = `<p><strong>Late fee: ${fmt(r.fee)}</strong><br>New total owed: ${fmt(r.total)}.${perDay}</p>`;
+  } catch (err) {
+    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+  }
+});
+</script>
+
+<h2>How late fees are calculated</h2>
+<p>There are three common ways a contract describes a late fee. A <strong>flat fee</strong> is a fixed amount added once the invoice is overdue, such as 25 or 50, no matter how late it is. A <strong>monthly percentage</strong>, often written as "1.5% per month", is charged on the outstanding amount and prorated by the number of days late, so 15 days late costs half a month's fee. An <strong>annual rate</strong> works the same way but is quoted per year, which is how statutory interest is usually expressed.</p>
+<p>The formula for a monthly percentage is: amount × rate ÷ 100 × days late ÷ 30. For an annual rate, divide by 365 instead of 30. This calculator uses simple interest, which is what most freelancer contracts and most late-payment laws use. Compound interest, where the fee itself starts attracting interest, is rare in small business invoicing and usually needs to be spelled out in the contract.</p>
+
+<h2>What you can actually charge</h2>
+<p>A late fee is only enforceable if the client agreed to it before the work started. That means it must be in your contract, your terms of business, or a written quote the client accepted. Adding "1.5% per month late fee" to the invoice for the first time after the due date has passed is unlikely to hold up, and it damages the relationship.</p>
+<p>Many countries set a default interest rate for late commercial payments that applies when the contract is silent. In the European Union and the United Kingdom, for example, businesses can claim statutory interest plus a fixed compensation amount on overdue business-to-business invoices. The rates change with central bank rates, so check the current figure for your country and enter it as an annual percentage. This tool does the arithmetic; it does not tell you what rate applies to you.</p>
+
+<h2>When to charge, and when not to</h2>
+<p>The point of a late fee is to change behaviour, not to earn money. Most freelancers find that simply having the clause in the contract, and mentioning it politely in the first reminder, is enough to get paid. Charging the fee is a decision, not an automatic step. For a good client who is a week late for the first time, a reminder is usually the better move. For a client who is repeatedly 60 days late, the fee is fair and the calculation above gives you the exact figure to put on the revised invoice.</p>
+<p>If you do charge it, issue a separate line on a new invoice or an updated statement showing the original amount, the days late, the rate, and the fee, so the client's accounts team can process it without questions.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Do I count the due date as day one?</h3>
+<p>No. Day one is the day after the due date. If the invoice was due on 1 March and it is now 16 March, it is 15 days late. Use the <a href="/invoice-due-date/">invoice due date calculator</a> if you are not sure of the due date.</p>
+<h3>Is a 1.5% monthly fee the same as 18% per year?</h3>
+<p>Very nearly. 1.5% per month prorated daily works out to 18% per year when divided over 30-day months. Because months are not all 30 days, the annual option gives a slightly different figure over long periods. Use whichever wording your contract uses.</p>
+<h3>Should the fee be calculated on the amount including tax?</h3>
+<p>Normally on the full invoice total the client owes, including VAT or sales tax, unless your contract says otherwise.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/invoice-due-date/">Invoice due date calculator</a></li>
+  <li><a href="/deposit-split-calculator/">Deposit and milestone split calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

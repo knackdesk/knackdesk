@@ -1,0 +1,70 @@
+<!-- title: Markup and Margin Calculator -->
+<!-- description: Enter any two of cost, price, markup or margin and get the other values instantly, with a plain-English explanation of the difference between markup and margin. -->
+<h1>Markup and Margin Calculator</h1>
+<p>Fill in any two fields and leave the others empty. The calculator works out the rest and shows the profit. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Cost<br><input type="number" id="cost" min="0" step="0.01" placeholder="e.g. 80"></label>
+  <label>Selling price<br><input type="number" id="price" min="0" step="0.01" placeholder="e.g. 100"></label>
+  <label>Markup (%)<br><input type="number" id="markup" min="0" step="0.01" placeholder="e.g. 25"></label>
+  <label>Margin (%)<br><input type="number" id="margin" min="0" max="99.99" step="0.01" placeholder="e.g. 20"></label>
+  <p><button class="primary" type="submit">Calculate</button> <button type="reset">Clear</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { solve } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const val = (id) => ($(id).value === "" ? undefined : Number($(id).value));
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = solve({ cost: val("cost"), price: val("price"), markupPercent: val("markup"), marginPercent: val("margin") });
+    $("out").innerHTML = `<table><tr><td>Cost</td><td><strong>${fmt(r.cost)}</strong></td></tr><tr><td>Selling price</td><td><strong>${fmt(r.price)}</strong></td></tr><tr><td>Profit per unit</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Markup</td><td><strong>${r.markupPercent}%</strong> of cost</td></tr><tr><td>Margin</td><td><strong>${r.marginPercent}%</strong> of price</td></tr></table>`;
+  } catch (err) {
+    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+  }
+});
+</script>
+
+<h2>Markup and margin are not the same number</h2>
+<p>Both describe the gap between what something costs you and what you sell it for, but they measure it against different bases. <strong>Markup</strong> is profit as a percentage of cost. <strong>Margin</strong> is profit as a percentage of the selling price. Because price is always bigger than cost when you make a profit, the margin percentage is always smaller than the markup percentage for the same sale.</p>
+<p>Take a product that costs 80 and sells for 100. Profit is 20. Markup is 20 ÷ 80 = 25%. Margin is 20 ÷ 100 = 20%. Same sale, two different percentages. Mixing them up is one of the most common pricing mistakes in small businesses: a shop that wants a 50% margin and applies a 50% markup ends up with a 33% margin and wonders where the money went.</p>
+
+<h2>The formulas</h2>
+<p>With cost (C) and price (P):</p>
+<ul>
+  <li>Profit = P − C</li>
+  <li>Markup % = (P − C) ÷ C × 100</li>
+  <li>Margin % = (P − C) ÷ P × 100</li>
+</ul>
+<p>Going the other way:</p>
+<ul>
+  <li>Price from markup: P = C × (1 + markup ÷ 100)</li>
+  <li>Price from margin: P = C ÷ (1 − margin ÷ 100)</li>
+  <li>Convert markup to margin: margin = markup ÷ (100 + markup) × 100</li>
+  <li>Convert margin to markup: markup = margin ÷ (100 − margin) × 100</li>
+</ul>
+<p>A quick reference: 25% markup is 20% margin, 50% markup is 33.3% margin, 100% markup is 50% margin, and 300% markup is 75% margin. A margin can never reach 100%, because that would mean the item cost nothing.</p>
+
+<h2>Which one should you use?</h2>
+<p>Use <strong>margin</strong> when you talk about the health of the business, because it relates directly to revenue: a 40% gross margin means 40 of every 100 in sales is left after direct costs. Accountants, investors and most reporting use margin. Use <strong>markup</strong> when you set prices from a cost list, because it is easier to apply: multiply cost by 1.5 for a 50% markup. Many industries have conventional markups, such as keystone (100% markup, 50% margin) in retail, and 10% to 20% markup on subcontracted work in construction and agencies.</p>
+<p>If a client or supplier quotes a percentage, always ask which one they mean. "We add 20%" is a markup. "We keep 20%" is a margin.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does margin here mean gross or net margin?</h3>
+<p>Gross. It only accounts for the direct cost you enter. Net margin also subtracts overheads, tax and other expenses.</p>
+<h3>Can I use this for services?</h3>
+<p>Yes. Enter your cost of delivery (your time at your internal rate plus any expenses) as the cost. Our <a href="/hourly-rate-calculator/">hourly rate calculator</a> helps you find that internal rate.</p>
+<h3>Why does it say margin must be below 100?</h3>
+<p>Margin is profit ÷ price. Profit cannot exceed price unless the cost is negative, so 100% is impossible.</p>
+<h3>Is my data stored?</h3>
+<p>No. The calculation runs entirely in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Freelance hourly rate calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late payment fee calculator</a></li>
+  <li><a href="/deposit-split-calculator/">Deposit and milestone split calculator</a></li>
+</ul>

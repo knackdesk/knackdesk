@@ -10,6 +10,14 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-30-knackdesk-passive-income-factory-design.md`
 
+## Amendments after final review (2026-09-30)
+
+- Task 7: `POST /v1/files/{id}/uploaded` must send `id: created.upload.id` and `path: created.upload.path` (the S3 multipart upload id), not the file UUID. Test fixture must give `upload.id` a distinct value.
+- Task 7: the CLI must refuse `status: draft` products and expose a testable `runCreate({ slug, rootDir, client })`; benefits are upserted by `metadata.slug` (list `/v1/benefits/`, PATCH existing) so reruns never duplicate.
+- Task 8: `summarizeOrders` counts only `paid` and `partially_refunded` orders; gross = `total_amount - refunded_amount`; net = `net_amount - platform_fee_amount - refunded_amount` (Polar's `net_amount` is before its fee).
+- Task 5: replacement of `<!--PRODUCTS-->` uses a function replacer (`$` safe); live digital products without `polar_url` are skipped with a warning.
+- Task 9: `planChanges` also returns `stale` records (same type+name, different content); the CLI prints them.
+
 ## Global Constraints
 
 - Node 20 or newer; all code is ESM (`"type": "module"`).

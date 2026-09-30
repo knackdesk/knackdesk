@@ -1,0 +1,14 @@
+# Idea Backlog
+
+Status: candidate | planned | shipped | rejected
+
+| id | idea | lane | demand | gap | effort | maint | money | total | status | sources |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Claude Code skill pack for WordPress/WooCommerce developers (standards, plugin scaffold, hooks, security, blocks, WP-CLI, perf) | digital | 4 | 4 | 4 | 4 | 4 | 17 | rejected | dev.to freelancer pack sells at $27; kissmyskills $29 skills; agensi 7k skills; no WP-specific paid pack found 2026-09-30 | — UPDATE: sadekur/wp-dev-skills (18 free) + 26 official Automattic skills, gap=1 |
+| 2 | Claude skills pack for Etsy/handmade sellers (listing SEO, pricing, replies, policies) | digital | 3 | 4 | 4 | 3 | 4 | 16 | rejected | 7M Etsy sellers pay for eRank/Marmalead; fees change yearly (maint) | — UPDATE: packs already sold on Etsy, PromptBase, GitHub; gap=2 |
+| 3 | Freelancer admin Claude skill pack | digital | 4 | 2 | 4 | 4 | 4 | 18 | rejected | dev.to/agentedeia $27 7-skill pack already exists; Solo Consultant Ops £99 |
+| 4 | Etsy fee & profit calculator web tool + profit-tracker sheet | tool | 5 | 1 | 5 | 3 | 3 | 17 | rejected | 9+ free calculators incl. etsy.com, craftybase, listadum, merchtitans |
+| 5 | Maker pricing calculators (candle/soap/3D print) + pricing kit | tool | 4 | 2 | 4 | 5 | 3 | 18 | candidate | makersmath.com has 22 free calculators; 3D print calcs saturated |
+| 6 | Tab session saver Chrome extension (freemium, Polar license) | extension | 4 | 2 | 3 | 3 | 3 | 15 | rejected | below threshold; crowded (Session Buddy, OneTab) |
+| 7 | Claude Code skill-authoring kit (templates, SKILL.md linter, eval harness) | digital | 4 | 3 | 4 | 3 | 4 | 18 | candidate | marketplaces growing (2,800 skills by May 2026); meta-tool angle |
+| 8 | Freelancer money tools cluster: invoice due date, late fee, hourly rate, markup/margin, deposit split (5 client-side tools + explainers) | tool | 3 | 3 | 4 | 5 | 4 | 19 | planned | high B2B CPM; invoicing SaaS affiliates pay per lead; long-tail terms mid competition; feeds AdSense 15-page requirement |
