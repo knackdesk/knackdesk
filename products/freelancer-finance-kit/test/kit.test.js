@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..", "..");
-const py = join(root, ".venv", "bin", "python");
+const venv = join(root, ".venv", "bin", "python");
+const py = existsSync(venv) ? venv : "python3";
 const builder = join(here, "..", "src", "build_kit.py");
 
 let out;
