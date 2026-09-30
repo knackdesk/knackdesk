@@ -7,7 +7,7 @@ export function revenueGoal({ annualGoal, avgProjectValue, projectsPerClient = 1
   num(annualGoal, "Annual goal");
   if (num(avgProjectValue, "Average project value") <= 0) throw new Error("Average project value must be above zero.");
   if (num(projectsPerClient, "Projects per client") <= 0) throw new Error("Projects per client must be above zero.");
-  if (num(winRatePercent, "Win rate") <= 0 || winRatePercent > 100) throw new Error("Win rate must be between 1 and 100 percent.");
+  if (num(winRatePercent, "Win rate") <= 0 || winRatePercent > 100) throw new Error("Win rate must be above 0 and at most 100 percent.");
   const projectsPerYear = Math.ceil(annualGoal / avgProjectValue);
   const clientsPerYear = Math.ceil(projectsPerYear / projectsPerClient);
   const proposalsPerYear = Math.ceil(clientsPerYear / (winRatePercent / 100));

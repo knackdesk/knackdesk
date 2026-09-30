@@ -1,13 +1,13 @@
 <!-- title: Retainer Pricing Calculator -->
-<!-- description: Price a monthly retainer from hours, hourly rate and a commitment discount, and see the effective rate, the annual total and what the discount costs you. -->
+<!-- description: Price a monthly retainer from hours, hourly rate and a commitment discount, and see the effective rate, the term total and what the discount costs you. -->
 <h1>Retainer Pricing Calculator</h1>
 <p>Enter the hours you will reserve each month, your hourly rate, and any discount you offer for the commitment. You get the monthly fee, the effective hourly rate, and the total over the term. Nothing is sent anywhere.</p>
 
 <form class="tool" id="f">
   <label>Hours reserved per month<br><input type="number" id="hours" min="0" step="any" value="20" required></label>
   <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="100" required></label>
-  <label>Commitment discount (%)<br><input type="number" id="discount" min="0" max="99" step="any" value="10"></label>
-  <label>Term (months)<br><input type="number" id="months" min="1" step="1" value="12"></label>
+  <label>Commitment discount (%)<br><input type="number" id="discount" min="0" max="99.99" step="any" value="10"></label>
+  <label>Term (months)<br><input type="number" id="months" min="1" step="1" value="12" required></label>
   <p><button class="primary" type="submit">Price the retainer</button></p>
   <div id="out" aria-live="polite"></div>
 </form>
@@ -27,17 +27,17 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>What a retainer is buying</h2>
-<p>A retainer is a client paying for availability, not just hours. They get priority and a predictable bill; you get predictable income and less time selling. That trade justifies a discount on your hourly rate, but the discount should be modest, typically 5% to 15%, because the reserved hours are hours you cannot sell to anyone else. A retainer priced at a steep discount with no hour cap is the fastest way to turn a good client into an underpaid full-time job.</p>
+<p>A retainer is a client paying for availability, not just hours. They get priority and a predictable bill; you get predictable income and less time selling. That trade justifies a modest discount on your hourly rate, because the reserved hours are hours you cannot sell to anyone else. A retainer priced at a steep discount with no hour cap is the fastest way to turn a good client into an underpaid full-time job.</p>
 
 <h2>The three terms that make retainers work</h2>
-<p><strong>A defined hour block.</strong> "Up to 20 hours a month" with a stated rate for hours beyond it. <strong>A rollover rule.</strong> Either unused hours expire monthly (simplest and most common) or roll over for one month only. Unlimited rollover builds a liability you will eventually have to deliver for free. <strong>A minimum term with notice.</strong> Three to six months with 30 days' notice protects both sides and is the real reason the discount exists. Put all three in the agreement and repeat the hour count on every invoice.</p>
+<p><strong>A defined hour block.</strong> "Up to 20 hours a month" with a stated rate for hours beyond it. <strong>A rollover rule.</strong> Either unused hours expire monthly (simplest and most common) or roll over for one month only. Unlimited rollover builds a liability you will eventually have to deliver for free. <strong>A minimum term with notice.</strong> Three to six months with 30 days' notice protects both sides and is the real reason the discount exists. Put all three in the written agreement (have your template checked once by a professional) and repeat the hour count on every invoice.</p>
 
 <h2>Reading the numbers</h2>
 <p>The effective hourly rate is the figure to compare with your <a href="/hourly-rate-calculator/">target rate</a>. If it is below your floor, reduce the discount or the hours rather than accept it. The "discount given over the term" line shows what the commitment is costing you in total; if that number makes you wince, the discount is too high. Track actual hours each month with the <a href="/hours-to-decimal/">hours converter</a> and review the retainer at the end of the term with the <a href="/effective-hourly-rate/">effective hourly rate calculator</a>.</p>
 
 <h2>Frequently asked questions</h2>
 <h3>Should the retainer be paid in advance?</h3>
-<p>Yes, at the start of each month. That is standard and is part of what the discount pays for.</p>
+<p>Usually, at the start of each month; advance payment is part of what the discount pays for.</p>
 <h3>What if the client regularly uses fewer hours?</h3>
 <p>Keep the fee; they are paying for availability. If it becomes a pattern, offer a smaller block at a slightly higher effective rate at the next renewal.</p>
 <h3>What about work outside the retainer scope?</h3>

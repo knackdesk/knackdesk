@@ -12,8 +12,8 @@
     </select>
   </label>
   <div id="applyWrap">
-    <label>Current price<br><input type="number" id="price" min="0" step="any" value="80"></label>
-    <label>Increase (%)<br><input type="number" id="percent" step="any" value="10"></label>
+    <label>Current price<br><input type="number" id="price" min="0" step="any" value="80" required></label>
+    <label>Increase (%)<br><input type="number" id="percent" step="any" value="10" required></label>
   </div>
   <div id="betweenWrap" hidden>
     <label>Old price<br><input type="number" id="oldPrice" min="0" step="any" value="80"></label>
@@ -53,10 +53,10 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>Raising prices without losing the margin</h2>
-<p>When a supplier, a software subscription or your own cost of living goes up, the instinct is to pass the same percentage on to clients. That keeps your profit in currency terms but not your margin. If your cost rises from 60 to 66 (10%) and you raise a 100 price by 10% to 110, your margin stays at 40%; in this case the two coincide. But if only part of your price is cost, the same percentage rise on the price over-recovers, and if your cost share is high, a matching percentage under-recovers. The third mode above does the exact calculation: it keeps the margin percentage constant and tells you the price that achieves it.</p>
+<p>When a supplier, a software subscription or your own cost of living goes up, the question is what to do to the price. Keeping your margin percentage constant means the price must rise by the same percentage as your total cost: if every cost you have goes up 10%, the price goes up 10%. The catch is that a headline increase rarely applies to all of your costs. If materials are 40% of what a job costs you and materials rise 25%, your total cost rises only 10%, and that, not 25%, is the price increase that keeps your margin. The third mode above takes your old and new total cost per unit or hour and your old price, and gives the price that keeps the margin, so you neither over-recover nor under-recover.</p>
 
 <h2>How to present an increase to clients</h2>
-<p>Annual increases of 3% to 10% are normal in most service businesses and rarely lose a client when they are announced in advance, apply from a fixed date and come with a one-line reason. Give at least 30 days' notice, put the new rate in writing, and apply it to new quotes first. For long-standing clients on old rates, a two-step increase over six months is often easier to accept than one large jump. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> shows what your rate should be from your costs and income goal, which is the strongest justification you can have.</p>
+<p>Many service businesses raise prices once a year, and an increase is far easier to accept when it is announced in advance, applies from a fixed date and comes with a one-line reason. Give at least 30 days' notice, put the new rate in writing, and apply it to new quotes first. For long-standing clients on old rates, a two-step increase over six months is often easier to accept than one large jump. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> shows what your rate should be from your costs and income goal, which is the strongest justification you can have.</p>
 
 <h2>Percentage between two prices</h2>
 <p>The second mode answers "how much did this go up?" Divide the difference by the old price, not the new one: from 80 to 100 is a 25% increase, even though 20 is 20% of 100. The same mistake in reverse makes decreases look smaller than they are. From 100 to 80 is a 20% decrease.</p>

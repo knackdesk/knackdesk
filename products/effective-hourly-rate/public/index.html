@@ -22,7 +22,7 @@ $("f").addEventListener("submit", (e) => {
   try {
     const target = $("target").value === "" ? undefined : Number($("target").value);
     const r = effectiveRate({ fee: Number($("fee").value), expenses: Number($("expenses").value) || 0, hours: Number($("hours").value), targetRate: target });
-    let html = `<p><strong>Effective rate: ${fmt(r.hourly)} per hour</strong> (${fmt(r.net)} after expenses, over ${$("hours").value} hours).</p>`;
+    let html = `<p><strong>Effective rate: ${fmt(r.hourly)} per hour</strong> (${fmt(r.net)} after expenses, over ${fmt(Number($("hours").value))} hours).</p>`;
     if (r.vsTargetPercent !== null) html += `<p>That is <strong>${Math.abs(r.vsTargetPercent)}% ${r.vsTargetPercent >= 0 ? "above" : "below"}</strong> your target. At your target rate this fee covers ${fmt(r.hoursAtTarget)} hours.</p>`;
     $("out").innerHTML = html;
   } catch (err) { showError($("out"), err.message); }
@@ -30,7 +30,7 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>Why every fixed-price project deserves this calculation</h2>
-<p>A fixed fee feels safe: the client knows the cost, you know the income. The risk sits entirely in the hours. Ten extra hours of revisions on a 3,000 project drop the effective rate from 75 to 60 without anyone noticing, because no invoice changes. Freelancers who never track hours on fixed work routinely discover, when they finally do, that their favourite type of project is the worst paid. Run this calculation at the end of every project and keep the numbers; after ten projects you will know exactly which kinds of work, and which clients, to price higher or turn down.</p>
+<p>A fixed fee feels safe: the client knows the cost, you know the income. The risk sits entirely in the hours. Ten extra hours of revisions on a 3,000 project with no expenses drop the effective rate from 75 to 60 without anyone noticing, because no invoice changes. Freelancers who start tracking hours on fixed work often find that a favourite type of project is among the worst paid. Run this calculation at the end of every project and keep the numbers; after ten projects you will know exactly which kinds of work, and which clients, to price higher or turn down.</p>
 
 <h2>What to count as hours</h2>
 <p>Everything the project consumed: the proposal, kickoff and check-in calls, the actual production work, revisions, file handover, invoicing and chasing payment. Counting only the "real work" is how fixed pricing goes wrong. Round to the nearest quarter hour and be honest; the number is for you.</p>

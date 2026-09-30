@@ -12,8 +12,8 @@
     </select>
   </label>
   <div id="applyWrap">
-    <label>Price<br><input type="number" id="price" min="0" step="any" value="250"></label>
-    <label>Discount (%)<br><input type="number" id="percent" min="0" max="100" step="any" value="20"></label>
+    <label>Price<br><input type="number" id="price" min="0" step="any" value="250" required></label>
+    <label>Discount (%)<br><input type="number" id="percent" min="0" max="100" step="any" value="20" required></label>
   </div>
   <div id="betweenWrap" hidden>
     <label>Original price<br><input type="number" id="original" min="0" step="any" value="250"></label>
@@ -53,7 +53,7 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>Why stacked discounts are smaller than they look</h2>
-<p>"20% off, then a further 10% off" sounds like 30% but is 28%. The second discount applies to the already reduced price: 100 becomes 80, and 10% of 80 is 8, leaving 72. Each extra discount shrinks the base for the next one. Retailers know this, which is why "extra 10% off sale items" is cheaper for them than it sounds to shoppers. When you offer stacked discounts yourself, quote the combined percentage so nobody feels misled.</p>
+<p>"20% off, then a further 10% off" sounds like 30% but is 28%. The second discount applies to the already reduced price: 100 becomes 80, and 10% of 80 is 8, leaving 72. Each extra discount shrinks the base for the next one. When you offer stacked discounts yourself, quote the combined percentage so nobody feels misled.</p>
 
 <h2>Discounts in quotes and proposals</h2>
 <p>A discount on a proposal is only persuasive when the client can see what it is a discount from. Show the list price, the discount as a line, and the final price. Tie it to something the client gives you: a longer commitment, a deposit, a testimonial, or a quieter delivery window. An unexplained discount teaches clients that the first number was padding. If you are considering a discount for early payment on an invoice, the <a href="/early-payment-discount/">early payment discount calculator</a> shows what it costs you in annualised terms.</p>
@@ -67,7 +67,7 @@ $("f").addEventListener("submit", (e) => {
 <h3>Can I enter a fixed-amount discount?</h3>
 <p>Convert it first: a 30 discount on a 250 price is 12%. Enter 12 in the discount field, or use the "between two prices" mode with 250 and 220.</p>
 <h3>Is VAT applied before or after the discount?</h3>
-<p>Normally after: discount the net price, then add VAT on the discounted amount. The <a href="/vat-calculator/">VAT calculator</a> handles that step.</p>
+<p>Usually the discount is applied to the net price and VAT is added on the discounted amount, but check your local rules. The <a href="/vat-calculator/">VAT calculator</a> handles the VAT step.</p>
 <h3>Is my data stored?</h3>
 <p>No. Everything runs in your browser.</p>
 
