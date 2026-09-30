@@ -15,6 +15,12 @@ function writePage(outDir, path, html) {
   writeFileSync(join(dir, "index.html"), html);
 }
 
+export function renderSitemap(paths) {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = paths.map((p) => `  <url><loc>https://knackdesk.com${p}</loc><lastmod>${today}</lastmod></url>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 function wrapToolPage(file, path, adsenseId) {
   if (!existsSync(file)) return;
   const raw = readFileSync(file, "utf8");
@@ -48,6 +54,9 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     cpSync(pub, join(outDir, data.slug), { recursive: true });
     wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId);
   }
+  const urls = ["/", ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
+  writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
+  writeFileSync(join(outDir, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://knackdesk.com/sitemap.xml\n");
   cpSync(join(rootDir, "site", "CNAME"), join(outDir, "CNAME"));
   cpSync(join(rootDir, "shared", "styles.css"), join(outDir, "styles.css"));
   return items.length;

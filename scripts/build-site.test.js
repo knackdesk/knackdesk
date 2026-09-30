@@ -59,6 +59,14 @@ description: d
     expect(index).not.toContain("kit tagline");
     expect(index).not.toContain('href="#"');
   });
+  it("writes sitemap.xml listing site pages and live products, and a robots.txt pointing to it", async () => {
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const sm = readFileSync(join(out, "sitemap.xml"), "utf8");
+    expect(sm).toContain("<loc>https://knackdesk.com/</loc>");
+    expect(sm).toContain("<loc>https://knackdesk.com/about/</loc>");
+    expect(sm).toContain("<loc>https://knackdesk.com/conv/</loc>");
+    expect(readFileSync(join(out, "robots.txt"), "utf8")).toContain("Sitemap: https://knackdesk.com/sitemap.xml");
+  });
   it("wraps a tool page that declares title meta in the site layout, keeping other public files verbatim", async () => {
     mkdirSync(join(root, "products", "wrap", "public"), { recursive: true });
     writeFileSync(join(root, "products", "wrap", "public", "index.html"), "<!-- title: Wrap Tool -->\n<!-- description: wraps -->\n<h1>Wrap</h1>");
