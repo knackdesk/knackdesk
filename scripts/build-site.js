@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, mkdirSync, writeFileSync, cpSync, existsSync
 import { join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.js";
-import { renderPage, renderProductCards } from "../shared/layout.js";
+import { renderPage, renderProductCards, escapeHtml } from "../shared/layout.js";
 
 function pageMeta(html, key) {
   const m = html.match(new RegExp(`<!--\\s*${key}:\\s*(.*?)\\s*-->`));
@@ -21,12 +21,20 @@ export function renderSitemap(paths) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
-function wrapToolPage(file, path, adsenseId) {
+export function renderCrossSell(digitalItems) {
+  if (digitalItems.length === 0) return "";
+  const cards = digitalItems
+    .map(({ data }) => `<p><strong>${escapeHtml(data.name)}</strong> — ${escapeHtml(data.tagline)} <a class="buy" href="${escapeHtml(data.polar_url)}">Get it for $${(data.price_cents / 100).toFixed(0)}</a></p>`)
+    .join("\n");
+  return `<aside class="crosssell"><h2>Keep all of this in one spreadsheet</h2>\n${cards}\n<p class="small">One-time purchase, delivered by Polar. Works in Excel, Google Sheets and Numbers.</p></aside>`;
+}
+
+function wrapToolPage(file, path, adsenseId, crossSell) {
   if (!existsSync(file)) return;
   const raw = readFileSync(file, "utf8");
   const title = pageMeta(raw, "title");
   if (!title) return;
-  writeFileSync(file, renderPage({ title, description: pageMeta(raw, "description"), body: raw, path, adsenseId }));
+  writeFileSync(file, renderPage({ title, description: pageMeta(raw, "description"), body: `${raw}\n${crossSell}`, path, adsenseId }));
 }
 
 export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
@@ -40,6 +48,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     return true;
   });
   const cards = renderProductCards(items);
+  const crossSell = renderCrossSell(items.filter(({ data }) => data.lane === "digital"));
   const pagesDir = join(rootDir, "site", "pages");
   for (const file of readdirSync(pagesDir).filter((f) => f.endsWith(".html"))) {
     const raw = readFileSync(join(pagesDir, file), "utf8");
@@ -52,7 +61,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const pub = join(dir, "public");
     if (!existsSync(pub)) continue;
     cpSync(pub, join(outDir, data.slug), { recursive: true });
-    wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId);
+    wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSell);
   }
   const urls = ["/", ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));

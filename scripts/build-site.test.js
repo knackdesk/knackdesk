@@ -73,6 +73,26 @@ description: d
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
     expect(existsSync(join(out, "ads.txt"))).toBe(false);
   });
+  it("appends a cross-sell block for listed digital products to tool pages", async () => {
+    mkdirSync(join(root, "products", "kit"), { recursive: true });
+    writeFileSync(join(root, "products", "kit", "PLAN.md"), `---
+polar_url: https://buy.polar.sh/abc
+slug: kit
+name: The Kit
+lane: digital
+price_cents: 1200
+status: live
+tagline: kit tagline
+description: d
+---`);
+    writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const page = readFileSync(join(out, "conv", "index.html"), "utf8");
+    expect(page).toContain('class="crosssell"');
+    expect(page).toContain('href="https://buy.polar.sh/abc"');
+    expect(page).toContain("The Kit");
+    expect(page).toContain("$12");
+  });
   it("wraps a tool page that declares title meta in the site layout, keeping other public files verbatim", async () => {
     mkdirSync(join(root, "products", "wrap", "public"), { recursive: true });
     writeFileSync(join(root, "products", "wrap", "public", "index.html"), "<!-- title: Wrap Tool -->\n<!-- description: wraps -->\n<h1>Wrap</h1>");

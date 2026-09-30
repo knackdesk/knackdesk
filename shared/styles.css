@@ -17,3 +17,5 @@ table{border-collapse:collapse;margin:1rem 0}td,th{border-bottom:1px solid var(-
 [hidden]{display:none!important}
 main a{color:var(--accent)}
 code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 .3em}
+.crosssell{background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:1.25rem 1.5rem;margin:2rem 0}.crosssell h2{margin-top:0;font-size:1.2rem}.crosssell .small{color:var(--muted);font-size:.9rem;margin-bottom:0}
+a.buy{display:inline-block;margin-left:.5rem;padding:.35rem .8rem;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600}

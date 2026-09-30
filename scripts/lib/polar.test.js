@@ -26,6 +26,26 @@ describe("findProductBySlug", () => {
   });
 });
 
+describe("organization tokens", () => {
+  it("omits organization_id from create bodies when the token is an organization token", async () => {
+    const { fetchImpl, calls } = mockFetch({
+      "GET /v1/products/": { body: { items: [], pagination: { max_page: 1 } } },
+      "POST /v1/products/": { status: 201, body: { id: "new" } },
+      "POST /v1/files/": { status: 201, body: { id: "f1", path: "p", upload: { id: "mp", path: "p", parts: [{ number: 1, url: "https://s3.test/part1" }] } } },
+      "PUT /part1": { body: {}, headers: [["etag", '"e"']] },
+      "POST /v1/files/f1/uploaded": { body: {} },
+      "GET /v1/benefits/": { body: { items: [], pagination: { max_page: 1 } } },
+      "POST /v1/benefits/": { status: 201, body: { id: "b1" } },
+    });
+    const c = createPolarClient({ token: "polar_oat_secret", orgId: "org-1", fetchImpl });
+    await c.upsertProduct({ slug: "kit", name: "Kit", description: "d", priceCents: 900 });
+    await c.uploadFile({ name: "k.zip", buffer: Buffer.from("z"), mimeType: "application/zip" });
+    await c.upsertDownloadableBenefit({ slug: "kit", description: "Download", fileIds: ["f1"] });
+    for (const call of calls.filter((x) => x.method === "POST")) expect(call.body).not.toHaveProperty("organization_id");
+    expect(calls[0].url).toContain("organization_id=org-1");
+  });
+});
+
 describe("upsertProduct", () => {
   it("creates with fixed one-time price in cents and slug metadata", async () => {
     const { fetchImpl, calls } = mockFetch({
@@ -113,9 +133,13 @@ describe("uploadFile + benefit", () => {
     const fileId = await c.uploadFile({ name: "kit.zip", buffer: Buffer.from("zipdata"), mimeType: "application/zip" });
     expect(fileId).toBe("f1");
     const create = calls.find((x) => x.url.endsWith("/v1/files/"));
-    expect(create.body).toMatchObject({ name: "kit.zip", mime_type: "application/zip", size: 7, service: "downloadable", organization_id: "org-1", upload: { parts: [{ number: 1, chunk_start: 0, chunk_end: 7 }] } });
+    const sha = "obiyJQmBqVfLWfdOmp658BnpTn5Q0oWW9qknESscolY=";
+    expect(create.body).toMatchObject({ name: "kit.zip", mime_type: "application/zip", size: 7, service: "downloadable", organization_id: "org-1", checksum_sha256_base64: sha, upload: { parts: [{ number: 1, chunk_start: 0, chunk_end: 7, checksum_sha256_base64: sha }] } });
+    const put = fetchImpl.mock.calls.find(([u]) => String(u).includes("/part1"))[1];
+    expect(put.headers["x-h"]).toBe("1");
+    expect(put.headers["x-amz-checksum-sha256"]).toBe(sha);
     const done = calls.find((x) => x.url.endsWith("/uploaded"));
-    expect(done.body).toEqual({ id: "mp-1", path: "org/f1.zip", parts: [{ number: 1, checksum_etag: "abc", checksum_sha256_base64: null }] });
+    expect(done.body).toEqual({ id: "mp-1", path: "org/f1.zip", parts: [{ number: 1, checksum_etag: "abc", checksum_sha256_base64: sha }] });
     const benefitId = await c.createDownloadableBenefit({ description: "Download the kit", fileIds: ["f1"] });
     expect(benefitId).toBe("b1");
     await c.attachBenefits("p1", ["b1"]);
