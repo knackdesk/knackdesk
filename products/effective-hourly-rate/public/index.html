@@ -1,0 +1,56 @@
+<!-- title: Effective Hourly Rate Calculator -->
+<!-- description: Divide a fixed project fee, minus expenses, by the hours you actually spent to see the real hourly rate and how far it is from your target. -->
+<h1>Effective Hourly Rate Calculator</h1>
+<p>Fixed-price work hides what it really pays. Enter the fee, any expenses you covered, and the hours you actually spent. You get the real hourly rate, and if you enter a target, how far off it you were. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Project fee<br><input type="number" id="fee" min="0" step="any" value="3000" required></label>
+  <label>Expenses you paid out of the fee (stock images, subcontractors, travel)<br><input type="number" id="expenses" min="0" step="any" value="200"></label>
+  <label>Hours actually spent (including calls, revisions and admin)<br><input type="number" id="hours" min="0" step="any" value="40" required></label>
+  <label>Your target hourly rate (optional)<br><input type="number" id="target" min="0" step="any" value="80"></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { effectiveRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const target = $("target").value === "" ? undefined : Number($("target").value);
+    const r = effectiveRate({ fee: Number($("fee").value), expenses: Number($("expenses").value) || 0, hours: Number($("hours").value), targetRate: target });
+    let html = `<p><strong>Effective rate: ${fmt(r.hourly)} per hour</strong> (${fmt(r.net)} after expenses, over ${$("hours").value} hours).</p>`;
+    if (r.vsTargetPercent !== null) html += `<p>That is <strong>${Math.abs(r.vsTargetPercent)}% ${r.vsTargetPercent >= 0 ? "above" : "below"}</strong> your target. At your target rate this fee covers ${fmt(r.hoursAtTarget)} hours.</p>`;
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why every fixed-price project deserves this calculation</h2>
+<p>A fixed fee feels safe: the client knows the cost, you know the income. The risk sits entirely in the hours. Ten extra hours of revisions on a 3,000 project drop the effective rate from 75 to 60 without anyone noticing, because no invoice changes. Freelancers who never track hours on fixed work routinely discover, when they finally do, that their favourite type of project is the worst paid. Run this calculation at the end of every project and keep the numbers; after ten projects you will know exactly which kinds of work, and which clients, to price higher or turn down.</p>
+
+<h2>What to count as hours</h2>
+<p>Everything the project consumed: the proposal, kickoff and check-in calls, the actual production work, revisions, file handover, invoicing and chasing payment. Counting only the "real work" is how fixed pricing goes wrong. Round to the nearest quarter hour and be honest; the number is for you.</p>
+
+<h2>What to do with a low result</h2>
+<p>If the rate is below target on one project, note why: an underestimated scope, a client who needed more hand-holding, or a first attempt at something new. If it is below target on most projects of a kind, the price is wrong. Use the gap to set the next quote: the "hours at your target rate" figure tells you how many hours the fee should have bought, and the difference is what to add to the next proposal, or to cap with a revision limit. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> gives you a defensible target if you do not have one yet.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include time spent on the proposal for projects I did not win?</h3>
+<p>Not here; this tool is per project. Unpaid proposal time belongs in the billable-share assumption of your hourly rate instead.</p>
+<h3>What about expenses the client reimbursed separately?</h3>
+<p>Leave them out of both the fee and the expenses. Only include costs that came out of the fixed fee.</p>
+<h3>Is a rate below my target always bad?</h3>
+<p>Not always. A portfolio piece, a new niche, or a strategic client can justify it once. It is bad when it is the norm.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Freelance hourly rate calculator</a></li>
+  <li><a href="/hours-to-decimal/">Hours to decimal converter</a></li>
+  <li><a href="/retainer-calculator/">Retainer pricing calculator</a></li>
+</ul>

@@ -1,0 +1,79 @@
+<!-- title: Discount Calculator -->
+<!-- description: Calculate a price after a discount, the discount percentage between two prices, and what stacked discounts such as 20% then 10% really add up to. -->
+<h1>Discount Calculator</h1>
+<p>Apply a discount to a price, work out the discount between an original and a sale price, or see the true combined rate of several discounts applied one after another. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>What do you want to do?<br>
+    <select id="mode">
+      <option value="apply" selected>Apply a discount to a price</option>
+      <option value="between">Find the discount between two prices</option>
+      <option value="stack">Stack several discounts</option>
+    </select>
+  </label>
+  <div id="applyWrap">
+    <label>Price<br><input type="number" id="price" min="0" step="any" value="250"></label>
+    <label>Discount (%)<br><input type="number" id="percent" min="0" max="100" step="any" value="20"></label>
+  </div>
+  <div id="betweenWrap" hidden>
+    <label>Original price<br><input type="number" id="original" min="0" step="any" value="250"></label>
+    <label>Sale price<br><input type="number" id="sale" min="0" step="any" value="200"></label>
+  </div>
+  <div id="stackWrap" hidden>
+    <label>Price<br><input type="number" id="price2" min="0" step="any" value="100"></label>
+    <label>Discounts in order, comma separated (%)<br><input type="text" id="stack" value="20, 10"></label>
+  </div>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { applyDiscount, discountBetween, stackDiscounts } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("mode").addEventListener("change", () => { for (const m of ["apply", "between", "stack"]) $(`${m}Wrap`).hidden = $("mode").value !== m; });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const mode = $("mode").value;
+    if (mode === "apply") {
+      const r = applyDiscount({ price: Number($("price").value), percent: Number($("percent").value) });
+      $("out").innerHTML = `<p><strong>Final price: ${fmt(r.finalPrice)}</strong>, saving ${fmt(r.saved)}.</p>`;
+    } else if (mode === "between") {
+      const p = discountBetween({ original: Number($("original").value), sale: Number($("sale").value) });
+      $("out").innerHTML = `<p>That is a <strong>${p}% discount</strong>.</p>`;
+    } else {
+      const percents = $("stack").value.split(",").map((s) => s.trim()).filter(Boolean).map((s) => { const n = Number(s); if (!Number.isFinite(n)) throw new Error(`"${s}" is not a number.`); return n; });
+      const r = stackDiscounts({ price: Number($("price2").value), percents });
+      $("out").innerHTML = `<p><strong>Final price: ${fmt(r.finalPrice)}</strong>, saving ${fmt(r.saved)}. Combined, that is a <strong>${r.combinedPercent}%</strong> discount, not ${percents.reduce((a, b) => a + b, 0)}%.</p>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why stacked discounts are smaller than they look</h2>
+<p>"20% off, then a further 10% off" sounds like 30% but is 28%. The second discount applies to the already reduced price: 100 becomes 80, and 10% of 80 is 8, leaving 72. Each extra discount shrinks the base for the next one. Retailers know this, which is why "extra 10% off sale items" is cheaper for them than it sounds to shoppers. When you offer stacked discounts yourself, quote the combined percentage so nobody feels misled.</p>
+
+<h2>Discounts in quotes and proposals</h2>
+<p>A discount on a proposal is only persuasive when the client can see what it is a discount from. Show the list price, the discount as a line, and the final price. Tie it to something the client gives you: a longer commitment, a deposit, a testimonial, or a quieter delivery window. An unexplained discount teaches clients that the first number was padding. If you are considering a discount for early payment on an invoice, the <a href="/early-payment-discount/">early payment discount calculator</a> shows what it costs you in annualised terms.</p>
+
+<h2>Finding the percentage between two prices</h2>
+<p>Divide the saving by the original price, never by the sale price. From 250 to 200, the saving is 50 and 50 ÷ 250 is 20%. Dividing by 200 would give 25%, which overstates the deal. The same logic in the other direction is a price increase, covered by the <a href="/price-increase-calculator/">price increase calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does the order of stacked discounts matter?</h3>
+<p>No. Multiplying by 0.8 then 0.9 gives the same result as 0.9 then 0.8. The order only matters for how it reads on a receipt.</p>
+<h3>Can I enter a fixed-amount discount?</h3>
+<p>Convert it first: a 30 discount on a 250 price is 12%. Enter 12 in the discount field, or use the "between two prices" mode with 250 and 220.</p>
+<h3>Is VAT applied before or after the discount?</h3>
+<p>Normally after: discount the net price, then add VAT on the discounted amount. The <a href="/vat-calculator/">VAT calculator</a> handles that step.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/price-increase-calculator/">Price increase calculator</a></li>
+  <li><a href="/early-payment-discount/">Early payment discount calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

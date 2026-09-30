@@ -1,0 +1,52 @@
+<!-- title: Revenue Goal Calculator -->
+<!-- description: Turn an annual revenue goal into the projects, clients and proposals you need each month, from your average project value, repeat rate and proposal win rate. -->
+<h1>Revenue Goal Calculator</h1>
+<p>A revenue goal is only useful once it becomes a number of proposals to send. Enter your goal, your average project value, how many projects a typical client buys, and your proposal win rate. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Annual revenue goal<br><input type="number" id="goal" min="0" step="any" value="120000" required></label>
+  <label>Average project value<br><input type="number" id="value" min="0" step="any" value="5000" required></label>
+  <label>Projects per client per year (repeat work)<br><input type="number" id="repeat" min="0" step="any" value="2"></label>
+  <label>Proposal win rate (%)<br><input type="number" id="win" min="0" max="100" step="any" value="25" required></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { revenueGoal } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = revenueGoal({ annualGoal: Number($("goal").value), avgProjectValue: Number($("value").value), projectsPerClient: Number($("repeat").value) || 1, winRatePercent: Number($("win").value) });
+    $("out").innerHTML = `<table><tr><th></th><th>Per year</th><th>Per month</th></tr><tr><td>Projects to deliver</td><td><strong>${r.projectsPerYear}</strong></td><td>${r.projectsPerMonth}</td></tr><tr><td>Clients to win</td><td><strong>${r.clientsPerYear}</strong></td><td>${r.clientsPerMonth}</td></tr><tr><td>Proposals to send</td><td><strong>${r.proposalsPerYear}</strong></td><td>${r.proposalsPerMonth}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>From a goal to a weekly habit</h2>
+<p>Most freelancers set an income goal in January and check it in December. The gap between the two is a pipeline that nobody measured. This calculator works backwards: the goal divided by your average project gives projects; projects divided by how many a client buys gives clients; clients divided by your win rate gives proposals. Proposals are the one number you control directly. Four a month is a weekly habit; forty a month is a business model problem.</p>
+
+<h2>Getting the inputs right</h2>
+<p><strong>Average project value</strong> is total revenue divided by number of projects over the last year, not your biggest or your typical "good" project. <strong>Projects per client</strong> captures repeat work; a client who comes back twice a year halves the number of new clients you need. If you do not know it, use 1 and treat repeat work as a bonus. <strong>Win rate</strong> is proposals won divided by proposals sent. New freelancers often sit at 10% to 20%; established ones with referrals can exceed 50%. Use your real number; a flattering guess makes the whole plan wrong.</p>
+
+<h2>Three levers, in order of effort</h2>
+<p>If the proposal count looks impossible, the cheapest lever is <strong>win rate</strong>: better-qualified leads and fewer proposals to people who were never going to buy. The second is <strong>project value</strong>: a modest price increase or a bigger scope, checked against your <a href="/hourly-rate-calculator/">hourly rate</a>. The third is <strong>repeat work</strong>: turning one-off projects into <a href="/retainer-calculator/">retainers</a>. Adding more proposals is the last resort, because it costs the most unpaid hours.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are the yearly numbers rounded up?</h3>
+<p>You cannot deliver 23.5 projects, so the calculator rounds each stage up to the next whole one. The monthly columns are the yearly figure divided by twelve.</p>
+<h3>Should the goal be revenue or take-home income?</h3>
+<p>Revenue. If you start from the income you want to keep, gross it up for expenses and tax first with the <a href="/hourly-rate-calculator/">hourly rate calculator</a>.</p>
+<h3>What if my projects vary a lot in size?</h3>
+<p>Run the calculator once per service line with its own average value and win rate, then add the proposal counts.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Freelance hourly rate calculator</a></li>
+  <li><a href="/retainer-calculator/">Retainer pricing calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

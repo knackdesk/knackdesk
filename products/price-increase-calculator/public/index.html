@@ -1,0 +1,79 @@
+<!-- title: Price Increase Calculator -->
+<!-- description: Raise a price by a percentage, find the percentage between two prices, or work out the increase you need to keep your margin after your costs go up. -->
+<h1>Price Increase Calculator</h1>
+<p>Three small jobs in one place: apply a percentage rise to a price, find the percentage between an old and a new price, and find the new price that keeps your margin when your costs go up. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>What do you want to do?<br>
+    <select id="mode">
+      <option value="apply" selected>Apply a percentage increase to a price</option>
+      <option value="between">Find the percentage between two prices</option>
+      <option value="margin">Find the price that keeps my margin after a cost increase</option>
+    </select>
+  </label>
+  <div id="applyWrap">
+    <label>Current price<br><input type="number" id="price" min="0" step="any" value="80"></label>
+    <label>Increase (%)<br><input type="number" id="percent" step="any" value="10"></label>
+  </div>
+  <div id="betweenWrap" hidden>
+    <label>Old price<br><input type="number" id="oldPrice" min="0" step="any" value="80"></label>
+    <label>New price<br><input type="number" id="newPrice" min="0" step="any" value="100"></label>
+  </div>
+  <div id="marginWrap" hidden>
+    <label>Old cost per unit or hour<br><input type="number" id="oldCost" min="0" step="any" value="60"></label>
+    <label>New cost<br><input type="number" id="newCost" min="0" step="any" value="66"></label>
+    <label>Old price<br><input type="number" id="oldPrice2" min="0" step="any" value="100"></label>
+  </div>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { applyIncrease, percentBetween, increaseToKeepMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("mode").addEventListener("change", () => { for (const m of ["apply", "between", "margin"]) $(`${m}Wrap`).hidden = $("mode").value !== m; });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const mode = $("mode").value;
+    if (mode === "apply") {
+      const r = applyIncrease({ price: Number($("price").value), percent: Number($("percent").value) });
+      $("out").innerHTML = `<p><strong>New price: ${fmt(r.newPrice)}</strong> (a change of ${fmt(r.difference)}).</p>`;
+    } else if (mode === "between") {
+      const p = percentBetween({ oldPrice: Number($("oldPrice").value), newPrice: Number($("newPrice").value) });
+      $("out").innerHTML = `<p><strong>${p}% ${p >= 0 ? "increase" : "decrease"}</strong> from the old price to the new one.</p>`;
+    } else {
+      const r = increaseToKeepMargin({ oldCost: Number($("oldCost").value), newCost: Number($("newCost").value), oldPrice: Number($("oldPrice2").value) });
+      $("out").innerHTML = `<p>Your margin is <strong>${r.marginPercent}%</strong>. To keep it after the cost change, charge <strong>${fmt(r.newPrice)}</strong>, a ${r.increasePercent}% increase.</p>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Raising prices without losing the margin</h2>
+<p>When a supplier, a software subscription or your own cost of living goes up, the instinct is to pass the same percentage on to clients. That keeps your profit in currency terms but not your margin. If your cost rises from 60 to 66 (10%) and you raise a 100 price by 10% to 110, your margin stays at 40%; in this case the two coincide. But if only part of your price is cost, the same percentage rise on the price over-recovers, and if your cost share is high, a matching percentage under-recovers. The third mode above does the exact calculation: it keeps the margin percentage constant and tells you the price that achieves it.</p>
+
+<h2>How to present an increase to clients</h2>
+<p>Annual increases of 3% to 10% are normal in most service businesses and rarely lose a client when they are announced in advance, apply from a fixed date and come with a one-line reason. Give at least 30 days' notice, put the new rate in writing, and apply it to new quotes first. For long-standing clients on old rates, a two-step increase over six months is often easier to accept than one large jump. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> shows what your rate should be from your costs and income goal, which is the strongest justification you can have.</p>
+
+<h2>Percentage between two prices</h2>
+<p>The second mode answers "how much did this go up?" Divide the difference by the old price, not the new one: from 80 to 100 is a 25% increase, even though 20 is 20% of 100. The same mistake in reverse makes decreases look smaller than they are. From 100 to 80 is a 20% decrease.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I raise prices for existing clients too?</h3>
+<p>Usually yes, on the next renewal or contract, with notice. Grandfathering old rates indefinitely means your best clients become your least profitable.</p>
+<h3>What if the cost increase is temporary?</h3>
+<p>Consider a surcharge line on the invoice for the affected period rather than a permanent price change; it is easier to remove later.</p>
+<h3>Does the margin mode work for hourly work?</h3>
+<p>Yes. Use your cost per hour (what an hour costs you to deliver) and your hourly price.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Freelance hourly rate calculator</a></li>
+  <li><a href="/discount-calculator/">Discount calculator</a></li>
+</ul>
