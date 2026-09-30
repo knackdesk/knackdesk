@@ -16,4 +16,4 @@ const path = "pipeline/LEDGER.md";
 const { head, rows } = parseLedger(readFileSync(path, "utf8"));
 const updated = applySales(rows, summary);
 writeFileSync(path, renderLedger(head, updated));
-for (const r of updated) console.log(`${r.slug.padEnd(20)} units=${r.units} gross=${r.gross_eur} net=${r.net_eur}`);
+for (const r of updated) console.log(`${r.slug.padEnd(20)} units=${r.units} gross=${r.gross_usd} net=${r.net_usd}`);

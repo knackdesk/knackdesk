@@ -1,4 +1,4 @@
-const COLS = ["slug", "lane", "launched", "url", "price_eur", "units", "gross_eur", "net_eur"];
+const COLS = ["slug", "lane", "launched", "url", "price_usd", "units", "gross_usd", "net_usd"];
 
 export function parseLedger(md) {
   const lines = md.split("\n");
@@ -37,11 +37,11 @@ export function summarizeOrders(orders, productIdToSlug) {
   return out;
 }
 
-const eur = (cents) => (cents / 100).toFixed(2);
+const usd = (cents) => (cents / 100).toFixed(2);
 
 export function applySales(rows, summary) {
   return rows.map((r) => {
     const s = summary[r.slug] ?? { units: 0, gross_cents: 0, net_cents: 0 };
-    return { ...r, units: String(s.units), gross_eur: eur(s.gross_cents), net_eur: eur(s.net_cents) };
+    return { ...r, units: String(s.units), gross_usd: usd(s.gross_cents), net_usd: usd(s.net_cents) };
   });
 }
