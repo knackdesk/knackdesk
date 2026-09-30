@@ -1,0 +1,59 @@
+<!-- title: Break-Even Calculator -->
+<!-- description: Find how many units or sales you need to cover fixed costs, from price per unit and variable cost per unit, with contribution margin explained in plain language. -->
+<h1>Break-Even Calculator</h1>
+<p>Enter your fixed costs for the period, the selling price per unit and the variable cost per unit. You get the number of units and the revenue needed to break even, and optionally to hit a profit target. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Fixed costs for the period (rent, salaries, software, insurance)<br><input type="number" id="fixed" min="0" step="0.01" value="5000" required></label>
+  <label>Selling price per unit<br><input type="number" id="price" min="0" step="0.01" value="50" required></label>
+  <label>Variable cost per unit (materials, packaging, payment fees, direct labour)<br><input type="number" id="variable" min="0" step="0.01" value="30" required></label>
+  <label>Target profit for the period (optional)<br><input type="number" id="profit" min="0" step="0.01" value="0"></label>
+  <p><button class="primary" type="submit">Calculate break-even</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { breakEven } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = breakEven({ fixedCosts: Number($("fixed").value), pricePerUnit: Number($("price").value), variableCostPerUnit: Number($("variable").value), targetProfit: Number($("profit").value) });
+    const goal = Number($("profit").value) > 0 ? "reach your profit target" : "break even";
+    $("out").innerHTML = `<p><strong>You need to sell ${r.units.toLocaleString()} units</strong> (${fmt(r.revenue)} in revenue) to ${goal}.</p>
+<p>Each unit contributes ${fmt(r.contributionMargin)} towards fixed costs, a contribution margin ratio of ${r.contributionMarginRatio}%.</p>`;
+  } catch (err) {
+    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+  }
+});
+</script>
+
+<h2>How break-even works</h2>
+<p>Every sale has two jobs: cover its own direct cost, and chip in towards the bills that arrive whether you sell anything or not. The amount left after direct costs is the <strong>contribution margin</strong>. Break-even is simply the point where enough contributions have piled up to pay the fixed costs. The formula is: break-even units = fixed costs ÷ (price per unit − variable cost per unit).</p>
+<p>With fixed costs of 5,000, a price of 50 and a variable cost of 30, each unit contributes 20, so you need 250 units. Sell 251 and the 20 from that last unit is profit. Sell 249 and you are 20 short.</p>
+
+<h2>Sorting costs into fixed and variable</h2>
+<p><strong>Fixed costs</strong> do not change with volume in the short term: rent, salaries, insurance, software subscriptions, your own minimum pay. <strong>Variable costs</strong> rise with each unit sold: materials, packaging, shipping you pay for, payment processing fees, sales commission, and labour paid per piece. Some costs are semi-variable, such as electricity in a workshop. Put the base amount in fixed and the per-unit part in variable, or just choose the side it mostly belongs to; precision matters less than getting the big items right.</p>
+<p>For a service business, a "unit" can be an hour, a day, a project or a client. The maths is the same: price per project minus the direct cost of delivering it is the contribution, and fixed costs are what you pay to keep the doors open.</p>
+
+<h2>Using the result</h2>
+<p>The break-even number is a sanity check for pricing and for capacity. If break-even needs more units than you can realistically sell or deliver in the period, you have three levers: raise the price, cut the variable cost, or cut fixed costs. Small changes to price have an outsized effect because they flow straight into the contribution margin. Raising the price from 50 to 55 in the example lifts the contribution from 20 to 25 and drops break-even from 250 to 200 units.</p>
+<p>Add a target profit to see how many units it takes to earn what you actually want, not just to survive. Then pair the answer with your <a href="/markup-margin-calculator/">markup and margin</a> numbers to make sure the price is competitive.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What period should I use?</h3>
+<p>Whatever period your fixed costs are quoted in. Monthly is most common; use the same period for the target profit.</p>
+<h3>Why does the result round up?</h3>
+<p>You cannot sell a fraction of a unit. 62.5 units means the 63rd sale is the one that tips you into profit.</p>
+<h3>What is a good contribution margin ratio?</h3>
+<p>It depends on the industry. Software and consulting often exceed 70%; retail and food are often 20% to 40%. Lower ratios mean fixed costs need far more volume to cover.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Freelance hourly rate calculator</a></li>
+  <li><a href="/vat-calculator/">VAT calculator</a></li>
+</ul>

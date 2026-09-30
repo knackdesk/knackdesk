@@ -1,0 +1,63 @@
+<!-- title: VAT Calculator -->
+<!-- description: Add VAT to a net price or remove it from a gross price at any rate. See the tax amount and switch between net and gross in one step. -->
+<h1>VAT Calculator</h1>
+<p>Add VAT to a net amount, or work backwards from a gross amount to find the net price and the VAT included. Enter any rate. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Amount<br><input type="number" id="amount" min="0" step="0.01" value="100" required></label>
+  <label>This amount is<br>
+    <select id="mode">
+      <option value="net" selected>Net (before VAT) — add VAT</option>
+      <option value="gross">Gross (including VAT) — remove VAT</option>
+    </select>
+  </label>
+  <label>VAT rate (%)<br><input type="number" id="rate" min="0" step="0.1" value="20" list="rates" required>
+    <datalist id="rates"><option value="5"><option value="7"><option value="9"><option value="10"><option value="13"><option value="19"><option value="20"><option value="21"><option value="23"><option value="25"><option value="27"></datalist>
+  </label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { addVat, removeVat } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const amount = Number($("amount").value), ratePercent = Number($("rate").value);
+    const r = $("mode").value === "net" ? addVat({ net: amount, ratePercent }) : removeVat({ gross: amount, ratePercent });
+    $("out").innerHTML = `<table><tr><td>Net (before VAT)</td><td><strong>${fmt(r.net)}</strong></td></tr><tr><td>VAT at ${ratePercent}%</td><td><strong>${fmt(r.vat)}</strong></td></tr><tr><td>Gross (including VAT)</td><td><strong>${fmt(r.gross)}</strong></td></tr></table>`;
+  } catch (err) {
+    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+  }
+});
+</script>
+
+<h2>Adding VAT</h2>
+<p>To add VAT to a net price, multiply by the rate: VAT = net × rate ÷ 100, and gross = net + VAT. At 20%, a net price of 100 carries 20 of VAT for a gross of 120. This is the direction most people get right.</p>
+
+<h2>Removing VAT: the mistake almost everyone makes</h2>
+<p>To find the net amount inside a gross price, you must <strong>divide</strong> by (1 + rate ÷ 100), not subtract the rate. A gross of 120 at 20% is 120 ÷ 1.2 = 100 net, with 20 of VAT. Taking 20% off 120 instead gives 96, which is wrong by 4. The error grows with the rate: at 25% a gross of 125 is 100 net, but 25% off 125 is 93.75. Bookkeeping errors of this kind are common in expense claims and price lists copied from consumer websites, where prices include tax.</p>
+<p>A handy shortcut for the VAT inside a gross figure: multiply the gross by rate ÷ (100 + rate). At 20% that is 1 ÷ 6, so the VAT inside 120 is 120 ÷ 6 = 20. At 25% it is 1 ÷ 5.</p>
+
+<h2>Which rate to use</h2>
+<p>Standard VAT rates in Europe range from 17% to 27%, and most countries have one or two reduced rates for food, books, hotels or energy. The datalist on the rate field lists common standard rates as suggestions; always check the rate that applies to the specific goods or service and country. Outside Europe, the same maths applies to GST in Australia, New Zealand, India and Canada, and to sales tax in the United States, though sales tax is normally quoted on top of listed prices rather than included.</p>
+<p>When you invoice a business customer in another EU country and both sides are VAT-registered, the reverse-charge mechanism usually applies and you invoice at 0% with a note. That is a tax rule rather than a calculation, so check it with your accountant.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does my result differ by a cent from my invoice software?</h3>
+<p>Rounding. Software may round each line, or the total, or use more decimal places internally. Differences of a cent are normal and acceptable.</p>
+<h3>Can I use decimals in the rate, like 8.5%?</h3>
+<p>Yes. Any rate from 0 upwards works.</p>
+<h3>Does this handle several items at once?</h3>
+<p>Add the net amounts first, then calculate VAT on the total, or calculate per item and sum. Both give the same result apart from cent rounding.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/early-payment-discount/">Early payment discount calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late payment fee calculator</a></li>
+</ul>

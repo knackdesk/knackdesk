@@ -16,3 +16,4 @@ table{border-collapse:collapse;margin:1rem 0}td,th{border-bottom:1px solid var(-
 [role=alert]{color:#b42318}
 [hidden]{display:none!important}
 main a{color:var(--accent)}
+code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 .3em}

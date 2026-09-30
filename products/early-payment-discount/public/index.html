@@ -1,0 +1,61 @@
+<!-- title: Early Payment Discount Calculator -->
+<!-- description: Work out what an early payment discount such as 2/10 net 30 saves and the annualised rate you give up by paying on the net date, so you can decide whether paying early is worth it. -->
+<h1>Early Payment Discount Calculator</h1>
+<p>Enter the invoice amount and the terms, for example "2/10 net 30" means a 2% discount if paid within 10 days, otherwise the full amount in 30 days. You get the saving, the amount to pay early, and the annualised cost of not taking the discount. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Invoice amount<br><input type="number" id="amount" min="0" step="0.01" value="10000" required></label>
+  <label>Discount (%)<br><input type="number" id="disc" min="0" max="99" step="0.1" value="2" required></label>
+  <label>Discount period (days)<br><input type="number" id="ddays" min="0" step="1" value="10" required></label>
+  <label>Net payment period (days)<br><input type="number" id="ndays" min="1" step="1" value="30" required></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { earlyPayment } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = earlyPayment({ amount: Number($("amount").value), discountPercent: Number($("disc").value), discountDays: Number($("ddays").value), netDays: Number($("ndays").value) });
+    $("out").innerHTML = `<p><strong>Pay ${fmt(r.payEarly)} within ${$("ddays").value} days and save ${fmt(r.saving)}.</strong></p>
+<p>Waiting the extra ${r.daysGained} days to pay the full amount costs the equivalent of <strong>${r.annualRate}% per year</strong>. If you can borrow or earn less than that, take the discount.</p>`;
+  } catch (err) {
+    $("out").innerHTML = `<p role="alert">${err.message}</p>`;
+  }
+});
+</script>
+
+<h2>What "2/10 net 30" means</h2>
+<p>Trade credit terms are written as discount / discount days, then "net" and the final due date. "2/10 net 30" offers 2% off if the invoice is paid within 10 days; otherwise the full amount is due in 30 days. "1/15 net 45" offers 1% off within 15 days, full amount at 45. The discount looks tiny, which is exactly why so many businesses ignore it. Annualised, it is one of the most expensive forms of financing you will ever pass up.</p>
+
+<h2>Why a 2% discount is really a 37% interest rate</h2>
+<p>By paying on day 10 instead of day 30, you give up the use of the money for 20 days and receive 2% in return. Twenty days fits into a year about 18 times, so the return compounds to roughly 36% to 37% per year. The precise formula this calculator uses is:</p>
+<p>Annual rate = (discount ÷ (100 − discount)) × (365 ÷ (net days − discount days)) × 100</p>
+<p>For 2/10 net 30 that is (2 ÷ 98) × (365 ÷ 20) = 37.2%. Compare that with the cost of an overdraft, a business credit card, or a line of credit. Unless your borrowing cost is higher than the annualised discount rate, paying early is the better financial decision, even if it means dipping into a credit line to do it.</p>
+
+<h2>For sellers: should you offer a discount?</h2>
+<p>Offering an early payment discount is a way to buy faster cash flow. Sellers with thin margins should be careful: a 2% discount on a 10% net margin gives away a fifth of the profit on that invoice. It works best when you have healthy margins and slow-paying customers, or when the alternative is invoice financing that costs more. Many small businesses get better results with a modest discount, such as 1/7 net 30, combined with a clear <a href="/late-fee-calculator/">late payment fee</a> for the other direction.</p>
+<p>State the terms on the invoice exactly, and make sure your accounting system applies the discount only when payment actually arrives within the window. Disputes about whether a payment made on day 11 qualifies are common; decide your policy before the first one lands.</p>
+
+<h2>For buyers: a simple decision rule</h2>
+<p>Run the numbers here. If the annualised rate is higher than what your money earns or costs elsewhere, take the discount every time, and schedule the payment for the last day of the discount window rather than immediately. If cash is genuinely too tight to pay early, prioritise the suppliers offering the largest annualised rate.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is the discount on the amount before or after tax?</h3>
+<p>Usually on the full invoice total including VAT or sales tax, unless the terms say otherwise. Enter whichever figure the discount applies to.</p>
+<h3>Why is the rate not just 2% × 18.25?</h3>
+<p>Because the base is the discounted amount, not the full price. You pay 98 to settle 100, so the return is 2 ÷ 98, not 2 ÷ 100. The difference is small but real.</p>
+<h3>Can I use this for "net 30, 2% if paid immediately"?</h3>
+<p>Yes. Set the discount period to 0 days.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/invoice-due-date/">Invoice due date calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late payment fee calculator</a></li>
+  <li><a href="/vat-calculator/">VAT calculator</a></li>
+</ul>
