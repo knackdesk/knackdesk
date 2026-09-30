@@ -36,7 +36,7 @@ export function createPolarClient({ token, orgId, fetchImpl = fetch }) {
       organization_id: orgId,
       recurring_interval: null,
       metadata: { slug },
-      prices: [{ amount_type: "fixed", price_amount: priceCents, price_currency: "usd" }],
+      prices: [{ amount_type: "fixed", price_amount: priceCents, price_currency: "eur" }],
     };
     const { json } = await call("/v1/products/", { method: "POST", body });
     return json;

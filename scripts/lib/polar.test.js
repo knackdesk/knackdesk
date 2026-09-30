@@ -36,7 +36,7 @@ describe("upsertProduct", () => {
     const p = await c.upsertProduct({ slug: "kit", name: "Kit", description: "d", priceCents: 900 });
     expect(p.id).toBe("new");
     const post = calls.find((x) => x.method === "POST");
-    expect(post.body).toMatchObject({ name: "Kit", recurring_interval: null, organization_id: "org-1", metadata: { slug: "kit" }, prices: [{ amount_type: "fixed", price_amount: 900, price_currency: "usd" }] });
+    expect(post.body).toMatchObject({ name: "Kit", recurring_interval: null, organization_id: "org-1", metadata: { slug: "kit" }, prices: [{ amount_type: "fixed", price_amount: 900, price_currency: "eur" }] });
   });
   it("patches an existing product instead of creating", async () => {
     const { fetchImpl, calls } = mockFetch({

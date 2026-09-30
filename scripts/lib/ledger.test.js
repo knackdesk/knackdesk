@@ -3,9 +3,9 @@ import { parseLedger, summarizeOrders, applySales, renderLedger } from "./ledger
 
 const md = `# Ledger
 
-Refreshed by \`npm run polar:sales\`. Amounts in USD.
+Refreshed by \`npm run polar:sales\`. Amounts in EUR.
 
-| slug | lane | launched | url | price_usd | units | gross_usd | net_usd |
+| slug | lane | launched | url | price_eur | units | gross_eur | net_eur |
 |---|---|---|---|---|---|---|---|
 | kit | digital | 2026-10-01 | https://polar.sh/x | 9.00 | 3 | 27.00 | 24.15 |
 | conv | tool | 2026-10-02 | https://knackdesk.com/conv/ | 0 | 0 | 0.00 | 0.00 |
@@ -32,8 +32,8 @@ describe("ledger", () => {
     const { rows } = parseLedger(md);
     const out = applySales(rows, { kit: { units: 5, gross_cents: 4500, net_cents: 4025 } });
     expect(out).not.toBe(rows);
-    expect(out[0]).toMatchObject({ units: "5", gross_usd: "45.00", net_usd: "40.25" });
-    expect(out[1]).toMatchObject({ units: "0", gross_usd: "0.00", net_usd: "0.00" });
+    expect(out[0]).toMatchObject({ units: "5", gross_eur: "45.00", net_eur: "40.25" });
+    expect(out[1]).toMatchObject({ units: "0", gross_eur: "0.00", net_eur: "0.00" });
     expect(out).toHaveLength(2);
   });
   it("applying an empty summary keeps every row", () => {
