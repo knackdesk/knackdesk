@@ -24,6 +24,12 @@ describe("renderPage", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).not.toMatch(/smitheo/i);
   });
+  it("loads the Cloudflare Web Analytics beacon before </body>", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+    expect(html).toContain("static.cloudflareinsights.com/beacon.min.js");
+    expect(html).toContain("859048f35cc94810a6dbcd305ed05ea6");
+    expect(html).toMatch(/<script defer src="https:\/\/static\.cloudflareinsights\.com\/beacon\.min\.js"[^>]*><\/script>\n<\/body>/);
+  });
   it("carries the not-advice disclaimer in the footer", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).toContain("not legal, tax or financial advice");

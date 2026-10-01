@@ -1,5 +1,7 @@
 import { SITE, OG_IMAGE, organizationNode, websiteNode, breadcrumbNode, renderJsonLd } from "./seo.js";
 
+const CF_BEACON_TOKEN = "859048f35cc94810a6dbcd305ed05ea6";
+
 export function escapeHtml(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
@@ -56,6 +58,7 @@ ${adsense(adsenseId)}
 ${body}
 </main>
 <footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footlinks"><span>© Knackdesk</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script>
 </body>
 </html>`;
 }
