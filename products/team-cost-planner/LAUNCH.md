@@ -7,10 +7,10 @@
 - [x] LICENSES.md lists every third-party asset/library (MIT/CC0 only)
 - [x] Deliverable built (`assets/*.zip` for kits, `public/` for tools, `dist.zip` for extensions)
 - [ ] Cover image: deferred
-- [ ] Pushed to main; deploy workflow green
+- [x] Pushed to main; deploy workflow green
 - [x] Polar listing created (`npm run polar:create -- <slug>`), URL recorded below
 - [x] Row added to pipeline/LEDGER.md
-- [ ] Status message sent to owner
+- [x] Status message sent to owner
 
 Live URL: https://knackdesk.com/kits/
 Polar URL: https://buy.polar.sh/polar_cl_pc9Ka3XTI7s5uCW3UKMItEBHsXPHO8mtv9wJp4bwWCy
