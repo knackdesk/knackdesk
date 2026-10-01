@@ -1,0 +1,59 @@
+<!-- title: Contractor Markup Calculator -->
+<!-- description: Convert between markup and margin on a job, find the markup a target margin needs, and work out the markup that covers your overhead and profit as shares of sales. -->
+<h1>Contractor Markup Calculator</h1>
+<p>Three ways to use it: enter a cost and a markup to see the price and the margin; enter a cost and the margin you want to see the markup it needs; or enter your overhead and profit as percentages of sales to get the standard markup that covers both. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Markup is profit as a share of cost; margin is profit as a share of price; the same job has a higher markup than margin.</p>
+<p class="formula"><strong>Formula:</strong> price = cost × (1 + markup); margin = (price − cost) ÷ price; markup for a margin = margin ÷ (1 − margin); markup for overhead and profit = 1 ÷ (1 − (overhead % + profit %)) − 1.</p>
+
+<form class="tool" id="f">
+  <label>I want to<br><select id="mode"><option value="cost" selected>Price a job from cost and markup</option><option value="margin">Find the markup for a target margin</option><option value="oh">Find the markup that covers overhead and profit</option></select></label>
+  <div id="costWrap"><label>Job cost<br><input type="number" id="cost" min="0.01" step="any" value="1000" required></label><label>Markup (% of cost)<br><input type="number" id="markup" min="0" step="any" value="50" required></label></div>
+  <div id="marginWrap" hidden><label>Job cost<br><input type="number" id="cost2" min="0.01" step="any" value="1000" required></label><label>Target margin (% of price)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="40" required></label></div>
+  <div id="ohWrap" hidden><label>Overhead (% of sales)<br><input type="number" id="oh" min="0" step="any" value="25" required></label><label>Profit wanted (% of sales)<br><input type="number" id="profit" min="0" step="any" value="10" required></label></div>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { markupFromCost, markupForMargin, markupForOverheadAndProfit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { for (const m of ["cost", "margin", "oh"]) $(`${m}Wrap`).hidden = $("mode").value !== m; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const mode = $("mode").value; let html;
+    if (mode === "cost") { const r = markupFromCost({ cost: Number($("cost").value), markupPercent: Number($("markup").value) }); html = `<table><tr><td>Price</td><td><strong>${fmt(r.price)}</strong></td></tr><tr><td>Profit</td><td>${fmt(r.profit)}</td></tr><tr><td>Margin on the price</td><td><strong>${fmt(r.marginPercent)}%</strong></td></tr></table>`; }
+    else if (mode === "margin") { const r = markupForMargin({ cost: Number($("cost2").value), marginPercent: Number($("margin").value) }); html = `<table><tr><td>Markup needed on cost</td><td><strong>${fmt(r.markupPercent)}%</strong></td></tr><tr><td>Price</td><td>${fmt(r.price)}</td></tr><tr><td>Profit</td><td>${fmt(r.profit)}</td></tr></table>`; }
+    else { const r = markupForOverheadAndProfit({ overheadPercent: Number($("oh").value), profitPercent: Number($("profit").value) }); html = `<table><tr><td>Standard markup on job cost</td><td><strong>${fmt(r.markupPercent)}%</strong></td></tr><tr><td>Gross margin this produces</td><td>${fmt(r.marginPercent)}% of sales</td></tr></table>`; }
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why contractors get this wrong</h2>
+<p>Overhead and profit are naturally thought of as shares of sales: the accounts say overhead was 25% of revenue and profit 10%. But quotes are built up from cost, so the number applied to a quote is a markup. Converting one to the other is where quotes go astray. Adding 35% to cost to cover 25% overhead and 10% profit produces a margin of only 26%, which leaves 1% profit after overhead. The markup that actually delivers 35% of sales is 53.85%. The third mode of this calculator does that conversion for you.</p>
+
+<h2>Finding your own overhead percentage</h2>
+<p>Take a full year of overhead costs: vehicles, insurance, tools and equipment, office, software, phone, advertising, licences, the owner's unbillable time and any admin wages. Divide by the same year's sales. That is the overhead share. Add the profit share you want the business to make after everyone, including you, has been paid for their hours. The resulting markup is your standard, applied to every job's direct cost; the <a href="/job-quote-calculator/">job quote calculator</a> applies it as a margin on the price with overhead shown separately, which gives the same result by a different route.</p>
+
+<h2>Checking a quote after the fact</h2>
+<p>Use the first mode to see what margin a markup really produced on a job, and the second to see what markup a competitor's margin implies. Across many jobs, the <a href="/project-profitability-calculator/">project profitability calculator</a> shows whether the standard markup is covering what it should. The general <a href="/markup-margin-calculator/">markup and margin calculator</a> handles the same conversion for products.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should subcontractor costs carry the same markup?</h3>
+<p>Many contractors apply a lower markup to subcontracted work because it carries less of their overhead. Decide one rule and use it on every quote; the <a href="/change-order-calculator/">change order calculator</a> has separate markups for own work and subcontractors.</p>
+<h3>Is a 10% profit share reasonable?</h3>
+<p>It depends on your trade and risk; use your own target. The arithmetic here does not include benchmarks.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/job-quote-calculator/">Job quote calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/change-order-calculator/">Change order calculator</a></li>
+</ul>

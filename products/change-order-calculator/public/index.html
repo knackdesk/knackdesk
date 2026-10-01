@@ -1,0 +1,60 @@
+<!-- title: Change Order Calculator -->
+<!-- description: Price added work on a signed contract from materials, labour and subcontractor cost with your markup on own work and on subcontractors, and see the change order price, the revised contract total and the change as a percentage. -->
+<h1>Change Order Calculator</h1>
+<p>Enter the original contract price and any change orders already agreed, then the materials, labour and subcontractor cost of the new change with your markups. You get the price of this change order, the revised contract total and the change as a percentage of the original. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A change order prices extra work at the same markup as the contract, so the added scope carries its share of overhead and profit.</p>
+<p class="formula"><strong>Formula:</strong> own cost = materials + hours × rate; change price = own cost × (1 + markup %) + subcontractors × (1 + sub markup %); revised total = original + previous change orders + change price; change % = change price ÷ original × 100.</p>
+
+<form class="tool" id="f">
+  <label>Original contract price<br><input type="number" id="orig" min="0.01" step="any" value="20000" required></label>
+  <label>Change orders already agreed (total)<br><input type="number" id="prev" min="0" step="any" value="1500"></label>
+  <fieldset><legend>This change</legend>
+  <label>Materials<br><input type="number" id="mat" min="0" step="any" value="800"></label>
+  <label>Labour hours<br><input type="number" id="hours" min="0" step="any" value="10"></label>
+  <label>Labour rate per hour (your cost)<br><input type="number" id="rate" min="0" step="any" value="50"></label>
+  <label>Subcontractor cost<br><input type="number" id="subs" min="0" step="any" value="1000"></label>
+  <label>Markup on own work (%)<br><input type="number" id="markup" min="0" step="any" value="35"></label>
+  <label>Markup on subcontractors (%)<br><input type="number" id="sm" min="0" step="any" value="10"></label>
+  </fieldset>
+  <p><button class="primary" type="submit">Calculate change order</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { changeOrder } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = changeOrder({ originalContract: Number($("orig").value), previousChangeOrders: Number($("prev").value) || 0, materials: Number($("mat").value) || 0, laborHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, subcontractors: Number($("subs").value) || 0, markupPercent: Number($("markup").value) || 0, subMarkupPercent: Number($("sm").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Own cost (materials + labour)</td><td>${fmt(r.ownCost)}</td></tr><tr><td>Markup on own work</td><td>${fmt(r.ownMarkup)}</td></tr><tr><td>Markup on subcontractors</td><td>${fmt(r.subMarkup)}</td></tr><tr><td>Change order price</td><td><strong>${fmt(r.changePrice)}</strong> (${fmt(r.changePercent)}% of the original)</td></tr><tr><td>Revised contract total</td><td><strong>${fmt(r.revisedTotal)}</strong></td></tr><tr><td>All changes as a share of the original</td><td>${fmt(r.cumulativePercent)}%</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why change orders need their own price</h2>
+<p>Extra work requested after the contract is signed is small, unplanned and disruptive: it interrupts the sequence, needs a separate materials run and often a return visit. Pricing it at cost, or waving it through as goodwill, gives away the margin on work that costs more per unit than the original job. The rule that keeps contracts healthy is to price every change at the same markup as the original quote and to put it in writing before the work starts, showing three figures: the original price, this change, and the new total. Those three figures are exactly what the calculator produces.</p>
+
+<h2>Own work and subcontractors</h2>
+<p>Many contractors apply a lower markup to subcontracted work, because the subcontractor carries their own overhead and the main contractor only coordinates. A separate markup field keeps that distinction. Use your real labour cost per hour, including employer contributions, so the markup is genuine profit and overhead rather than wage recovery. If you have not settled a standard markup, the <a href="/contractor-markup-calculator/">contractor markup calculator</a> derives one from your overhead and profit targets.</p>
+
+<h2>Watching the cumulative figure</h2>
+<p>The last line shows all change orders together as a share of the original contract. When it climbs past ten or fifteen percent, the project has drifted from its scope and the schedule and payment stages usually need revisiting too. The <a href="/deposit-split-calculator/">deposit split calculator</a> re-stages payments against the revised total, and the <a href="/job-quote-calculator/">job quote calculator</a> builds the original price the changes are compared with.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What about work removed from the scope?</h3>
+<p>Enter the removed work's cost as a negative change by agreement; a credit is usually at cost plus a smaller markup, and the arithmetic is the same with negative inputs handled by hand.</p>
+<h3>Should the change order include a schedule change?</h3>
+<p>Yes, in the document. The calculator covers price only.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/job-quote-calculator/">Job quote calculator</a></li>
+  <li><a href="/contractor-markup-calculator/">Contractor markup calculator</a></li>
+  <li><a href="/deposit-split-calculator/">Deposit split calculator</a></li>
+</ul>

@@ -1,0 +1,58 @@
+<!-- title: Painting Quote Calculator -->
+<!-- description: Quote a painting job from the area to paint, number of coats, paint coverage and price per tin, preparation hours, area painted per hour and hourly rate, plus markup. Works in square metres or square feet. -->
+<h1>Painting Quote Calculator</h1>
+<p>Enter the area to paint and the number of coats, what one tin of paint covers and costs, your preparation time, how much area you paint per hour and your hourly rate, then the markup you add. You get the tins needed, paint cost, labour hours and cost, and the quote. Use square metres or square feet consistently. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A painting quote is tins of paint plus hours of work, both driven by the area times the coats, with a markup on top.</p>
+<p class="formula"><strong>Formula:</strong> painted area = area × coats; tins = painted area ÷ coverage per tin, rounded up; paint cost = tins × price; hours = prep hours + painted area ÷ area per hour; labour = hours × rate; quote = (paint + labour) × (1 + markup %).</p>
+
+<form class="tool" id="f">
+  <label>Area to paint (m² or ft², walls and ceilings, minus openings)<br><input type="number" id="area" min="0" step="any" value="120" required></label>
+  <label>Coats<br><input type="number" id="coats" min="1" step="1" value="2" required></label>
+  <label>Coverage per tin (same area unit, per coat)<br><input type="number" id="cov" min="0.01" step="any" value="10" required></label>
+  <label>Price per tin<br><input type="number" id="price" min="0" step="any" value="8"></label>
+  <label>Preparation hours (masking, filling, sanding, moving furniture)<br><input type="number" id="prep" min="0" step="any" value="2"></label>
+  <label>Area painted per hour (one coat)<br><input type="number" id="aph" min="0.01" step="any" value="20" required></label>
+  <label>Labour rate per hour<br><input type="number" id="rate" min="0" step="any" value="30"></label>
+  <label>Markup for overhead and profit (%)<br><input type="number" id="markup" min="0" step="any" value="25"></label>
+  <p><button class="primary" type="submit">Calculate quote</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { paintingQuote } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = paintingQuote({ area: Number($("area").value), coats: Number($("coats").value), coveragePerUnit: Number($("cov").value), pricePerUnit: Number($("price").value) || 0, prepHours: Number($("prep").value) || 0, areaPerHour: Number($("aph").value), hourlyRate: Number($("rate").value) || 0, markupPercent: Number($("markup").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Area including coats</td><td>${fmt(r.paintedArea)}</td></tr><tr><td>Tins of paint</td><td>${r.paintUnits}</td></tr><tr><td>Paint cost</td><td>${fmt(r.paintCost)}</td></tr><tr><td>Labour hours</td><td>${fmt(r.hours)}</td></tr><tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Cost before markup</td><td>${fmt(r.subtotal)}</td></tr><tr><td>Quote</td><td><strong>${fmt(r.quote)}</strong></td></tr><tr><td>Quote per unit of area</td><td>${r.pricePerArea === null ? "n/a" : fmt(r.pricePerArea)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Measuring the area</h2>
+<p>Wall area is the perimeter of the room times the wall height, minus doors and windows; add the ceiling if it is being painted. Measure rather than estimate, and keep the unit consistent: if the area is in square metres, coverage per tin and area per hour must be too. Paint manufacturers state coverage per litre or per tin on the label, usually for one coat on a smooth surface; porous or textured surfaces take more, so reduce the coverage figure for those. Tins are rounded up because you cannot buy a fraction of one, which is also why a small job can carry a high paint cost per area.</p>
+
+<h2>Productivity and preparation</h2>
+<p>Area per hour is the figure most painters know from experience and most quotes get wrong by optimism. It depends on the surface, the paint, cutting in, ceilings and access. Preparation is separate because it does not scale with coats: masking, filling, sanding and moving furniture take the same time whether you apply one coat or three. Enter them honestly; a quote built on a fast day loses money on a normal one.</p>
+
+<h2>Markup and the final number</h2>
+<p>The markup covers the costs that are not paint or hours on this job: vehicle, insurance, equipment, quoting time and profit. The <a href="/contractor-markup-calculator/">contractor markup calculator</a> works out what percentage your overhead and profit need. For jobs with mixed trades or materials beyond paint, the <a href="/job-quote-calculator/">job quote calculator</a> builds the price from cost, overhead and margin.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>How do I handle primer or different paints?</h3>
+<p>Run the calculator once per paint type and add the quotes, or treat primer as an extra coat with its own coverage if the price is similar.</p>
+<h3>Can I quote per square metre instead?</h3>
+<p>The last line gives the quote per unit of area, which you can use as a rate card figure for similar jobs.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/job-quote-calculator/">Job quote calculator</a></li>
+  <li><a href="/contractor-markup-calculator/">Contractor markup calculator</a></li>
+  <li><a href="/call-out-fee-calculator/">Call-out fee calculator</a></li>
+</ul>

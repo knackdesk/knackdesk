@@ -1,0 +1,57 @@
+<!-- title: Call-Out Fee Calculator -->
+<!-- description: Total for a service visit from the call-out fee and the minutes it includes, time on site billed in increments at your hourly rate, and parts at cost plus your markup. -->
+<h1>Call-Out Fee Calculator</h1>
+<p>Enter your call-out fee and the minutes it covers, your hourly rate and the increment you bill in, the time spent on site, and any parts fitted at cost with your markup. You get the extra labour, the parts price and the total for the visit. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A service visit is priced as a call-out fee for turning up, time on site beyond what the fee includes, and parts at a markup.</p>
+<p class="formula"><strong>Formula:</strong> extra minutes = max(0, minutes on site − included minutes), rounded up to the billing increment; labour = extra minutes ÷ 60 × hourly rate; parts price = parts cost × (1 + markup %); total = call-out fee + labour + parts price.</p>
+
+<form class="tool" id="f">
+  <label>Call-out fee<br><input type="number" id="fee" min="0" step="any" value="80"></label>
+  <label>Minutes included in the fee<br><input type="number" id="inc" min="0" step="any" value="60"></label>
+  <label>Hourly rate after the included time<br><input type="number" id="rate" min="0" step="any" value="60"></label>
+  <label>Billing increment (minutes)<br><select id="step"><option value="15">15</option><option value="30" selected>30</option><option value="60">60</option></select></label>
+  <label>Minutes on site<br><input type="number" id="mins" min="0" step="any" value="100" required></label>
+  <label>Parts and materials at cost<br><input type="number" id="parts" min="0" step="any" value="45"></label>
+  <label>Parts markup (%)<br><input type="number" id="pm" min="0" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate visit total</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { callOut } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = callOut({ callOutFee: Number($("fee").value) || 0, includedMinutes: Number($("inc").value) || 0, hourlyRate: Number($("rate").value) || 0, minutesOnSite: Number($("mins").value), incrementMinutes: Number($("step").value), partsCost: Number($("parts").value) || 0, partsMarkupPercent: Number($("pm").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Time beyond the included minutes</td><td>${r.extraMinutes} min, billed as ${r.billedExtraMinutes} min</td></tr><tr><td>Extra labour</td><td>${fmt(r.laborCharge)}</td></tr><tr><td>Parts price</td><td>${fmt(r.partsPrice)} (profit ${fmt(r.partsProfit)})</td></tr><tr><td>Visit total</td><td><strong>${fmt(r.total)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What the call-out fee is for</h2>
+<p>The fee covers the cost of getting to the customer: travel time, fuel, the slot in the diary, and usually a first block of time on site, often thirty or sixty minutes. Pricing it that way means a ten-minute fix still pays for the hour it took out of the day. State clearly how many minutes the fee includes; most disputes about service bills come from customers who thought the fee was the whole price. Emergency and out-of-hours visits usually carry a higher fee and rate; run the calculator with those figures for a second price list.</p>
+
+<h2>Billing increments and parts</h2>
+<p>Time beyond the included minutes is billed in increments, because nobody bills to the minute and the increment protects you from short overruns. Fifteen-minute increments feel fair to customers; thirty or sixty are simpler. Parts are charged at cost plus a markup that covers sourcing, stock on the van, warranty and the trip to the supplier when the part is not in stock. The calculator shows the parts profit separately so you can see how much of the visit's margin comes from parts versus time.</p>
+
+<h2>Quoting before you go</h2>
+<p>For customers who want a figure in advance, estimate the minutes on site and give the total with the assumptions spoken: the fee, what it includes, the rate after that and the increment. For larger jobs quoted from materials and hours rather than a visit, the <a href="/job-quote-calculator/">job quote calculator</a> is the right tool, and the <a href="/contractor-markup-calculator/">contractor markup calculator</a> helps set the parts markup from your overhead.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should travel time be billed separately?</h3>
+<p>Usually it is inside the call-out fee. If you bill it separately, add it to the minutes on site.</p>
+<h3>Does the fee include tax?</h3>
+<p>Enter figures before tax and add it to the total when you present the price.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/job-quote-calculator/">Job quote calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late fee calculator</a></li>
+</ul>

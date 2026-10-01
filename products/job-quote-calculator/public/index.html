@@ -1,0 +1,56 @@
+<!-- title: Job Quote Calculator -->
+<!-- description: Price a job from materials, labour hours at your rate, subcontractors, an overhead allowance and the profit margin you want on the price. Shows direct cost, overhead, total cost, quote price, profit and the markup it represents. -->
+<h1>Job Quote Calculator</h1>
+<p>Enter what the job costs you in materials, labour and subcontractors, the overhead percentage your business needs, and the profit margin you want on the price. You get the total cost, the quote price, the profit and the markup that works out to. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A quote that pays is cost plus overhead, divided up so that the margin you want is a share of the price rather than an add-on to the cost.</p>
+<p class="formula"><strong>Formula:</strong> direct cost = materials + hours × rate + subcontractors; overhead = direct cost × overhead %; total cost = direct + overhead; price = total cost ÷ (1 − margin %); profit = price − total cost; markup = profit ÷ total cost × 100.</p>
+
+<form class="tool" id="f">
+  <label>Materials<br><input type="number" id="mat" min="0" step="any" value="1200"></label>
+  <label>Labour hours<br><input type="number" id="hours" min="0" step="any" value="16"></label>
+  <label>Labour rate per hour (what you pay, including on-costs)<br><input type="number" id="rate" min="0" step="any" value="45"></label>
+  <label>Subcontractors and hire<br><input type="number" id="subs" min="0" step="any" value="300"></label>
+  <label>Overhead allowance (% of direct cost)<br><input type="number" id="oh" min="0" step="any" value="15"></label>
+  <label>Profit margin wanted (% of the price)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="20"></label>
+  <p><button class="primary" type="submit">Calculate quote</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { jobQuote } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = jobQuote({ materials: Number($("mat").value) || 0, laborHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, subcontractors: Number($("subs").value) || 0, overheadPercent: Number($("oh").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Direct cost</td><td>${fmt(r.directCost)}</td></tr><tr><td>Overhead</td><td>${fmt(r.overhead)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Quote price</td><td><strong>${fmt(r.price)}</strong></td></tr><tr><td>Profit</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Markup on cost this represents</td><td>${r.markupPercent === null ? "n/a" : fmt(r.markupPercent) + "%"}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Cost, overhead, then price</h2>
+<p>Most underpriced jobs go wrong in the same place: the quote covers materials and wages and nothing else. Overhead is everything the business pays whether or not this job exists: the van, insurance, tools, phone, software, the hours spent quoting jobs you did not win, and the office if there is one. Divide a year of those costs by a year of direct job costs and you have an overhead percentage; applying it to every quote means every job carries its share. Fifteen to thirty percent is common for small trade businesses, but your own figure is the one to use.</p>
+
+<h2>Margin on the price, not markup on the cost</h2>
+<p>The calculator asks for the profit margin as a share of the price, because that is how profit shows up in the accounts. A 20% margin on a 2,553 cost needs a price of 3,191, which is a 25% markup. Quoting a 20% markup instead would give a price of 3,064 and a 16.7% margin, so the job would earn less than intended on every unit of work. The <a href="/contractor-markup-calculator/">contractor markup calculator</a> converts between the two and finds the markup that covers your overhead and profit together.</p>
+
+<h2>After the quote</h2>
+<p>A quote is a prediction. Track the actual hours and materials against it: the <a href="/project-profitability-calculator/">project profitability calculator</a> shows what a finished job really earned, and the pattern across jobs tells you whether your hours or your overhead figure needs adjusting. For work added after the contract is signed, the <a href="/change-order-calculator/">change order calculator</a> prices it at the same markup so the extra work does not erode the margin.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should the labour rate be what I pay or what I charge?</h3>
+<p>What it costs you per hour, including employer contributions and paid non-productive time. The markup is applied by the margin, not by inflating the rate.</p>
+<h3>Where does sales tax or VAT go?</h3>
+<p>Add it on top of the quote price when you present it; the calculation here is before tax.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/contractor-markup-calculator/">Contractor markup calculator</a></li>
+  <li><a href="/change-order-calculator/">Change order calculator</a></li>
+  <li><a href="/project-budget-calculator/">Project budget calculator</a></li>
+</ul>
