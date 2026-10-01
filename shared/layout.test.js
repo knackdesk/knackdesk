@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderPage, renderProductCards, renderCatalogSections, renderMegaMenu } from "./layout.js";
+import { renderPage, renderProductCards, renderCatalogSections, renderMegaMenu, renderFinder } from "./layout.js";
 import { extractFaq, faqPageNode, webApplicationNode, productNode } from "./seo.js";
 
 const ldGraph = (html) => {
@@ -229,5 +229,48 @@ describe("renderCatalogSections", () => {
     expect(kits).toContain('href="https://polar.sh/k"');
     expect(kits).toContain("$9");
     expect(kits).not.toContain('href="/vat/"');
+  });
+});
+
+describe("renderMegaMenu with a large catalog", () => {
+  const many = Array.from({ length: 10 }, (_, i) => ({ data: { slug: `inv${i}`, name: `Invoice tool ${i} Calculator`, lane: "tool", category: "invoicing", tagline: "t" } }));
+  const kits = Array.from({ length: 6 }, (_, i) => ({ data: { slug: `kit${i}`, name: `Kit ${i}`, lane: "digital", category: "invoicing", tagline: "t", price_cents: 1200, polar_url: `https://polar.sh/k${i}` } }));
+  it("caps each category at six tools and links to the full category with a count", () => {
+    const menu = renderMegaMenu(many);
+    expect(menu).toContain('href="/inv5/"');
+    expect(menu).not.toContain('href="/inv6/"');
+    expect(menu).toContain('class="more"');
+    expect(menu).toMatch(/All 10 .*calculators/);
+    expect(menu).toContain('href="/invoicing/"');
+  });
+  it("shows at most four kits in a full-width strip and links to all kits", () => {
+    const menu = renderMegaMenu([...many, ...kits]);
+    expect(menu).toContain('href="https://polar.sh/k3"');
+    expect(menu).not.toContain('href="https://polar.sh/k4"');
+    expect(menu).toContain('class="mega-cat mega-kits"');
+    expect(menu).toMatch(/All 6 kits/);
+    expect(menu).toContain('href="/kits/"');
+  });
+});
+
+describe("renderFinder", () => {
+  it("renders a search box, category chips with counts and the filter script", () => {
+    const items = [
+      { data: { slug: "a", name: "A Calculator", lane: "tool", category: "invoicing", tagline: "t" } },
+      { data: { slug: "b", name: "B Calculator", lane: "tool", category: "invoicing", tagline: "t" } },
+      { data: { slug: "c", name: "C Calculator", lane: "tool", category: "time", tagline: "t" } },
+      { data: { slug: "k", name: "Kit", lane: "digital", category: "time", tagline: "t", price_cents: 900, polar_url: "https://polar.sh/k" } },
+    ];
+    const html = renderFinder(items);
+    expect(html).toContain('<input type="search" id="finder"');
+    expect(html).toContain('class="chips"');
+    expect(html).toContain('href="/invoicing/"');
+    expect(html).toMatch(/Invoicing<span class="count">2<\/span>/);
+    expect(html).toMatch(/Time &amp; pay<span class="count">1<\/span>/);
+    expect(html).not.toContain('href="/pricing/"');
+    expect(html).toContain('href="/kits/"');
+    expect(html).toMatch(/Kits<span class="count">1<\/span>/);
+    expect(html).toContain("<script>");
+    expect(html).toContain('id="finder-empty"');
   });
 });

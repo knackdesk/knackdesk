@@ -41,20 +41,38 @@ function socialMeta({ title, description, url, ogType }) {
 
 const shortName = (name) => name.replace(/\s+(Calculator|Converter)$/i, "");
 
+const MENU_TOOLS_PER_CATEGORY = 6;
+const MENU_KITS = 4;
+
 export function renderMegaMenu(items) {
   const tools = items.filter(({ data }) => data.lane !== "digital");
   const kits = items.filter(({ data }) => data.lane === "digital");
   const cols = CATEGORY_SECTIONS.map((c) => {
     const inCat = tools.filter(({ data }) => data.category === c.key);
     if (inCat.length === 0) return "";
-    const lis = inCat.map(({ data }) => `<li><a href="/${escapeHtml(data.slug)}/" title="${escapeHtml(data.name)}">${escapeHtml(shortName(data.name))}</a></li>`).join("");
-    return `<details class="mega-cat" open><summary><h3><a href="/${c.key}/">${escapeHtml(c.heading)}</a></h3></summary><ul>${lis}</ul></details>`;
+    const lis = inCat.slice(0, MENU_TOOLS_PER_CATEGORY).map(({ data }) => `<li><a href="/${escapeHtml(data.slug)}/" title="${escapeHtml(data.name)}">${escapeHtml(shortName(data.name))}</a></li>`);
+    if (inCat.length > MENU_TOOLS_PER_CATEGORY) lis.push(`<li class="more"><a href="/${c.key}/">All ${inCat.length} ${escapeHtml(c.heading.toLowerCase())} calculators →</a></li>`);
+    return `<details class="mega-cat" open><summary><h3><a href="/${c.key}/">${escapeHtml(c.heading)}</a></h3></summary><ul>${lis.join("")}</ul></details>`;
   }).filter(Boolean);
   if (kits.length) {
-    const lis = kits.map(({ data }) => `<li><a href="${escapeHtml(data.polar_url || "/#kits")}">${escapeHtml(data.name)} <span class="price">$${(data.price_cents / 100).toFixed(0)}</span></a></li>`).join("");
-    cols.push(`<details class="mega-cat mega-kits" open><summary><h3><a href="/kits/">Kits</a></h3></summary><ul>${lis}</ul></details>`);
+    const lis = kits.slice(0, MENU_KITS).map(({ data }) => `<li><a href="${escapeHtml(data.polar_url || "/kits/")}">${escapeHtml(data.name)} <span class="price">$${(data.price_cents / 100).toFixed(0)}</span></a></li>`);
+    lis.push(`<li class="more"><a href="/kits/">All ${kits.length} kits →</a></li>`);
+    cols.push(`<details class="mega-cat mega-kits" open><summary><h3><a href="/kits/">Kits</a></h3></summary><ul>${lis.join("")}</ul></details>`);
   }
   return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega"><div class="mega-top"><span>All tools</span><button type="button" class="mega-close" aria-label="Close menu">×</button></div><div class="mega-grid">${cols.join("")}</div></div></details>`;
+}
+
+const FINDER_SCRIPT = `<script>(()=>{const init=()=>{const q=document.getElementById("finder"),empty=document.getElementById("finder-empty");if(!q)return;const cards=[...document.querySelectorAll("section.category .cards li")],sections=[...document.querySelectorAll("section.category")];const norm=(s)=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");const apply=()=>{const t=norm(q.value.trim());let shown=0;for(const li of cards){const hit=!t||norm(li.textContent).includes(t);li.hidden=!hit;if(hit)shown++}for(const s of sections){const any=[...s.querySelectorAll(".cards li")].some((li)=>!li.hidden);s.hidden=!any;const more=s.querySelector(".more");if(more)more.hidden=!!t}empty.hidden=shown>0;document.body.classList.toggle("finding",!!t)};q.addEventListener("input",apply);q.addEventListener("search",apply);const u=new URL(location.href).searchParams.get("q");if(u){q.value=u;apply()}};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()})();</script>`;
+
+export function renderFinder(items) {
+  const tools = items.filter(({ data }) => data.lane !== "digital");
+  const kits = items.filter(({ data }) => data.lane === "digital");
+  const chips = CATEGORY_SECTIONS.map((c) => {
+    const n = tools.filter(({ data }) => data.category === c.key).length;
+    return n ? `<a class="chip" href="/${c.key}/">${escapeHtml(c.nav)}<span class="count">${n}</span></a>` : "";
+  }).filter(Boolean);
+  if (kits.length) chips.push(`<a class="chip chip-kits" href="/kits/">Kits<span class="count">${kits.length}</span></a>`);
+  return `<div class="finder"><label for="finder" class="visually-hidden">Find a calculator</label><input type="search" id="finder" placeholder="Find a calculator, e.g. late fee, margin, PTO…" autocomplete="off" spellcheck="false"><p class="finder-hint">${tools.length} free calculators${kits.length ? ` and ${kits.length} kits` : ""}. Type to filter, or pick a category.</p><nav class="chips" aria-label="Categories">${chips.join("")}</nav><p id="finder-empty" hidden>No calculator matches that. Try another word, or <a href="/contact/">tell us what you were looking for</a>.</p></div>${FINDER_SCRIPT}`;
 }
 
 export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "", footerKits = [] }) {

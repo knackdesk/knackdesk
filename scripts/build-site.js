@@ -3,7 +3,7 @@ import { join, basename } from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.js";
-import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, escapeHtml } from "../shared/layout.js";
+import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, renderFinder, escapeHtml } from "../shared/layout.js";
 import { CATEGORY_COPY } from "../shared/category-copy.js";
 import { renderKitsPage } from "../shared/kits-page.js";
 import { webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
@@ -113,7 +113,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const raw = readFileSync(join(pagesDir, file), "utf8");
     const name = basename(file, ".html");
     const path = name === "index" ? "/" : `/${name}/`;
-    const body = raw.replace("<!--PRODUCTS-->", () => sections);
+    const body = raw.replace("<!--FINDER-->", () => renderFinder(items)).replace("<!--PRODUCTS-->", () => sections);
     const schema = path === "/" ? digital.map(({ data }) => productNode(data)) : [];
     writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion, footerKits }));
   }
