@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderPage, renderProductCards, renderCatalogSections } from "./layout.js";
+import { renderPage, renderProductCards, renderCatalogSections, renderMegaMenu } from "./layout.js";
 import { extractFaq, faqPageNode, webApplicationNode, productNode } from "./seo.js";
 
 const ldGraph = (html) => {
@@ -20,11 +20,24 @@ describe("renderPage", () => {
     expect(html).toContain('href="/privacy/"');
     expect(html).not.toContain("adsbygoogle");
   });
-  it("has the five category links in the header and About/Contact in the footer", () => {
-    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+  it("puts the megamenu in the header when given, with About/Contact in the footer", () => {
+    const menu = renderMegaMenu([
+      { data: { slug: "a", name: "A tool", lane: "tool", category: "invoicing", tagline: "t" } },
+      { data: { slug: "b", name: "B tool", lane: "tool", category: "property", tagline: "t" } },
+      { data: { slug: "k", name: "Kit", lane: "digital", tagline: "t", price_cents: 900, polar_url: "https://polar.sh/k" } },
+    ]);
+    expect(menu).toContain("<details");
+    expect(menu).toContain('<summary>Tools');
+    expect(menu).toContain('href="/invoicing/"');
+    expect(menu).toContain('href="/a/"');
+    expect(menu).toContain('href="/property/"');
+    expect(menu).not.toContain('href="/pricing/"');
+    expect(menu).toContain('href="https://polar.sh/k"');
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/", menu });
     const header = html.split("</header>")[0];
-    for (const p of ["/invoicing/", "/pricing/", "/planning/", "/time/", "/property/"]) expect(header).toContain(`href="${p}"`);
+    expect(header).toContain('href="/a/"');
     expect(header).not.toContain('href="/about/"');
+    expect(html).toContain("details.menu");
     const footer = html.split("<footer>")[1];
     expect(footer).toContain('href="/about/"');
     expect(footer).toContain('href="/contact/"');

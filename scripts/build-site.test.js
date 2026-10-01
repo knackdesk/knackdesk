@@ -144,10 +144,11 @@ description: d
 ---`);
     writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
-    const prop = readFileSync(join(out, "ptool", "index.html"), "utf8");
+    const aside = (html) => html.split('<aside class="crosssell">')[1].split("</aside>")[0];
+    const prop = aside(readFileSync(join(out, "ptool", "index.html"), "utf8"));
     expect(prop).toContain("Kit property");
     expect(prop).not.toContain("Kit pricing");
-    const conv = readFileSync(join(out, "conv", "index.html"), "utf8");
+    const conv = aside(readFileSync(join(out, "conv", "index.html"), "utf8"));
     expect(conv).toContain("Kit pricing");
     expect(conv).toContain("Kit property");
   });
@@ -166,6 +167,17 @@ description: d
     expect(readFileSync(join(out, "sitemap.xml"), "utf8")).toContain("<loc>https://knackdesk.com/invoicing/</loc>");
     expect(readFileSync(join(out, "llms.txt"), "utf8")).toContain("https://knackdesk.com/invoicing/");
     expect(readFileSync(join(out, "index.html"), "utf8")).toContain('href="/invoicing/"');
+  });
+  it("renders the megamenu with every tool on tool pages, hub pages and site pages", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    for (const page of ["fee/index.html", "invoicing/index.html", "about/index.html", "index.html"]) {
+      const html = readFileSync(join(out, page), "utf8");
+      const header = html.split("</header>")[0];
+      expect(header).toContain("<details");
+      expect(header).toContain('href="/fee/"');
+      expect(header).toContain('href="/conv/"');
+    }
   });
   it("matches kits that list several categories", async () => {
     mkdirSync(join(root, "products", "kitm"), { recursive: true });

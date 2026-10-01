@@ -39,7 +39,23 @@ function socialMeta({ title, description, url, ogType }) {
 <meta name="twitter:image" content="${OG_IMAGE}">`;
 }
 
-export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null }) {
+export function renderMegaMenu(items) {
+  const tools = items.filter(({ data }) => data.lane !== "digital");
+  const kits = items.filter(({ data }) => data.lane === "digital");
+  const cols = CATEGORY_SECTIONS.map((c) => {
+    const inCat = tools.filter(({ data }) => data.category === c.key);
+    if (inCat.length === 0) return "";
+    const lis = inCat.map(({ data }) => `<li><a href="/${escapeHtml(data.slug)}/">${escapeHtml(data.name)}</a></li>`).join("");
+    return `<div class="mega-col"><h3><a href="/${c.key}/">${escapeHtml(c.heading)}</a></h3><ul>${lis}</ul></div>`;
+  }).filter(Boolean);
+  if (kits.length) {
+    const lis = kits.map(({ data }) => `<li><a href="${escapeHtml(data.polar_url || "/#kits")}">${escapeHtml(data.name)} <span class="price">$${(data.price_cents / 100).toFixed(0)}</span></a></li>`).join("");
+    cols.push(`<div class="mega-col mega-kits"><h3><a href="/#kits">Kits</a></h3><ul>${lis}</ul></div>`);
+  }
+  return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega">${cols.join("")}</div></details>`;
+}
+
+export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "" }) {
   const docTitle = headline || title;
   const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
@@ -59,11 +75,12 @@ ${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Categories">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}</nav></header>
+<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Site">${menu || CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}<a class="navlink" href="/#kits">Kits</a></nav></header>
 <main>
 ${crumbs({ title, path, parent })}${body}
 </main>
 <footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<script>document.addEventListener("click",(e)=>{for(const d of document.querySelectorAll("details.menu[open]"))if(!d.contains(e.target))d.removeAttribute("open")});document.addEventListener("keydown",(e)=>{if(e.key==="Escape")for(const d of document.querySelectorAll("details.menu[open]"))d.removeAttribute("open")});</script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script>
 </body>
 </html>`;
