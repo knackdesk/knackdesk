@@ -274,3 +274,13 @@ describe("renderFinder", () => {
     expect(html).toContain('id="finder-empty"');
   });
 });
+
+describe("footer kits", () => {
+  it("lists at most six kits and always links to all kits", () => {
+    const kits = Array.from({ length: 10 }, (_, i) => ({ name: `Kit ${i}`, slug: `kit-${i}` }));
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/", footerKits: kits });
+    const footer = html.split("<h4>Kits</h4>")[1].split("</ul>")[0];
+    expect((footer.match(/href="\/kits\/#/g) || []).length).toBe(6);
+    expect(footer).toContain('href="/kits/">All 10 kits');
+  });
+});

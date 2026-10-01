@@ -152,6 +152,44 @@ description: d
     expect(conv).toContain("Kit pricing");
     expect(conv).toContain("Kit property");
   });
+  it("caps the cross-sell at the three most relevant kits: page category listed first, then more specific kits", async () => {
+    const kits = [["k1", "planning, pricing"], ["k2", "pricing"], ["k3", "invoicing, planning"], ["k4", "planning"], ["k5", "time, planning, pricing"]];
+    for (const [slug, cat] of kits) {
+      mkdirSync(join(root, "products", slug), { recursive: true });
+      writeFileSync(join(root, "products", slug, "PLAN.md"), `---
+polar_url: https://buy.polar.sh/${slug}
+slug: ${slug}
+name: Kit ${slug}
+lane: digital
+category: ${cat}
+price_cents: 1200
+status: live
+tagline: t
+description: d
+---`);
+    }
+    mkdirSync(join(root, "products", "ptool", "public"), { recursive: true });
+    writeFileSync(join(root, "products", "ptool", "public", "index.html"), "<!-- title: P -->\n<!-- description: p -->\n<h1>P</h1>");
+    writeFileSync(join(root, "products", "ptool", "PLAN.md"), `---
+slug: ptool
+name: P tool
+lane: tool
+category: planning
+status: live
+tagline: t
+description: d
+---`);
+    writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const aside = (html) => html.split('<aside class="crosssell">')[1].split("</aside>")[0];
+    const names = (a) => [...a.matchAll(/<strong>(Kit k\d)<\/strong>/g)].map((m) => m[1]);
+    // planning page: k4 (planning only) and k1 (planning first, 2 cats) outrank k3 (planning second) and k5 (planning second, 3 cats); k2 excluded
+    expect(names(aside(readFileSync(join(out, "ptool", "index.html"), "utf8")))).toEqual(["Kit k4", "Kit k1", "Kit k3"]);
+    // a page whose category matches only one kit shows that kit alone: matches are never padded with unrelated kits
+    expect(names(aside(readFileSync(join(out, "conv", "index.html"), "utf8")))).toEqual(["Kit k5"]);
+    const footer = readFileSync(join(out, "ptool", "index.html"), "utf8").split("<h4>Kits</h4>")[1].split("</ul>")[0];
+    expect((footer.match(/href="\/kits\/#/g) || []).length).toBeLessThanOrEqual(6);
+  });
   it("writes a category hub page per category with the tools, breadcrumb schema and sitemap entry", async () => {
     addFeeTool(root);
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });

@@ -99,9 +99,13 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   const digital = items.filter(({ data }) => data.lane === "digital");
   const sections = renderCatalogSections(items);
   const kitCategories = (data) => String(data.category || "").split(",").map((c) => c.trim()).filter(Boolean);
+  // Up to three kits per page: kits that list the page's category first rank highest, then kits with fewer categories (more specific).
+  const MAX_CROSS_SELL = 3;
   const kitsFor = (category) => {
     const matching = digital.filter(({ data }) => kitCategories(data).includes(category));
-    return matching.length > 0 ? matching : digital;
+    const pool = matching.length > 0 ? matching : digital;
+    const rank = (item) => { const cats = kitCategories(item.data); const i = cats.indexOf(category); return [i < 0 ? 99 : i, cats.length, item.data.name]; };
+    return [...pool].sort((a, b) => { const [ai, an, as] = rank(a), [bi, bn, bs] = rank(b); return ai - bi || an - bn || as.localeCompare(bs); }).slice(0, MAX_CROSS_SELL);
   };
   const crossSellFor = (category) => renderCrossSell(kitsFor(category));
   const menu = renderMegaMenu(items);
