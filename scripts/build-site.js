@@ -2,8 +2,10 @@ import { readdirSync, readFileSync, mkdirSync, writeFileSync, cpSync, existsSync
 import { join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.js";
-import { renderPage, renderCatalogSections, escapeHtml } from "../shared/layout.js";
+import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, escapeHtml } from "../shared/layout.js";
+import { CATEGORY_COPY } from "../shared/category-copy.js";
 import { webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
+import { collectionPageNode } from "../shared/seo.js";
 import { renderLlmsTxt, renderLlmsFullTxt } from "./lib/llms.js";
 
 const ROBOTS = `User-agent: *
@@ -70,7 +72,7 @@ function blockText(html, cls) {
   return m ? htmlToText(m[1]) : "";
 }
 
-function wrapToolPage(file, path, adsenseId, crossSell, data) {
+function wrapToolPage(file, path, adsenseId, crossSell, data, parent = null) {
   if (!existsSync(file)) return null;
   const raw = readFileSync(file, "utf8");
   const title = pageMeta(raw, "title");
@@ -78,7 +80,7 @@ function wrapToolPage(file, path, adsenseId, crossSell, data) {
   const description = pageMeta(raw, "description");
   const schema = [webApplicationNode({ name: title, path, description }), faqPageNode(raw)].filter(Boolean);
   const body = `${insertByline(raw, data.reviewed)}\n${crossSell}`;
-  writeFileSync(file, renderPage({ title, description, body, path, adsenseId, headline: data.headline || "", ogType: "article", schema }));
+  writeFileSync(file, renderPage({ title, description, body, path, adsenseId, headline: data.headline || "", ogType: "article", schema , parent }));
   return { definition: blockText(raw, "definition"), formula: blockText(raw, "formula") };
 }
 
@@ -94,10 +96,13 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   });
   const digital = items.filter(({ data }) => data.lane === "digital");
   const sections = renderCatalogSections(items);
-  const crossSellFor = (category) => {
-    const matching = digital.filter(({ data }) => data.category && data.category === category);
-    return renderCrossSell(matching.length > 0 ? matching : digital);
+  const kitCategories = (data) => String(data.category || "").split(",").map((c) => c.trim()).filter(Boolean);
+  const kitsFor = (category) => {
+    const matching = digital.filter(({ data }) => kitCategories(data).includes(category));
+    return matching.length > 0 ? matching : digital;
   };
+  const crossSellFor = (category) => renderCrossSell(kitsFor(category));
+  const categoryOf = (key) => CATEGORY_SECTIONS.find((c) => c.key === key);
   const pagesDir = join(rootDir, "site", "pages");
   for (const file of readdirSync(pagesDir).filter((f) => f.endsWith(".html"))) {
     const raw = readFileSync(join(pagesDir, file), "utf8");
@@ -112,12 +117,25 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const pub = join(dir, "public");
     if (!existsSync(pub)) continue;
     cpSync(pub, join(outDir, data.slug), { recursive: true });
-    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data);
+    const cat = categoryOf(data.category);
+    const parent = cat ? { name: cat.heading, path: `/${cat.key}/` } : null;
+    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data, parent);
     if (d) details[data.slug] = d;
   }
-  writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items));
-  writeFileSync(join(outDir, "llms-full.txt"), renderLlmsFullTxt(items, details));
-  const urls = ["/", ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
+  const tools = items.filter(({ data }) => data.lane !== "digital");
+  const categoryPages = CATEGORY_SECTIONS.filter((c) => tools.some(({ data }) => data.category === c.key));
+  for (const c of categoryPages) {
+    const copy = CATEGORY_COPY[c.key];
+    const inCat = tools.filter(({ data }) => data.category === c.key);
+    const path = `/${c.key}/`;
+    const body = `<h1>${escapeHtml(copy.title)}</h1>\n${copy.intro}\n${renderProductCards(inCat)}\n${renderCrossSell(kitsFor(c.key))}`;
+    const schema = [collectionPageNode({ name: copy.title, description: copy.description, path, items: inCat.map(({ data }) => ({ name: data.name, path: `/${data.slug}/` })) })];
+    writePage(outDir, path, renderPage({ title: copy.title, description: copy.description, headline: copy.headline, body, path, adsenseId, schema }));
+  }
+  const categoryLinks = categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` }));
+  writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items, categoryLinks));
+  writeFileSync(join(outDir, "llms-full.txt"), renderLlmsFullTxt(items, details, categoryLinks));
+  const urls = ["/", ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
   if (adsenseId) writeFileSync(join(outDir, "ads.txt"), `google.com, ${adsenseId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
   writeFileSync(join(outDir, "robots.txt"), ROBOTS);

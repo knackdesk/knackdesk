@@ -11,9 +11,15 @@ function adsense(id) {
   return `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escapeHtml(id)}" crossorigin="anonymous"></script>`;
 }
 
-function pageGraph({ title, path, schema }) {
-  const base = path === "/" ? [organizationNode(), websiteNode()] : [organizationNode(), breadcrumbNode({ name: title, path })];
+function pageGraph({ title, path, schema, parent }) {
+  const base = path === "/" ? [organizationNode(), websiteNode()] : [organizationNode(), breadcrumbNode({ name: title, path, parent })];
   return [...base, ...schema];
+}
+
+function crumbs({ title, path, parent }) {
+  if (path === "/") return "";
+  const links = [`<a href="/">Home</a>`, ...(parent ? [`<a href="${escapeHtml(parent.path)}">${escapeHtml(parent.name)}</a>`] : []), `<span>${escapeHtml(title)}</span>`];
+  return `<nav class="crumbs" aria-label="Breadcrumb">${links.join(" › ")}</nav>\n`;
 }
 
 function socialMeta({ title, description, url, ogType }) {
@@ -33,7 +39,7 @@ function socialMeta({ title, description, url, ogType }) {
 <meta name="twitter:image" content="${OG_IMAGE}">`;
 }
 
-export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [] }) {
+export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null }) {
   const docTitle = headline || title;
   const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
@@ -49,15 +55,15 @@ export function renderPage({ title, description, body, path, adsenseId = "", hea
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 ${socialMeta({ title: docTitle, description, url: `${SITE}${path}`, ogType })}
 <link rel="stylesheet" href="/styles.css">
-${renderJsonLd(pageGraph({ title, path, schema }))}
+${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>
 <body>
 <header class="top"><a class="brand" href="/">Knackdesk</a><nav><a href="/about/">About</a><a href="/contact/">Contact</a></nav></header>
 <main>
-${body}
+${crumbs({ title, path, parent })}${body}
 </main>
-<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footlinks"><span>© Knackdesk</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script>
 </body>
 </html>`;
@@ -82,8 +88,9 @@ export const CATEGORY_SECTIONS = [
   { key: "property", heading: "Rent & property", intro: "Calculators for tenants, flatmates, landlords and small investors." },
 ];
 
-function section({ id, heading, intro, list }) {
-  return `<section class="category" id="${id}">\n<h2>${escapeHtml(heading)}</h2>\n<p class="category-intro">${escapeHtml(intro)}</p>\n${list}\n</section>`;
+function section({ id, heading, intro, list, href }) {
+  const more = href ? `\n<p class="more"><a href="${escapeHtml(href)}">All ${escapeHtml(heading.toLowerCase())} calculators →</a></p>` : "";
+  return `<section class="category" id="${id}">\n<h2>${escapeHtml(heading)}</h2>\n<p class="category-intro">${escapeHtml(intro)}</p>\n${list}${more}\n</section>`;
 }
 
 function renderKitCards(kits) {
@@ -98,7 +105,7 @@ export function renderCatalogSections(items) {
   const kits = items.filter(({ data }) => data.lane === "digital");
   const parts = CATEGORY_SECTIONS.map(({ key, heading, intro }) => {
     const inCat = tools.filter(({ data }) => data.category === key);
-    return inCat.length ? section({ id: key, heading, intro, list: renderProductCards(inCat) }) : "";
+    return inCat.length ? section({ id: key, heading, intro, list: renderProductCards(inCat), href: `/${key}/` }) : "";
   }).filter(Boolean);
   if (kits.length) {
     parts.push(section({ id: "kits", heading: "Kits", intro: "Spreadsheet workbooks you buy once and keep. They work in Excel, Google Sheets and Numbers.", list: renderKitCards(kits) }));

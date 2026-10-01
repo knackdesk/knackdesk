@@ -151,6 +151,39 @@ description: d
     expect(conv).toContain("Kit pricing");
     expect(conv).toContain("Kit property");
   });
+  it("writes a category hub page per category with the tools, breadcrumb schema and sitemap entry", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const hub = readFileSync(join(out, "invoicing", "index.html"), "utf8");
+    expect(hub).toContain("<h1>Invoicing");
+    expect(hub).toContain('href="/fee/"');
+    expect(hub).toContain('"CollectionPage"');
+    expect(hub).toContain('"ItemList"');
+    const tool = readFileSync(join(out, "fee", "index.html"), "utf8");
+    expect(tool).toContain('class="crumbs"');
+    expect(tool).toContain('href="/invoicing/"');
+    expect(tool).toMatch(/"BreadcrumbList"[\s\S]*"Invoicing/);
+    expect(readFileSync(join(out, "sitemap.xml"), "utf8")).toContain("<loc>https://knackdesk.com/invoicing/</loc>");
+    expect(readFileSync(join(out, "llms.txt"), "utf8")).toContain("https://knackdesk.com/invoicing/");
+    expect(readFileSync(join(out, "index.html"), "utf8")).toContain('href="/invoicing/"');
+  });
+  it("matches kits that list several categories", async () => {
+    mkdirSync(join(root, "products", "kitm"), { recursive: true });
+    writeFileSync(join(root, "products", "kitm", "PLAN.md"), `---
+polar_url: https://buy.polar.sh/kitm
+slug: kitm
+name: Kit multi
+lane: digital
+category: invoicing, time
+price_cents: 900
+status: live
+tagline: t
+description: d
+---`);
+    writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    expect(readFileSync(join(out, "conv", "index.html"), "utf8")).toContain("Kit multi");
+  });
   it("appends a cross-sell block for listed digital products to tool pages", async () => {
     mkdirSync(join(root, "products", "kit"), { recursive: true });
     writeFileSync(join(root, "products", "kit", "PLAN.md"), `---
@@ -210,7 +243,9 @@ description: d
     expect(app).toMatchObject({ name: "Late Fee Calculator", url: "https://knackdesk.com/fee/", description: "Work out a late fee." });
     const faq = graph.find((n) => n["@type"] === "FAQPage");
     expect(faq.mainEntity).toEqual([{ "@type": "Question", name: "Do I count the due date?", acceptedAnswer: { "@type": "Answer", text: "No. Day one is the day after the due date." } }]);
-    expect(graph.find((n) => n["@type"] === "BreadcrumbList").itemListElement[1]).toMatchObject({ name: "Late Fee Calculator", item: "https://knackdesk.com/fee/" });
+    const crumbs = graph.find((n) => n["@type"] === "BreadcrumbList").itemListElement;
+    expect(crumbs.at(-1)).toMatchObject({ name: "Late Fee Calculator", item: "https://knackdesk.com/fee/" });
+    expect(crumbs[1]).toMatchObject({ name: "Invoicing & payment", item: "https://knackdesk.com/invoicing/" });
     expect(page).toContain('<meta property="og:type" content="article">');
   });
   it("omits FAQPage when a tool page has no FAQ section", async () => {

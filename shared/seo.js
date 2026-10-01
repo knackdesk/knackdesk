@@ -36,13 +36,24 @@ export function websiteNode() {
   return { "@type": "WebSite", "@id": `${SITE}/#website`, name: "Knackdesk", url: SITE, publisher: { "@id": ORG_ID } };
 }
 
-export function breadcrumbNode({ name, path }) {
+export function breadcrumbNode({ name, path, parent }) {
+  const trail = [{ name: "Home", path: "/" }, ...(parent ? [parent] : []), { name, path }];
   return {
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
-      { "@type": "ListItem", position: 2, name, item: `${SITE}${path}` },
-    ],
+    itemListElement: trail.map((t, i) => ({ "@type": "ListItem", position: i + 1, name: t.name, item: `${SITE}${t.path}` })),
+  };
+}
+
+export function collectionPageNode({ name, description, path, items }) {
+  return {
+    "@type": "CollectionPage",
+    name,
+    description,
+    url: `${SITE}${path}`,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, url: `${SITE}${it.path}` })),
+    },
   };
 }
 

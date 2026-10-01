@@ -18,6 +18,11 @@ function kitsSection(kits) {
   return `\n## Kits\n\n${lines.join("\n")}\n`;
 }
 
+function categoriesSection(categories) {
+  if (!categories || categories.length === 0) return "";
+  return `\n## Categories\n\n${categories.map((c) => `- [${c.heading}](${SITE}${c.path})`).join("\n")}\n`;
+}
+
 function aboutSection() {
   return `\n## About\n\n- [About Knackdesk](${SITE}/about/): who makes the tools, how they are checked, and how to report an error\n- [Contact](${SITE}/contact/): hello@knackdesk.com\n`;
 }
@@ -28,17 +33,17 @@ const split = (items) => ({
   kits: items.filter(({ data }) => data.lane === "digital"),
 });
 
-export function renderLlmsTxt(items) {
+export function renderLlmsTxt(items, categories = []) {
   const { tools, kits } = split(items);
-  return `${header()}\n## Tools\n\n${tools.map(toolLine).join("\n")}\n${kitsSection(kits)}${aboutSection()}`;
+  return `${header()}${categoriesSection(categories)}\n## Tools\n\n${tools.map(toolLine).join("\n")}\n${kitsSection(kits)}${aboutSection()}`;
 }
 
-export function renderLlmsFullTxt(items, details = {}) {
+export function renderLlmsFullTxt(items, details = {}, categories = []) {
   const { tools, kits } = split(items);
   const blocks = tools.map((item) => {
     const d = details[item.data.slug] || {};
     const extra = [d.definition, d.formula].filter(Boolean).map((l) => `  ${l}`);
     return [toolLine(item), ...extra].join("\n");
   });
-  return `${header()}\n## Tools\n\n${blocks.join("\n")}\n${kitsSection(kits)}${aboutSection()}`;
+  return `${header()}${categoriesSection(categories)}\n## Tools\n\n${blocks.join("\n")}\n${kitsSection(kits)}${aboutSection()}`;
 }

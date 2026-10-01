@@ -3,6 +3,7 @@ polar_url: https://buy.polar.sh/polar_cl_1kxM2saIYYrH9BHa9p1Yp1V7mSAUgu68kmN170p
 slug: freelancer-finance-kit
 name: Freelancer Finance Kit
 lane: digital
+category: invoicing, planning, time
 price_cents: 1200
 status: live
 tagline: One spreadsheet for invoices, due dates, late fees, rates and cash flow

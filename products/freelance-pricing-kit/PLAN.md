@@ -3,6 +3,7 @@ polar_url: https://buy.polar.sh/polar_cl_OBBsiKSM4hFSr1kEAo4BmryGy2P76krpK5WPl4U
 slug: freelance-pricing-kit
 name: Freelance Pricing Kit
 lane: digital
+category: pricing, planning
 price_cents: 900
 status: live
 tagline: Rate card, quote builder, retainer pricer and revenue plan in one workbook
