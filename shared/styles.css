@@ -45,3 +45,4 @@ details.menu>summary::-webkit-details-marker{display:none}details.menu[open]>sum
   body.menu-open{overflow:hidden}
 }
 .totop{position:fixed;right:16px;bottom:16px;z-index:15;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);font-size:1.3rem;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18)}.totop[hidden]{display:none}.totop:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.kit{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.25rem 1.5rem;margin:1.5rem 0}.kit h2{margin-top:0;display:flex;justify-content:space-between;align-items:baseline;gap:1rem}.kit-price{color:var(--accent);font-size:1.1rem}.kit-tagline{color:var(--muted);margin-top:-.5rem}.kit-features{padding-left:1.2rem}.kit-features li{margin:.3rem 0}a.buy.big{margin-left:0;padding:.6rem 1.1rem;font-size:1rem}

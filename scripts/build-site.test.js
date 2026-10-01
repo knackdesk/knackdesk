@@ -186,6 +186,43 @@ description: d
     expect(html).toMatch(/href="\/styles\.css\?v=[0-9a-f]{8,}"/);
     expect(readFileSync(join(out, "conv", "index.html"), "utf8")).toMatch(/styles\.css\?v=[0-9a-f]{8,}/);
   });
+  it("writes a /kits/ page listing every kit with buy links, listing copy, Product schema and FAQ", async () => {
+    mkdirSync(join(root, "products", "kit1"), { recursive: true });
+    writeFileSync(join(root, "products", "kit1", "PLAN.md"), `---
+polar_url: https://buy.polar.sh/kit1
+slug: kit1
+name: Kit One
+lane: digital
+category: invoicing
+price_cents: 1200
+status: live
+tagline: One tagline
+description: One description.
+---
+# Kit One
+
+**Audience:** people.
+
+## Listing copy (Polar)
+Intro sentence for kit one.
+- **Sheet A:** does a.
+- **Sheet B:** does b.
+Works in Excel.
+`);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const page = readFileSync(join(out, "kits", "index.html"), "utf8");
+    expect(page).toContain("<h1>");
+    expect(page).toContain("Kit One");
+    expect(page).toContain('href="https://buy.polar.sh/kit1"');
+    expect(page).toContain("$12");
+    expect(page).toContain("does a.");
+    expect(page).toContain('"Product"');
+    expect(page).toContain('"FAQPage"');
+    expect(readFileSync(join(out, "sitemap.xml"), "utf8")).toContain("<loc>https://knackdesk.com/kits/</loc>");
+    const home = readFileSync(join(out, "index.html"), "utf8");
+    expect(home.split("</header>")[0]).toContain('href="/kits/"');
+    expect(home).toContain('href="/kits/"');
+  });
   it("matches kits that list several categories", async () => {
     mkdirSync(join(root, "products", "kitm"), { recursive: true });
     writeFileSync(join(root, "products", "kitm", "PLAN.md"), `---

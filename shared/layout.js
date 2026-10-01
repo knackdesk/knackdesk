@@ -52,7 +52,7 @@ export function renderMegaMenu(items) {
   }).filter(Boolean);
   if (kits.length) {
     const lis = kits.map(({ data }) => `<li><a href="${escapeHtml(data.polar_url || "/#kits")}">${escapeHtml(data.name)} <span class="price">$${(data.price_cents / 100).toFixed(0)}</span></a></li>`).join("");
-    cols.push(`<details class="mega-cat mega-kits" open><summary><h3><a href="/#kits">Kits</a></h3></summary><ul>${lis}</ul></details>`);
+    cols.push(`<details class="mega-cat mega-kits" open><summary><h3><a href="/kits/">Kits</a></h3></summary><ul>${lis}</ul></details>`);
   }
   return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega"><div class="mega-top"><span>All tools</span><button type="button" class="mega-close" aria-label="Close menu">×</button></div><div class="mega-grid">${cols.join("")}</div></div></details>`;
 }
@@ -77,7 +77,7 @@ ${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Site">${menu || CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}<a class="navlink" href="/#kits">Kits</a></nav></header>
+<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Site">${menu || CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}<a class="navlink" href="/kits/">Kits</a></nav></header>
 <main>
 ${crumbs({ title, path, parent })}${body}
 </main>
@@ -110,7 +110,7 @@ export const CATEGORY_SECTIONS = [
 ];
 
 function section({ id, heading, intro, list, href }) {
-  const more = href ? `\n<p class="more"><a href="${escapeHtml(href)}">All ${escapeHtml(heading.toLowerCase())} calculators →</a></p>` : "";
+  const more = href ? `\n<p class="more"><a href="${escapeHtml(href)}">${id === "kits" ? "All kits" : `All ${escapeHtml(heading.toLowerCase())} calculators`} →</a></p>` : "";
   return `<section class="category" id="${id}">\n<h2>${escapeHtml(heading)}</h2>\n<p class="category-intro">${escapeHtml(intro)}</p>\n${list}${more}\n</section>`;
 }
 
@@ -129,7 +129,7 @@ export function renderCatalogSections(items) {
     return inCat.length ? section({ id: key, heading, intro, list: renderProductCards(inCat), href: `/${key}/` }) : "";
   }).filter(Boolean);
   if (kits.length) {
-    parts.push(section({ id: "kits", heading: "Kits", intro: "Spreadsheet workbooks you buy once and keep. They work in Excel, Google Sheets and Numbers.", list: renderKitCards(kits) }));
+    parts.push(section({ id: "kits", heading: "Kits", intro: "Spreadsheet workbooks you buy once and keep. They work in Excel, Google Sheets and Numbers.", list: renderKitCards(kits), href: "/kits/" }));
   }
   return parts.join("\n");
 }

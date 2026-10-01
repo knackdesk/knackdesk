@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.js";
 import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, escapeHtml } from "../shared/layout.js";
 import { CATEGORY_COPY } from "../shared/category-copy.js";
+import { renderKitsPage } from "../shared/kits-page.js";
 import { webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
 import { collectionPageNode } from "../shared/seo.js";
 import { renderLlmsTxt, renderLlmsFullTxt } from "./lib/llms.js";
@@ -135,10 +136,15 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const schema = [collectionPageNode({ name: copy.title, description: copy.description, path, items: inCat.map(({ data }) => ({ name: data.name, path: `/${data.slug}/` })) })];
     writePage(outDir, path, renderPage({ title: copy.title, description: copy.description, headline: copy.headline, body, path, adsenseId, schema, menu, assetVersion }));
   }
+  if (digital.length > 0) {
+    const body = renderKitsPage(digital);
+    const schema = [...digital.map(({ data }) => productNode(data)), faqPageNode(body)].filter(Boolean);
+    writePage(outDir, "/kits/", renderPage({ title: "Spreadsheet Kits", headline: "Spreadsheet Kits for Freelancers and Landlords: Buy Once, Keep Forever", description: "Workbooks for invoicing and cash flow, pricing and quotes, and rent tracking. Formulas only, no macros; work in Excel, Google Sheets and Numbers. One-time purchase.", body, path: "/kits/", adsenseId, schema, menu, assetVersion }));
+  }
   const categoryLinks = categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` }));
   writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items, categoryLinks));
   writeFileSync(join(outDir, "llms-full.txt"), renderLlmsFullTxt(items, details, categoryLinks));
-  const urls = ["/", ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
+  const urls = ["/", ...(digital.length > 0 ? ["/kits/"] : []), ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
   if (adsenseId) writeFileSync(join(outDir, "ads.txt"), `google.com, ${adsenseId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
   writeFileSync(join(outDir, "robots.txt"), ROBOTS);
