@@ -10,3 +10,4 @@ Refreshed by `npm run polar:sales`. Amounts in USD.
 | saas-metrics-dashboard | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_4UIKY64EHCakdbakAWu2frzfhbDDw7KSYVQ0G09hKVW | 14.00 | 0 | 0.00 | 0.00 |
 | online-seller-profit-tracker | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_FbLUm3fh24VYerZhsTL8E8F7bGXNmfm5yuWhW1nIFR2 | 12.00 | 0 | 0.00 | 0.00 |
 | team-cost-planner | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_pc9Ka3XTI7s5uCW3UKMItEBHsXPHO8mtv9wJp4bwWCy | 14.00 | 0 | 0.00 | 0.00 |
+| agency-quote-profit-tracker | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_2yBraDoA9wMFyUyrHbAfdQ9wVU3aIJ2hVS0C71SfxI1 | 14.00 | 0 | 0.00 | 0.00 |
