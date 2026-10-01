@@ -45,6 +45,18 @@ describe("renderPage", () => {
     expect(footer).toContain('href="/about/"');
     expect(footer).toContain('href="/contact/"');
   });
+  it("renders a four-column footer with brand, categories, kits and site links, plus the disclaimer", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/", footerKits: [{ name: "Kit One", slug: "kit-one" }] });
+    const footer = html.split("<footer>")[1];
+    expect(footer).toContain('class="foot-brand"');
+    expect(footer).toContain("hello@knackdesk.com");
+    for (const p of ["/invoicing/", "/pricing/", "/planning/", "/time/", "/property/", "/ecommerce/"]) expect(footer).toContain(`href="${p}"`);
+    expect(footer).toContain('href="/kits/#kit-one"');
+    expect(footer).toContain("Kit One");
+    for (const p of ["/about/", "/contact/", "/kits/", "/privacy/", "/terms/"]) expect(footer).toContain(`href="${p}"`);
+    expect(footer).toContain("not legal, tax or financial advice");
+    expect(footer).toContain(`© ${new Date().getUTCFullYear()} Knackdesk`);
+  });
   it("includes a back-to-top button", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).toContain('class="totop"');

@@ -223,6 +223,22 @@ Works in Excel.
     expect(home.split("</header>")[0]).toContain('href="/kits/"');
     expect(home).toContain('href="/kits/"');
   });
+  it("lists the kits in the footer of every page", async () => {
+    mkdirSync(join(root, "products", "kitf"), { recursive: true });
+    writeFileSync(join(root, "products", "kitf", "PLAN.md"), `---
+polar_url: https://buy.polar.sh/kitf
+slug: kitf
+name: Footer Kit
+lane: digital
+category: time
+price_cents: 900
+status: live
+tagline: t
+description: d
+---`);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    expect(readFileSync(join(out, "about", "index.html"), "utf8").split("<footer>")[1]).toContain('href="/kits/#kitf"');
+  });
   it("matches kits that list several categories", async () => {
     mkdirSync(join(root, "products", "kitm"), { recursive: true });
     writeFileSync(join(root, "products", "kitm", "PLAN.md"), `---

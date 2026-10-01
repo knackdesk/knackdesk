@@ -57,7 +57,7 @@ export function renderMegaMenu(items) {
   return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega"><div class="mega-top"><span>All tools</span><button type="button" class="mega-close" aria-label="Close menu">×</button></div><div class="mega-grid">${cols.join("")}</div></div></details>`;
 }
 
-export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "" }) {
+export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "", footerKits = [] }) {
   const docTitle = headline || title;
   const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
@@ -81,7 +81,15 @@ ${adsense(adsenseId)}
 <main>
 ${crumbs({ title, path, parent })}${body}
 </main>
-<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<footer>
+<div class="foot">
+<div class="foot-brand"><a class="brand" href="/">Knackdesk</a><p>Small, useful calculators and spreadsheet kits for freelancers, small businesses, landlords and online sellers. Free to use; nothing you enter leaves your browser.</p><p><a href="mailto:hello@knackdesk.com">hello@knackdesk.com</a></p></div>
+<div class="foot-col"><h4>Tools</h4><ul>${CATEGORY_SECTIONS.map((c) => `<li><a href="/${c.key}/">${escapeHtml(c.heading)}</a></li>`).join("")}</ul></div>
+<div class="foot-col"><h4>Kits</h4><ul>${footerKits.map((k) => `<li><a href="/kits/#${escapeHtml(k.slug)}">${escapeHtml(k.name)}</a></li>`).join("")}<li><a href="/kits/">All kits</a></li></ul></div>
+<div class="foot-col"><h4>Knackdesk</h4><ul><li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li><li><a href="/kits/">Kits</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li></ul></div>
+</div>
+<div class="foot-bottom"><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><p class="copy">© ${new Date().getUTCFullYear()} Knackdesk</p></div>
+</footer>
 <button type="button" class="totop" aria-label="Back to top" hidden>↑</button>
 <script>(()=>{const b=document.querySelector(".totop");if(b){const t=()=>{b.hidden=window.scrollY<600};window.addEventListener("scroll",t,{passive:true});t();b.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}})();</script>
 <script>(()=>{const m=document.querySelector("details.menu");if(!m)return;const narrow=()=>window.matchMedia("(max-width: 640px)").matches;const closeAll=()=>m.removeAttribute("open");m.addEventListener("toggle",()=>{if(m.open&&narrow())for(const c of m.querySelectorAll("details.mega-cat"))c.removeAttribute("open");if(m.open&&!narrow())for(const c of m.querySelectorAll("details.mega-cat"))c.setAttribute("open","");document.body.classList.toggle("menu-open",m.open&&narrow())});document.addEventListener("click",(e)=>{if(e.target.closest(".mega-close")){closeAll();return}if(m.open&&!m.contains(e.target))closeAll()});document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeAll()})})();</script>
