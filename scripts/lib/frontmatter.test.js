@@ -51,7 +51,7 @@ describe("validateProduct", () => {
     const { price_cents, ...tool } = { ...good, lane: "tool" };
     expect(() => validateProduct(tool)).toThrow(/category/);
     expect(() => validateProduct({ ...tool, category: "misc" })).toThrow(/category/);
-    for (const category of ["invoicing", "pricing", "planning", "time"]) {
+    for (const category of ["invoicing", "pricing", "planning", "time", "property"]) {
       expect(validateProduct({ ...tool, category }).category).toBe(category);
     }
   });

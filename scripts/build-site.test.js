@@ -228,6 +228,27 @@ description: d
     expect(types(graph)).toEqual(expect.arrayContaining(["Organization", "WebSite", "Product"]));
     expect(graph.find((n) => n["@type"] === "Product").offers).toMatchObject({ price: "12.00", priceCurrency: "USD", url: "https://buy.polar.sh/abc" });
   });
+  it("lists property tools last under Rent & property", async () => {
+    mkdirSync(join(root, "products", "rent", "public"), { recursive: true });
+    writeFileSync(join(root, "products", "rent", "public", "index.html"), "<h1>Rent</h1>");
+    writeFileSync(join(root, "products", "rent", "PLAN.md"), `---
+slug: rent
+name: Rent Tool
+lane: tool
+category: property
+status: live
+tagline: rent things
+description: d
+---`);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const index = readFileSync(join(out, "index.html"), "utf8");
+    const time = index.indexOf("<h2>Time &amp; pay</h2>");
+    const prop = index.indexOf("<h2>Rent &amp; property</h2>");
+    expect(prop).toBeGreaterThan(time);
+    expect(index).toContain("Calculators for tenants, flatmates, landlords and small investors.");
+    expect(index.slice(prop)).toContain('href="/rent/"');
+    expect(index.slice(time, prop)).not.toContain('href="/rent/"');
+  });
   it("gives every site page valid JSON-LD with breadcrumbs except the home page", async () => {
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
     const about = ldGraph(readFileSync(join(out, "about", "index.html"), "utf8"));

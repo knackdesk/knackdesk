@@ -1,0 +1,106 @@
+<!-- title: Rent Increase Calculator -->
+<!-- description: Calculate a new rent from a percentage or fixed increase, the percentage between two rents, and what the change costs or earns per year. -->
+<h1>Rent Increase Calculator</h1>
+<p>Apply a percentage or fixed increase to a rent, find the percentage between an old and a new rent, or check a proposed rent against a cap you enter. Each result shows the monthly and yearly difference. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A rent increase percentage is the change in rent divided by the old rent, and the yearly cost is twelve times the monthly change.</p>
+<p class="formula"><strong>Formula:</strong> new rent = old rent × (1 + increase% ÷ 100); increase% = (new − old) ÷ old × 100; yearly difference = (new − old) × 12.</p>
+
+<form class="tool" id="f">
+  <label>What do you want to do?<br>
+    <select id="mode">
+      <option value="apply" selected>Apply an increase to a rent</option>
+      <option value="between">Find the increase between two rents</option>
+      <option value="cap">Check a new rent against a cap</option>
+    </select>
+  </label>
+  <div id="applyWrap">
+    <label>Current monthly rent<br><input type="number" id="rent" min="0" step="any" value="1200" required></label>
+    <label>Increase<br><input type="number" id="increase" step="any" value="5" required></label>
+    <label>Increase is a<br>
+      <select id="unit">
+        <option value="percent" selected>Percentage (%)</option>
+        <option value="amount">Fixed amount per month</option>
+      </select>
+    </label>
+  </div>
+  <div id="betweenWrap" hidden>
+    <label>Old monthly rent<br><input type="number" id="old" min="0" step="any" value="1200" required></label>
+    <label>New monthly rent<br><input type="number" id="new" min="0" step="any" value="1300" required></label>
+  </div>
+  <div id="capWrap" hidden>
+    <label>Old monthly rent<br><input type="number" id="old2" min="0" step="any" value="1200" required></label>
+    <label>Proposed new rent<br><input type="number" id="new2" min="0" step="any" value="1300" required></label>
+    <label>Cap that applies to you (%)<br><input type="number" id="cap" min="0" step="any" value="5" required></label>
+  </div>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { applyIncrease, percentBetween, capCheck } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleMode = () => { for (const m of ["apply", "between", "cap"]) $(`${m}Wrap`).hidden = $("mode").value !== m; syncWraps(); };
+$("mode").addEventListener("change", toggleMode);
+toggleMode();
+const diffs = (r) => `${r.monthlyDifference >= 0 ? "+" : ""}${fmt(r.monthlyDifference)} a month, ${r.yearlyDifference >= 0 ? "+" : ""}${fmt(r.yearlyDifference)} a year`;
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const mode = $("mode").value;
+    if (mode === "apply") {
+      const rent = Number($("rent").value);
+      const inc = Number($("increase").value);
+      if ($("unit").value === "amount") {
+        const p = percentBetween({ oldRent: rent, newRent: rent + inc });
+        $("out").innerHTML = `<p><strong>New rent: ${fmt(rent + inc)}</strong>, a ${p.percent}% change (${diffs(p)}).</p>`;
+      } else {
+        const r = applyIncrease({ rent, percent: inc });
+        $("out").innerHTML = `<p><strong>New rent: ${fmt(r.newRent)}</strong> (${diffs(r)}).</p>`;
+      }
+    } else if (mode === "between") {
+      const p = percentBetween({ oldRent: Number($("old").value), newRent: Number($("new").value) });
+      $("out").innerHTML = `<p>That is a <strong>${p.percent}% change</strong> (${diffs(p)}).</p>`;
+    } else {
+      const c = capCheck({ oldRent: Number($("old2").value), newRent: Number($("new2").value), capPercent: Number($("cap").value) });
+      const verdict = c.withinCap ? "is within" : "is above";
+      $("out").innerHTML = `<p>The proposed rent is a <strong>${c.percent}% change</strong> and <strong>${verdict}</strong> the ${c.capPercent}% cap you entered.</p><p>The highest rent at that cap is ${fmt(c.maxRentAtCap)}.</p>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Turning a rent increase letter into a percentage</h2>
+<p>Rent increase notices often state only the new figure: "from 1 March your rent will be 1,300". That makes it hard to judge whether the rise is modest or large. Divide the change by the old rent: from 1,200 to 1,300 is a 100 increase, and 100 ÷ 1,200 is 8.33%. Always divide by the old rent, never the new one. Dividing by 1,300 gives 7.69%, which understates the rise.</p>
+<p>The yearly figure is often the more useful one. A 100 monthly increase is 1,200 a year, which is easier to compare with a pay rise, a move to a cheaper area, or the cost of moving itself. The calculator shows both so you can see the change in the terms that matter to you.</p>
+
+<p>It also helps to compare the new rent with what you would pay elsewhere. Look at current listings for similar homes nearby, and remember that moving has its own costs: removals, a new deposit, overlapping rent for a few days and time off work. A rise that looks large as a percentage can still be cheaper than moving, and a small one can be worth questioning if similar homes are let for less.</p>
+
+<h2>Applying a percentage or fixed increase</h2>
+<p>If you are a landlord planning an increase, or a tenant who has been told "rents are going up 5%", the apply mode turns the percentage into a new rent. On 1,200, a 5% increase is 60 a month, giving 1,260, or 720 more a year. If the increase is quoted as a fixed amount instead, choose "fixed amount" and the tool shows the percentage that amount represents. A negative number works too, for a rent reduction.</p>
+<p>Increases compound. Two years of 5% rises take 1,200 to 1,260 and then to 1,323, not 1,320, because the second rise applies to the already higher rent. If you are looking at several years of increases, run the calculation once per year using the previous result as the new starting rent.</p>
+
+<h2>Checking against a cap</h2>
+<p>Some cities and countries limit how much rent can rise in a year, some link increases to an inflation index, and many have no cap at all. Rules on rent control, notice periods and deposits vary by country and city, and they change. This calculator does not know which rules apply to your tenancy. In cap mode you enter the percentage that applies to you, and the tool does the arithmetic: the percentage the proposed rent represents, whether it is at or below your cap, and the highest rent that cap allows.</p>
+<p>Treat the result as a starting point for a conversation, not as legal advice. If a proposed rent is above a cap you believe applies, check the current rules with the local authority, a tenants' organisation or an adviser before replying. Landlords can use the same mode to confirm a planned rise stays within whatever limit applies to them.</p>
+
+<p>Keep a record of each increase: the date, the old and new rent and the percentage. Over a few years that history shows how fast your rent has moved, and it is useful evidence if you ever need to discuss a rise with a landlord or an adviser.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is my percentage different from the one my landlord quoted?</h3>
+<p>The usual cause is dividing by the new rent instead of the old one, or rounding. The correct base is the rent before the increase.</p>
+<h3>Can I use this for a rent decrease?</h3>
+<p>Yes. Enter a negative increase in apply mode, or a lower new rent in the between mode, and the result shows a negative percentage.</p>
+<h3>Does the cap mode tell me what the legal cap is?</h3>
+<p>No. It only uses the cap you type in. Whether a cap exists, and its size, depends on where the property is.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/rent-to-income-calculator/">Rent to income calculator</a></li>
+  <li><a href="/prorated-rent-calculator/">Prorated rent calculator</a></li>
+  <li><a href="/rental-yield-calculator/">Rental yield calculator</a></li>
+</ul>

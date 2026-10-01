@@ -1,0 +1,104 @@
+<!-- title: Rent to Income Calculator -->
+<!-- description: See what share of gross monthly income a rent takes, and the maximum rent for an income at a target ratio such as 30%, with the arithmetic shown. -->
+<h1>Rent to Income Calculator</h1>
+<p>Find what share of your gross income a rent takes, the highest rent an income supports at a target ratio, or the income needed for a given rent. Enter income as monthly or yearly. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The rent-to-income ratio is monthly rent divided by gross monthly income, shown as a percentage.</p>
+<p class="formula"><strong>Formula:</strong> ratio = rent ÷ monthly income × 100; maximum rent = monthly income × target% ÷ 100; income needed = rent ÷ (target% ÷ 100). Yearly income ÷ 12 = monthly income.</p>
+
+<form class="tool" id="f">
+  <label>What do you want to do?<br>
+    <select id="mode">
+      <option value="ratio" selected>Find my rent-to-income ratio</option>
+      <option value="max">Find the maximum rent for an income</option>
+      <option value="income">Find the income needed for a rent</option>
+    </select>
+  </label>
+  <div id="incomeInWrap">
+    <label>Gross income<br><input type="number" id="income" min="0" step="any" value="4000" required></label>
+    <label>Income is<br>
+      <select id="period">
+        <option value="monthly" selected>Per month</option>
+        <option value="annual">Per year</option>
+      </select>
+    </label>
+  </div>
+  <div id="rentInWrap">
+    <label>Monthly rent<br><input type="number" id="rent" min="0" step="any" value="1200" required></label>
+  </div>
+  <div id="targetWrap" hidden>
+    <label>Target ratio (%)<br><input type="number" id="target" min="1" max="100" step="any" value="30" required></label>
+  </div>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { ratio, maxRent, incomeNeeded } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleMode = () => {
+  const mode = $("mode").value;
+  $("incomeInWrap").hidden = mode === "income";
+  $("rentInWrap").hidden = mode === "max";
+  $("targetWrap").hidden = mode === "ratio";
+  syncWraps();
+};
+$("mode").addEventListener("change", toggleMode);
+toggleMode();
+const monthlyIncome = () => { const v = Number($("income").value); return $("period").value === "annual" ? v / 12 : v; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const mode = $("mode").value;
+    if (mode === "ratio") {
+      const inc = monthlyIncome();
+      const r = ratio({ monthlyIncome: inc, monthlyRent: Number($("rent").value) });
+      $("out").innerHTML = `<p>The rent takes <strong>${fmt(r.percent)}%</strong> of a gross monthly income of ${fmt(inc)}.</p>`;
+    } else if (mode === "max") {
+      const inc = monthlyIncome();
+      const t = Number($("target").value);
+      const r = maxRent({ monthlyIncome: inc, targetPercent: t });
+      $("out").innerHTML = `<p>At ${fmt(t)}% of ${fmt(inc)} a month, the <strong>maximum rent is ${fmt(r.maxRent)}</strong> a month.</p>`;
+    } else {
+      const t = Number($("target").value);
+      const r = incomeNeeded({ monthlyRent: Number($("rent").value), targetPercent: t });
+      $("out").innerHTML = `<p>To keep the rent at ${fmt(t)}% of income you need <strong>${fmt(r.income)} a month</strong> (${fmt(r.income * 12)} a year) before tax.</p>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What the rent-to-income ratio tells you</h2>
+<p>The ratio is the simplest affordability check there is: monthly rent divided by gross monthly income. A rent of 1,200 on an income of 4,000 a month is 30%. Landlords and letting agents use it to screen applicants, and tenants use it to decide what to look at before they start viewing places. It uses gross income, before tax, because that is the figure on a payslip or contract and the one landlords usually ask for.</p>
+<p>The ratio says nothing about the rest of your budget. Two people on the same income can afford very different rents depending on debts, childcare, commuting costs and savings goals. Treat the ratio as a first filter, then check the rent against a real monthly budget that includes bills and everything else you spend.</p>
+
+<h2>The 30% rule and income multiples</h2>
+<p>Spending no more than 30% of gross income on rent is a common rule of thumb used by many landlords and agencies. It is a convention, not a law, and nothing requires you or a landlord to use it. Some landlords express the same idea the other way round, as an income multiple: they ask that your income is a certain number of times the rent. An income of 3 times the rent means the rent is 33.33% of income; 2.5 times means 40%.</p>
+<p>The threshold a particular landlord applies may be stricter or looser, may count only one applicant's income or a household's combined income, and may use yearly rather than monthly figures. Rules on what landlords can ask for, and on deposits and guarantors, vary by country and city. This calculator only applies the numbers you enter; it does not know what any landlord will accept.</p>
+
+<h2>Working backwards to a budget</h2>
+<p>The other two modes turn the ratio into a target. If you earn 4,000 a month and want rent to stay at 30%, the maximum rent is 1,200. If a flat costs 1,500 and the landlord applies a 30% ratio, the income needed is 5,000 a month, or 60,000 a year. If you are paid yearly, choose "per year" and the tool divides by twelve before calculating.</p>
+<p>When you share a home, work out each person's share of the rent first, then check each share against that person's own income. The <a href="/rent-split-calculator/">rent split calculator</a> can divide the rent by income, which keeps everyone's ratio the same.</p>
+
+<p>If your income varies from month to month, as it does for many freelancers and contractors, use a cautious figure: an average of your lower months, or your last full year divided by twelve. Landlords may ask for accounts, tax returns or bank statements instead of payslips, and some ask self-employed applicants for a guarantor or extra rent in advance. Check what a landlord will ask for before you apply, so the ratio you plan around matches the income figure they will actually use.</p>
+
+<p>Rent is rarely the only housing cost. Utilities, internet, council or local taxes, contents insurance and commuting can add a large amount each month, and some rents include bills while others do not. When comparing two homes, add the extras to each rent before working out the ratio, so you compare what each home really costs.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I use gross or net income?</h3>
+<p>Landlords usually ask about gross income, so the tool assumes gross. You can enter take-home pay instead for your own budgeting; the ratio will be higher.</p>
+<h3>Is 30% a legal limit?</h3>
+<p>No. It is a rule of thumb. Some landlords use a different ratio or an income multiple, and some use none.</p>
+<h3>How do I convert "3 times the rent" into a ratio?</h3>
+<p>Divide 100 by the multiple. Three times the rent is 33.33%, so enter 33.33 as the target ratio.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/rent-split-calculator/">Rent split calculator</a></li>
+  <li><a href="/rent-increase-calculator/">Rent increase calculator</a></li>
+  <li><a href="/prorated-rent-calculator/">Prorated rent calculator</a></li>
+</ul>

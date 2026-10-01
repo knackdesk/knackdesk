@@ -2,7 +2,7 @@ const SITE = "https://knackdesk.com";
 
 const SUMMARY =
   "Knackdesk makes small, single-purpose web tools and spreadsheet kits for freelancers, contractors and small businesses. " +
-  "The tools cover invoicing and payment terms, rates and pricing, cash planning, and time and pay. " +
+  "The tools cover invoicing and payment terms, rates and pricing, cash planning, time and pay, and rent and property. " +
   "They are free, run entirely in the browser, need no account and send nothing to a server. " +
   "Every formula is unit-tested. Results are arithmetic only, not legal, tax or financial advice.";
 

@@ -1,0 +1,74 @@
+<!-- title: Prorated Rent Calculator -->
+<!-- description: Work out prorated rent for a partial first or last month from the monthly rent and move-in or move-out date, by actual days or a 30-day month. -->
+<h1>Prorated Rent Calculator</h1>
+<p>Enter the monthly rent and the date you move in or out to see the rent for the partial month, the daily rate and the number of days charged. Choose whether the daily rate uses the real number of days in that month or a flat 30-day month. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Prorated rent is the share of a month's rent that covers only the days you actually live in the property.</p>
+<p class="formula"><strong>Formula:</strong> daily rate = monthly rent ÷ days in month (actual or 30); prorated rent = daily rate × days charged, counting the move-in or move-out day.</p>
+
+<form class="tool" id="f">
+  <label>Monthly rent<br><input type="number" id="rent" min="0" step="any" value="1500" required></label>
+  <label>Are you moving in or out?<br>
+    <select id="mode">
+      <option value="move-in" selected>Moving in (charge from this date to month end)</option>
+      <option value="move-out">Moving out (charge from the 1st to this date)</option>
+    </select>
+  </label>
+  <label>Move-in or move-out date<br><input type="date" id="date" required></label>
+  <label>Daily rate based on<br>
+    <select id="basis">
+      <option value="actual" selected>Actual days in that month</option>
+      <option value="30">A 30-day month</option>
+    </select>
+  </label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { proratedRent, localIsoDate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+syncWraps();
+if (!$("date").value) $("date").value = localIsoDate();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = proratedRent({ monthlyRent: Number($("rent").value), date: $("date").value, mode: $("mode").value, basis: $("basis").value });
+    const dayWord = r.daysCharged === 1 ? "day" : "days";
+    $("out").innerHTML = `<p><strong>Prorated rent: ${fmt(r.prorated)}</strong></p><p>${r.daysCharged} ${dayWord} charged at a daily rate of ${fmt(r.dailyRate)} (monthly rent ÷ ${r.daysInMonth} days).</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How prorated rent is worked out</h2>
+<p>Most tenancies charge rent by the month, but people rarely move on the first. Prorating splits the month's rent into a daily rate and charges only the days the tenant has the property. If you move in on 11 October and the rent is 1,500, October has 31 days, so the daily rate is 1,500 ÷ 31 = 48.39. From the 11th to the 31st inclusive is 21 days, so the first month's rent is 1,016.13. The calculator multiplies before rounding, which is why the result is not exactly 21 × 48.39.</p>
+<p>Moving out works the other way round: you pay from the 1st up to and including the move-out day. Leaving on 10 February in a 28-day February at 1,500 a month means 10 days at 53.57, or 535.71. Whether the move-in or move-out day itself is charged is a convention, not a law of arithmetic. This tool counts it, because the tenant normally has the keys for at least part of that day. If your agreement says otherwise, adjust the date by one day.</p>
+
+<h2>Actual days or a 30-day month?</h2>
+<p>There are two common ways to get the daily rate. The actual-days method divides by the real length of the month: 28 or 29 in February, 30 or 31 otherwise. It is the most precise, but it means a day in February costs more than a day in October. The 30-day method treats every month as 30 days, so the daily rate is always the monthly rent divided by 30. It is simple and predictable, and some landlords and agents prefer it for that reason.</p>
+<p>The two methods give different answers, sometimes by a noticeable amount. On 1,500 a month, a move-in on 11 October costs 1,016.13 using actual days and 1,050 using a 30-day month. Neither method is wrong; what matters is that both sides agree in advance. One quirk of the 30-day method: a move-in on the 31st of a long month still counts as one day, charged at the 30-day rate. The days charged always come from the real calendar; only the daily rate changes.</p>
+<p>A third approach, dividing a full year's rent by 365 to get a daily rate, is also used in some places. You can reproduce it here by multiplying the monthly rent by 12, dividing by 365, and comparing it with the daily rate shown.</p>
+
+<h2>Before you agree a figure</h2>
+<p>Check what your tenancy agreement says about the first and last month. Some agreements require a full month's rent up front and settle the difference later; others start the rent cycle on the move-in date so no proration is needed at all. Rules on rent, deposits and notice periods vary by country and city, and this calculator does not know which ones apply to you. It only applies the numbers you enter, so treat the result as arithmetic to discuss, not as legal advice.</p>
+<p>Write the agreed method into the paperwork, for example "rent for October is prorated at the monthly rent divided by the number of days in the month, for 21 days". That one line prevents most disputes at move-out time, when the same question comes back in reverse. If you share the place with others, the <a href="/rent-split-calculator/">rent split calculator</a> divides the prorated amount between flatmates.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is the move-in day counted?</h3>
+<p>Yes, in this calculator both the move-in day and the move-out day are charged. If your agreement excludes them, pick the next or previous day instead.</p>
+<h3>Why does February cost more per day?</h3>
+<p>With the actual-days method, the same monthly rent is spread over fewer days, so each day costs more. Switch to the 30-day basis if you want every day to cost the same.</p>
+<h3>Does this handle leap years?</h3>
+<p>Yes. The day count comes from the real calendar, so February 2028 has 29 days and February 2026 has 28.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/rent-split-calculator/">Rent split calculator</a></li>
+  <li><a href="/rent-increase-calculator/">Rent increase calculator</a></li>
+  <li><a href="/rent-to-income-calculator/">Rent to income calculator</a></li>
+  <li><a href="/working-days-calculator/">Working days calculator</a></li>
+</ul>

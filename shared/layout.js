@@ -76,6 +76,7 @@ export const CATEGORY_SECTIONS = [
   { key: "pricing", heading: "Rates & pricing", intro: "Set and check what you charge: hourly and day rates, markup and margin, discounts, price rises, retainers and commission." },
   { key: "planning", heading: "Planning & cash", intro: "See how long your cash lasts, what you need to sell to break even or hit a goal, and what your software really costs." },
   { key: "time", heading: "Time & pay", intro: "Turn hours into invoice-ready decimals, count working days and work out overtime pay." },
+  { key: "property", heading: "Rent & property", intro: "Calculators for tenants, flatmates, landlords and small investors." },
 ];
 
 function section({ id, heading, intro, list }) {

@@ -1,0 +1,67 @@
+<!-- title: Rental Yield Calculator -->
+<!-- description: Find the gross and net rental yield of a property from its price, rent and yearly costs, plus monthly cash flow after a mortgage payment. -->
+<h1>Rental Yield Calculator</h1>
+<p>Enter the purchase price, the monthly rent and the yearly running costs to see the gross and net rental yield. Add empty weeks and a mortgage payment to see the monthly cash flow as well. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Rental yield is a year's rent as a percentage of the property price; net yield first deducts running costs and empty weeks.</p>
+<p class="formula"><strong>Formula:</strong> gross yield = rent × 12 ÷ price × 100; net yield = (rent × 12 × (1 − empty weeks ÷ 52) − yearly costs) ÷ price × 100.</p>
+
+<form class="tool" id="f">
+  <label>Purchase price<br><input type="number" id="price" min="0" step="any" value="200000" required></label>
+  <label>Monthly rent<br><input type="number" id="rent" min="0" step="any" value="1000" required></label>
+  <label>Yearly running costs<br><input type="number" id="costs" min="0" step="any" value="2400"></label>
+  <label>Empty weeks per year (0 to 52)<br><input type="number" id="vacancy" min="0" max="52" step="any" value="2"></label>
+  <label>Monthly mortgage payment (optional)<br><input type="number" id="mortgage" min="0" step="any" value="500"></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { rentalYield } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+syncWraps();
+const optional = (id) => ($(id).value.trim() === "" ? 0 : Number($(id).value));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = rentalYield({ price: Number($("price").value), monthlyRent: Number($("rent").value), annualCosts: optional("costs"), vacancyWeeks: optional("vacancy"), monthlyMortgage: optional("mortgage") });
+    $("out").innerHTML = `<p><strong>Gross yield: ${fmt(r.grossYield)}%</strong> · <strong>Net yield: ${fmt(r.netYield)}%</strong></p>`
+      + `<p>Rent collected after empty weeks: ${fmt(r.annualRent)} a year. Net income after costs: ${fmt(r.netIncome)} a year.</p>`
+      + `<p>Monthly cash flow after the mortgage payment: <strong>${fmt(r.monthlyCashFlow)}</strong>.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Gross yield and net yield</h2>
+<p>Gross yield is the figure you see in property listings. It divides a full year's rent by the purchase price and ignores everything else. A property bought for 200,000 and let at 1,000 a month brings in 12,000 a year, a gross yield of 6%. It is quick and useful for comparing listings, but it is not what you keep.</p>
+<p>Net yield subtracts the money the property costs to run and the rent you lose while it is empty. With two empty weeks a year, 12,000 becomes 11,538.46. Take off 2,400 of yearly costs and the net income is 9,138.46, a net yield of 4.57%. The gap between the two figures is the reason to calculate both: two properties with the same gross yield can have very different net yields once their costs are known.</p>
+<p>This calculator uses the purchase price as the base. Some investors use the current market value instead, or add buying costs such as taxes and legal fees to the price. Use whichever base you want to compare, as long as you use the same one for every property.</p>
+
+<h2>What goes into yearly running costs</h2>
+<p>Running costs are the regular bills a landlord pays that the tenant does not. Typical lines include building and landlord insurance, repairs and maintenance, letting or management fees if an agent is involved, service charges or ground rent on some flats, safety checks and certificates required where you are, and accounting fees. Property taxes and income tax on rent vary widely by country and are often left out of yield and treated separately.</p>
+<p>The calculator does not suggest figures for any of these. The right numbers depend on the property, its age, its location and how it is managed. Add up your own estimates or past bills and enter the yearly total. If you are unsure, run the calculation twice with a low and a high estimate to see how sensitive the net yield is to costs.</p>
+
+<h2>Cash flow is not the same as yield</h2>
+<p>Yield measures the return on the whole price of the property, whether or not you borrowed to buy it. Cash flow is what is left each month after the mortgage payment. Using the example above, a net income of 9,138.46 a year is 761.54 a month; after a 500 mortgage payment, cash flow is 261.54 a month. A negative cash flow means you are topping up the property from other income.</p>
+<p>The mortgage figure should be the payment you actually make. On a repayment mortgage part of it repays the loan, which builds equity rather than being a cost, so cash flow here is a cautious measure. Tax rules on mortgage interest, deposits and rental income vary by country and change over time; this tool only applies the numbers you enter and is not financial or tax advice.</p>
+
+<p>Yield is one input to an investment decision, not the whole picture. It does not include any change in the property's value, the cost of buying and selling, or the time you spend managing it. Compare yields between properties on the same basis, and test the result with higher costs, more empty weeks and a higher mortgage payment to see how much room for error the numbers leave.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does gross yield ignore empty weeks?</h3>
+<p>That is the standard definition: gross yield assumes a full year of rent with no costs. Empty weeks and costs are both deducted in the net yield.</p>
+<h3>Should I include the deposit or the loan in the price?</h3>
+<p>Use the full purchase price for yield. If you want the return on the cash you put in, that is a different measure, often called cash-on-cash return.</p>
+<h3>Can I leave the mortgage blank?</h3>
+<p>Yes. Leave it blank or enter 0 and cash flow is simply net income divided by twelve.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/rent-increase-calculator/">Rent increase calculator</a></li>
+  <li><a href="/rent-to-income-calculator/">Rent to income calculator</a></li>
+  <li><a href="/prorated-rent-calculator/">Prorated rent calculator</a></li>
+</ul>
