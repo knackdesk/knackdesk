@@ -1,0 +1,65 @@
+<!-- title: CAC Payback Calculator -->
+<!-- description: Work out customer acquisition cost from sales and marketing spend and new customers, then the months needed to recover it from gross-margin-adjusted revenue per account. -->
+<h1>CAC Payback Calculator</h1>
+<p>Enter what you spent on sales and marketing in a period and how many customers it brought in, or enter the acquisition cost directly. Add monthly revenue per account and gross margin to get the payback period. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> CAC payback is the number of months of gross profit from a new customer needed to recover what it cost to acquire them.</p>
+<p class="formula"><strong>Formula:</strong> CAC = spend ÷ new customers; payback (months) = CAC ÷ (ARPA × gross margin).</p>
+
+<form class="tool" id="f">
+  <label>How do you want to enter acquisition cost?<br>
+    <select id="mode"><option value="derive" selected>From spend and new customers</option><option value="direct">Enter CAC directly</option></select>
+  </label>
+  <div id="deriveWrap">
+    <label>Sales and marketing spend in the period<br><input type="number" id="spend" min="0" step="any" value="30000" required></label>
+    <label>New customers won in the period<br><input type="number" id="newc" min="0" step="1" value="100" required></label>
+  </div>
+  <div id="directWrap" hidden>
+    <label>Customer acquisition cost<br><input type="number" id="cac" min="0" step="any" value="300" required></label>
+  </div>
+  <label>Average monthly revenue per account (ARPA)<br><input type="number" id="arpa" min="0" step="any" value="50" required></label>
+  <label>Gross margin (%)<br><input type="number" id="margin" min="0" max="100" step="any" value="80" required></label>
+  <p><button class="primary" type="submit">Calculate payback</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { cacPayback } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll('[id$="Wrap"]')) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const direct = $("mode").value === "direct"; $("directWrap").hidden = !direct; $("deriveWrap").hidden = direct; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const common = { arpa: Number($("arpa").value), marginPercent: Number($("margin").value) };
+    const r = $("mode").value === "direct" ? cacPayback({ cac: Number($("cac").value), ...common }) : cacPayback({ spend: Number($("spend").value), newCustomers: Number($("newc").value), ...common });
+    $("out").innerHTML = `<p>Acquisition cost per customer: <strong>${fmt(r.cac)}</strong>. Each customer contributes ${fmt(r.monthlyContribution)} of gross profit a month.</p><p><strong>Payback period: ${fmt(r.paybackMonths)} months</strong>.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What to include in acquisition cost</h2>
+<p>Everything spent to win new customers in the period: advertising, content and tools, sales salaries and commissions, agency fees, and the share of marketing staff time that goes to acquisition rather than retention. Divide by the customers who actually started paying in that period. Attribution is never perfect; the common convention is to count all new paying customers, including those who came from referrals, because the spend created the environment they arrived in. Be consistent from period to period so the trend is meaningful.</p>
+
+<h2>Why payback uses gross profit, not revenue</h2>
+<p>A customer paying 50 a month does not hand you 50 to spend on recovering their acquisition cost. Hosting, payment processing and support come out first. Using margin-adjusted revenue gives the true number of months until the customer has paid for themselves. Shorter is better because the money comes back sooner to be spent on the next customer, and because fewer customers churn before paying back.</p>
+
+<h2>Reading the result</h2>
+<p>A payback measured in months, not years, means growth can be funded from revenue rather than outside money. Compare the payback period with the expected customer lifetime from the <a href="/ltv-calculator/">lifetime value calculator</a>: if customers typically leave before paying back, acquisition is destroying value regardless of how good the LTV to CAC ratio looks on paper. Improving <a href="/churn-rate-calculator/">churn</a> and ARPA shortens payback as effectively as cutting spend.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include the founders' time?</h3>
+<p>If you are modelling what it would cost to replace that effort with paid staff, yes. For a pure cash view, no. Say which you chose when you share the number.</p>
+<h3>Monthly or annual plans?</h3>
+<p>Use monthly revenue per account normalised across plans, as in the <a href="/mrr-calculator/">MRR calculator</a>, even if some customers pay annually up front.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/ltv-calculator/">Customer lifetime value calculator</a></li>
+  <li><a href="/churn-rate-calculator/">Churn rate calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>

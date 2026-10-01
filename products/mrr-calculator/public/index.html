@@ -1,0 +1,73 @@
+<!-- title: MRR and ARR Calculator -->
+<!-- description: Add up monthly recurring revenue from each plan's price, billing period and customers; see ARR, average revenue per account and a growth projection. -->
+<h1>MRR and ARR Calculator</h1>
+<p>Enter each plan with its price, billing period and number of customers. You get monthly recurring revenue per plan and in total, annual recurring revenue, average revenue per account, and an optional projection at a monthly growth rate. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> MRR is the recurring revenue you would collect in a month if every active subscription were billed monthly; ARR is twelve times that.</p>
+<p class="formula"><strong>Formula:</strong> MRR = Σ (plan price × customers ÷ months in billing period); ARR = MRR × 12; ARPA = MRR ÷ customers.</p>
+
+<form class="tool" id="f">
+  <table id="plans"><tr><th>Plan</th><th>Price</th><th>Billed every</th><th>Customers</th></tr>
+  <tr><td><input type="text" id="n1" value="Basic"></td><td><input type="number" id="p1" min="0" step="any" value="10"></td><td><select id="b1"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option></select></td><td><input type="number" id="c1" min="0" step="1" value="100"></td></tr>
+  <tr><td><input type="text" id="n2" value="Pro"></td><td><input type="number" id="p2" min="0" step="any" value="240"></td><td><select id="b2"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year" selected>Year</option></select></td><td><input type="number" id="c2" min="0" step="1" value="50"></td></tr>
+  <tr><td><input type="text" id="n3" value=""></td><td><input type="number" id="p3" min="0" step="any"></td><td><select id="b3"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option></select></td><td><input type="number" id="c3" min="0" step="1"></td></tr>
+  <tr><td><input type="text" id="n4" value=""></td><td><input type="number" id="p4" min="0" step="any"></td><td><select id="b4"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option></select></td><td><input type="number" id="c4" min="0" step="1"></td></tr>
+  <tr><td><input type="text" id="n5" value=""></td><td><input type="number" id="p5" min="0" step="any"></td><td><select id="b5"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option></select></td><td><input type="number" id="c5" min="0" step="1"></td></tr>
+  </table>
+  <label>Monthly growth rate for the projection (%)<br><input type="number" id="growth" step="any" value="5"></label>
+  <label>Months to project<br><input type="number" id="months" min="0" max="120" step="1" value="12"></label>
+  <p><button class="primary" type="submit">Calculate MRR</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { mrr, project } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const plans = [];
+    for (let i = 1; i <= 5; i++) {
+      const name = $("n" + i).value.trim(), price = $("p" + i).value, customers = $("c" + i).value;
+      if (name === "" && price === "" && customers === "") continue;
+      plans.push({ name, price: Number(price), period: $("b" + i).value, customers: customers === "" ? 0 : Number(customers) });
+    }
+    const r = mrr({ plans });
+    const months = Number($("months").value) || 0;
+    const proj = project({ mrr: r.mrr, growthPercent: Number($("growth").value) || 0, months });
+    const rows = r.plans.map((p) => `<tr><td>${esc(p.name)}</td><td>${p.customers.toLocaleString()}</td><td>${fmt(p.mrr)}</td></tr>`).join("");
+    $("out").innerHTML = `<table><tr><th>Plan</th><th>Customers</th><th>MRR</th></tr>${rows}<tr><td>Total</td><td>${r.customers.toLocaleString()}</td><td><strong>${fmt(r.mrr)}</strong></td></tr></table>
+<p><strong>ARR: ${fmt(r.arr)}</strong> · ARPA: ${fmt(r.arpa)} per month</p>
+<p>At ${$("growth").value}% monthly growth, MRR in ${months} months: <strong>${fmt(proj)}</strong>.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What counts as recurring revenue</h2>
+<p>MRR normalises every subscription to a monthly amount so that plans billed monthly, quarterly and yearly can be added together. A customer paying 240 a year contributes 20 of MRR, not 240 in the month they pay and nothing for the rest of the year. One-off fees, setup charges, usage overages that are not contracted, and discounts that expire should be left out; they inflate the number and make growth look lumpier than it is. Free trials contribute nothing until they convert.</p>
+<p>ARR is simply MRR multiplied by twelve. It is a run-rate, not a forecast: it says what the current subscriber base would pay over a year if nothing changed, which is why investors pair it with churn and net revenue retention.</p>
+
+<h2>Average revenue per account</h2>
+<p>ARPA (sometimes ARPU) is MRR divided by the number of paying accounts. It tells you how much a typical customer pays and is the input to the <a href="/ltv-calculator/">lifetime value</a> and <a href="/cac-payback-calculator/">CAC payback</a> calculations. A rising ARPA with flat customer numbers means expansion is working; a falling one usually means new customers are landing on cheaper plans.</p>
+
+<h2>Projecting growth</h2>
+<p>The projection applies a constant monthly growth rate to today's MRR. It is a simple compounding model: 5% a month is about 80% a year, 10% a month is more than three times. Real growth rarely stays constant, so use the projection to set a target and sanity-check a plan rather than to forecast revenue, and remember that net growth already includes churn.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include customers on a free plan?</h3>
+<p>Not in MRR or ARPA. Track them separately as a conversion funnel.</p>
+<h3>How do I treat a discounted annual plan?</h3>
+<p>Use the price actually paid for the year divided by twelve. The list price is not recurring revenue.</p>
+<h3>Is ARR the same as yearly revenue?</h3>
+<p>No. ARR is a run-rate based on current subscriptions; yearly revenue is what you actually invoice, including one-off items and customers who leave during the year.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/churn-rate-calculator/">Churn rate calculator</a></li>
+  <li><a href="/nrr-calculator/">Net revenue retention calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>

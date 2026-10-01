@@ -1,0 +1,53 @@
+<!-- title: Net Revenue Retention Calculator -->
+<!-- description: Calculate net revenue retention and gross revenue retention for a customer cohort from its starting MRR, expansion, contraction and churned MRR over the period. -->
+<h1>Net Revenue Retention Calculator</h1>
+<p>Take the customers you had at the start of a period and enter their MRR then, plus how much they expanded, contracted and churned by the end. You get net and gross revenue retention. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Net revenue retention is how much of a cohort's starting revenue you still have at the end of a period, counting upgrades; gross retention ignores upgrades.</p>
+<p class="formula"><strong>Formula:</strong> NRR = (start + expansion − contraction − churned) ÷ start × 100; GRR = (start − contraction − churned) ÷ start × 100.</p>
+
+<form class="tool" id="f">
+  <label>MRR of the cohort at the start<br><input type="number" id="start" min="0" step="any" value="10000" required></label>
+  <label>Expansion MRR from those customers (upgrades, more seats)<br><input type="number" id="exp" min="0" step="any" value="1500"></label>
+  <label>Contraction MRR (downgrades)<br><input type="number" id="con" min="0" step="any" value="300"></label>
+  <label>Churned MRR (customers who left)<br><input type="number" id="churned" min="0" step="any" value="700"></label>
+  <p><button class="primary" type="submit">Calculate retention</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { retention } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = retention({ startMrr: Number($("start").value), expansion: Number($("exp").value) || 0, contraction: Number($("con").value) || 0, churned: Number($("churned").value) || 0 });
+    $("out").innerHTML = `<p>Cohort MRR at the end: <strong>${fmt(r.endMrr)}</strong>.</p><p><strong>Net revenue retention: ${fmt(r.nrr)}%</strong> · Gross revenue retention: <strong>${fmt(r.grr)}%</strong></p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Net versus gross retention</h2>
+<p>Both metrics follow one cohort, the customers you already had at the start of the period, and ignore anyone acquired since. Gross revenue retention asks how much of their starting revenue survived downgrades and cancellations; it can never exceed 100%. Net revenue retention adds back the upgrades from the customers who stayed, so it can exceed 100% when expansion outweighs losses. A business with NRR above 100% grows even if it stops acquiring customers, which is why the metric gets so much attention in fundraising.</p>
+
+<h2>Choosing the period and the cohort</h2>
+<p>Annual NRR is the standard figure in investor materials: take the customers active twelve months ago and compare their MRR then with their MRR now. Monthly NRR is useful for spotting trends early but is noisier. Whatever period you use, keep the cohort fixed: new customers who joined during the period belong in a growth metric, not here. The starting MRR should be measured the same way as in the <a href="/mrr-calculator/">MRR calculator</a>, normalised to monthly.</p>
+
+<h2>What moves the number</h2>
+<p>Contraction and churn pull both metrics down; the <a href="/churn-rate-calculator/">churn rate calculator</a> separates the customer and revenue views. Expansion only helps NRR, and it comes from pricing tiers, usage-based components and seat growth. If GRR is healthy but NRR is flat, the product retains customers but gives them nothing to grow into; if NRR is high but GRR is weak, a few expanding accounts are masking a leaky base.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Where do reactivated customers go?</h3>
+<p>Customers who left and came back within the period are usually treated as expansion if they were in the starting cohort; be consistent.</p>
+<h3>Can GRR be above 100%?</h3>
+<p>No. By definition it excludes expansion, so the calculator caps it at 100%.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/churn-rate-calculator/">Churn rate calculator</a></li>
+  <li><a href="/mrr-calculator/">MRR and ARR calculator</a></li>
+  <li><a href="/ltv-calculator/">Customer lifetime value calculator</a></li>
+</ul>

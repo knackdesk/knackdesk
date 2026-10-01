@@ -1,0 +1,57 @@
+<!-- title: Churn Rate Calculator -->
+<!-- description: Calculate customer churn and revenue churn for a period, the matching retention rates and the annualised churn, from customers and revenue at the start and lost. -->
+<h1>Churn Rate Calculator</h1>
+<p>Enter how many customers you had at the start of the period and how many cancelled during it. Add starting and lost monthly revenue to get revenue churn as well. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Churn is the share of customers (or recurring revenue) at the start of a period that is gone by the end of it.</p>
+<p class="formula"><strong>Formula:</strong> customer churn = lost ÷ start × 100; revenue churn = MRR lost ÷ MRR at start × 100; annualised = (1 − (1 − monthly churn)^12) × 100.</p>
+
+<form class="tool" id="f">
+  <label>Customers at the start of the month<br><input type="number" id="start" min="0" step="1" value="500" required></label>
+  <label>Customers who cancelled during the month<br><input type="number" id="lost" min="0" step="1" value="15" required></label>
+  <label>MRR at the start (optional)<br><input type="number" id="smrr" min="0" step="any" value="20000"></label>
+  <label>MRR lost to cancellations (optional)<br><input type="number" id="lmrr" min="0" step="any" value="500"></label>
+  <p><button class="primary" type="submit">Calculate churn</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { churn } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const smrr = $("smrr").value === "" ? undefined : Number($("smrr").value);
+    const lmrr = $("lmrr").value === "" ? undefined : Number($("lmrr").value);
+    const r = churn({ startCustomers: Number($("start").value), lostCustomers: Number($("lost").value), startMrr: smrr, lostMrr: lmrr });
+    let html = `<p><strong>Customer churn: ${fmt(r.customerChurn)}% per month</strong> (retention ${fmt(r.customerRetention)}%). Annualised, that is ${fmt(r.annualisedCustomerChurn)}% of customers lost over a year.</p>`;
+    if (r.revenueChurn !== null) html += `<p><strong>Revenue churn: ${fmt(r.revenueChurn)}% per month</strong> (revenue retention ${fmt(r.revenueRetention)}%), ${fmt(r.annualisedRevenueChurn)}% annualised.</p>`;
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Customer churn and revenue churn are different numbers</h2>
+<p>Customer churn counts heads: 15 of 500 customers leaving is 3%. Revenue churn weighs them by what they paid: if those 15 were on the cheapest plan, revenue churn is lower than 3%; if they were the biggest accounts, it is higher. Both matter. Customer churn tells you how well the product retains people; revenue churn tells you what it costs. Quote which one you mean and over what period, because the same business can honestly report 3% monthly customer churn and 30% annual churn.</p>
+
+<h2>Why annualised churn is not twelve times monthly churn</h2>
+<p>Losing 3% a month compounds. After twelve months, 0.97 to the power of twelve, about 69%, of the starting customers remain, so the annual loss is about 31%, not 36%. The calculator applies this compounding. If your input period is already a year, read the first result as annual churn and ignore the annualised line.</p>
+
+<h2>Reading the result</h2>
+<p>Churn is the denominator of <a href="/ltv-calculator/">customer lifetime value</a>: at 3% monthly churn an average customer stays about 33 months, at 6% about 17. Small changes in churn move lifetime value and the affordable <a href="/cac-payback-calculator/">acquisition cost</a> a lot, which is why retention work usually pays better than more marketing once a product has traction. Pair this number with <a href="/nrr-calculator/">net revenue retention</a>, which also counts upgrades and downgrades from the customers who stayed.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Do customers who joined and left in the same month count?</h3>
+<p>Convention is to count only customers present at the start of the period in the denominator, and only those of them who left in the numerator. Treat same-month joiners and leavers as a separate conversion problem.</p>
+<h3>What is a good churn rate?</h3>
+<p>It depends on the market and price point; the useful comparison is your own rate over time and against the gross margin you need to recover acquisition costs.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/ltv-calculator/">Customer lifetime value calculator</a></li>
+  <li><a href="/nrr-calculator/">Net revenue retention calculator</a></li>
+  <li><a href="/mrr-calculator/">MRR and ARR calculator</a></li>
+</ul>

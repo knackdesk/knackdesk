@@ -1,0 +1,56 @@
+<!-- title: Customer Lifetime Value Calculator -->
+<!-- description: Estimate customer lifetime value from monthly revenue per account, gross margin and monthly churn, see the implied customer lifetime, and compare it with acquisition cost. -->
+<h1>Customer Lifetime Value Calculator</h1>
+<p>Enter the average monthly revenue per account, your gross margin and monthly churn. You get the expected customer lifetime in months, the lifetime value, and if you add the acquisition cost, the LTV to CAC ratio. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Lifetime value is the gross profit an average customer generates before they churn.</p>
+<p class="formula"><strong>Formula:</strong> lifetime (months) = 1 ÷ monthly churn; LTV = ARPA × gross margin × lifetime; LTV:CAC = LTV ÷ CAC.</p>
+
+<form class="tool" id="f">
+  <label>Average monthly revenue per account (ARPA)<br><input type="number" id="arpa" min="0" step="any" value="50" required></label>
+  <label>Gross margin (%)<br><input type="number" id="margin" min="0" max="100" step="any" value="80" required></label>
+  <label>Monthly churn (%)<br><input type="number" id="churn" min="0.01" max="100" step="any" value="4" required></label>
+  <label>Customer acquisition cost (optional)<br><input type="number" id="cac" min="0" step="any" value="300"></label>
+  <p><button class="primary" type="submit">Calculate LTV</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { ltv } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const cac = $("cac").value === "" ? undefined : Number($("cac").value);
+    const r = ltv({ arpa: Number($("arpa").value), marginPercent: Number($("margin").value), churnPercent: Number($("churn").value), cac });
+    let html = `<p><strong>Lifetime value: ${fmt(r.ltv)}</strong> over an expected lifetime of ${fmt(r.lifetimeMonths)} months.</p>`;
+    if (r.ltvToCac !== null) html += `<p>LTV to CAC ratio: <strong>${fmt(r.ltvToCac)} : 1</strong>.</p>`;
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>The formula, and what it assumes</h2>
+<p>This calculator uses the simplest widely used lifetime value formula: average revenue per account, reduced to gross profit by the margin, multiplied by the expected lifetime, which is one divided by the monthly churn rate. At 4% monthly churn the average customer stays 25 months; at 50 of revenue and 80% margin that is 1,000 of gross profit. The formula assumes churn is constant and that customers neither upgrade nor downgrade. Both are simplifications: real churn is usually higher in the first months and lower later, and expansion can push the true value well above this figure. Treat the result as a conservative baseline.</p>
+
+<h2>Why margin belongs in the calculation</h2>
+<p>Revenue is not what you keep. Hosting, payment fees, support staff and any cost that scales with customers come off first. A lifetime value built on revenue flatters the business by exactly the inverse of the margin: at 60% margin a revenue-based figure is two-thirds too high. Investors and acquirers always use gross-margin-adjusted value, so it is the version worth getting used to.</p>
+
+<h2>LTV to CAC</h2>
+<p>Dividing lifetime value by <a href="/cac-payback-calculator/">customer acquisition cost</a> gives the ratio that shows whether growth spending creates value. A ratio around 3 is a common benchmark in SaaS writing, but the right number depends on how fast the payback is and how much cash you have; a 3:1 ratio recovered over four years is very different from one recovered in ten months. Check the <a href="/cac-payback-calculator/">payback period</a> alongside this ratio.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>My churn is annual. What do I enter?</h3>
+<p>Convert it to monthly first: monthly ≈ 1 − (1 − annual)^(1/12). For 30% annual churn that is about 2.9% monthly.</p>
+<h3>Should ARPA be before or after discounts?</h3>
+<p>After. Use what customers actually pay per month on average.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/churn-rate-calculator/">Churn rate calculator</a></li>
+  <li><a href="/cac-payback-calculator/">CAC payback calculator</a></li>
+  <li><a href="/mrr-calculator/">MRR and ARR calculator</a></li>
+</ul>
