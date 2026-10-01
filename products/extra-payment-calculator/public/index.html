@@ -1,0 +1,54 @@
+<!-- title: Extra Payment Calculator -->
+<!-- description: How much interest and time an extra monthly payment saves on an amortising loan, from the balance, annual rate, remaining term and the extra amount paid each month. -->
+<h1>Extra Payment Calculator</h1>
+<p>Enter the loan balance, the annual rate, the months left and the extra amount you would pay on top of the scheduled payment each month. You get the new payoff time, the interest saved and the months cut from the loan. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Every extra unit paid reduces the balance that interest is charged on, so overpayments shorten the loan and cut the total interest.</p>
+<p class="formula"><strong>Formula:</strong> the scheduled payment comes from the amortisation formula; the balance is then run month by month with the extra payment until it reaches zero; interest saved = scheduled total interest − interest actually paid.</p>
+
+<form class="tool" id="f">
+  <label>Loan balance today<br><input type="number" id="principal" min="0.01" step="any" value="20000" required></label>
+  <label>Annual interest rate (%)<br><input type="number" id="rate" min="0" step="any" value="7" required></label>
+  <label>Months remaining<br><input type="number" id="term" min="1" step="1" value="48" required></label>
+  <label>Extra payment each month<br><input type="number" id="extra" min="0" step="any" value="150" required></label>
+  <p><button class="primary" type="submit">Calculate savings</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { extraPayment } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = extraPayment({ principal: Number($("principal").value), annualRatePercent: Number($("rate").value), termMonths: Number($("term").value), extraMonthly: Number($("extra").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Scheduled payment</td><td>${fmt(r.scheduledPayment)}</td></tr><tr><td>Payment with the extra amount</td><td>${fmt(r.totalMonthlyPayment)}</td></tr><tr><td>Interest on the original schedule</td><td>${fmt(r.scheduledInterest)}</td></tr><tr><td>Interest with extra payments</td><td>${fmt(r.newInterest)}</td></tr><tr><td>Interest saved</td><td><strong>${fmt(r.interestSaved)}</strong></td></tr><tr><td>Paid off in</td><td><strong>${r.newMonths} months</strong> (${r.monthsSaved} months sooner)</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why small overpayments matter</h2>
+<p>Interest on an amortising loan is charged each month on whatever is still owed. An extra payment goes entirely to the balance, so next month's interest is lower, which means more of the scheduled payment also goes to the balance, and the effect compounds. On the example, 150 a month on a four-year loan clears it a year early and saves about a quarter of the interest. The earlier in the term you start, the larger the saving, because that is when the balance and the interest are highest.</p>
+
+<h2>Check the terms first</h2>
+<p>Some loans charge an early repayment fee or limit overpayments to a percentage of the balance each year. Others apply extra payments to future scheduled payments rather than to the balance, which saves nothing; ask the lender to apply overpayments to principal. Compare any fee with the interest saved shown here before deciding. For a loan with upfront fees, the <a href="/loan-apr-calculator/">loan APR calculator</a> shows how much of the cost was fixed at the start and cannot be recovered by paying early.</p>
+
+<h2>Overpay or keep the cash</h2>
+<p>Paying down a loan is a guaranteed return equal to its interest rate. Whether that beats keeping the money depends on what else it could do: cover a cash shortfall, which the <a href="/cash-runway-calculator/">cash runway calculator</a> can test, or earn more elsewhere. A common approach is to keep a reserve first and overpay with what is left. The <a href="/business-loan-calculator/">business loan calculator</a> gives the scheduled figures this tool starts from.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I enter a one-off lump sum instead?</h3>
+<p>Not directly. Subtract the lump sum from the balance and run the calculator on the rest to see the effect over the remaining term.</p>
+<h3>Why is the last month's payment smaller?</h3>
+<p>The simulation stops when the balance reaches zero, so the final payment is whatever remains rather than the full amount.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/business-loan-calculator/">Business loan calculator</a></li>
+  <li><a href="/loan-apr-calculator/">Loan APR calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>

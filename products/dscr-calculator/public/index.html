@@ -1,0 +1,53 @@
+<!-- title: DSCR Calculator -->
+<!-- description: Debt service coverage ratio from net operating income and annual debt payments, whether it meets a lender's target, and the largest annual and monthly debt payment the target ratio allows. -->
+<h1>DSCR Calculator</h1>
+<p>Enter net operating income for the year and the total annual debt service, meaning all loan principal and interest payments. You get the debt service coverage ratio, whether it meets the target you enter, and the largest annual and monthly payment the target would allow. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> DSCR is how many times the income a business or property produces covers its loan payments.</p>
+<p class="formula"><strong>Formula:</strong> DSCR = net operating income ÷ annual debt service; largest debt service for a target = net operating income ÷ target ratio; monthly = ÷ 12.</p>
+
+<form class="tool" id="f">
+  <label>Net operating income for the year (before debt payments)<br><input type="number" id="noi" step="any" value="120000" required></label>
+  <label>Annual debt service (all principal and interest)<br><input type="number" id="ds" min="0.01" step="any" value="80000" required></label>
+  <label>Lender's target ratio<br><input type="number" id="target" min="0.01" step="any" value="1.25" required></label>
+  <p><button class="primary" type="submit">Calculate DSCR</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { dscr } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = dscr({ netOperatingIncome: Number($("noi").value), annualDebtService: Number($("ds").value), targetRatio: Number($("target").value) });
+    $("out").innerHTML = `<table><tr><td>Debt service coverage ratio</td><td><strong>${fmt(r.ratio)}×</strong></td></tr><tr><td>Meets the target</td><td>${r.meetsTarget ? "Yes" : "No"}</td></tr><tr><td>Largest annual debt service at the target</td><td>${fmt(r.maxAnnualDebtService)}</td></tr><tr><td>Largest monthly payment at the target</td><td><strong>${fmt(r.maxMonthlyPayment)}</strong></td></tr><tr><td>Headroom (or shortfall) in annual debt service</td><td>${fmt(r.headroom)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What goes into the ratio</h2>
+<p>Net operating income is revenue minus operating expenses, before interest, loan principal, income tax and non-cash items such as depreciation. For a rental property it is rent less vacancies, management, maintenance, insurance and property tax. For a business it is close to operating profit with depreciation added back. Debt service is the full year of payments on all loans, both the interest and the principal, including any new loan being applied for. A ratio of 1.0 means income exactly covers the payments; above 1.0 there is a cushion, below it the payments are being met from reserves or new borrowing.</p>
+
+<h2>Lender targets</h2>
+<p>Lenders set a minimum DSCR that varies with the type of loan, the asset and the economy; figures around 1.2 to 1.5 are commonly cited, with riskier lending requiring more cover. Enter the target from the lender's own criteria. The calculator then shows the largest annual and monthly payment that target allows, which the <a href="/business-loan-calculator/">business loan calculator</a> can turn into a loan amount at a given rate and term. Headroom is the annual payment you could add before the target is breached; a negative figure is the reduction needed to reach it.</p>
+
+<h2>Improving the ratio</h2>
+<p>DSCR rises when income rises, operating costs fall, or debt service falls. Refinancing to a longer term lowers the annual payment and raises the ratio without changing the business, at the cost of more total interest. Paying down an existing loan, which the <a href="/extra-payment-calculator/">extra payment calculator</a> models, has the opposite trade-off. For a property, the <a href="/rental-yield-calculator/">rental yield calculator</a> covers the income side.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can net operating income be negative?</h3>
+<p>Yes; the ratio is then negative and no debt is supportable at any target. The maximum payment shows as zero.</p>
+<h3>Is DSCR the same as interest cover?</h3>
+<p>No. Interest cover divides by interest only; DSCR divides by interest plus principal and is stricter.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/business-loan-calculator/">Business loan calculator</a></li>
+  <li><a href="/rental-yield-calculator/">Rental yield calculator</a></li>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+</ul>

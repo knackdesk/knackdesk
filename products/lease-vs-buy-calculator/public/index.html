@@ -1,0 +1,63 @@
+<!-- title: Lease vs Buy Calculator -->
+<!-- description: Compare the total cost of leasing equipment or a vehicle with buying it on finance over the same period, including deposit, loan interest, lease buyout and expected resale value. -->
+<h1>Lease vs Buy Calculator</h1>
+<p>Enter the lease terms on one side and the purchase and loan terms on the other. You get the total cost of each route over its term, which one is cheaper and by how much. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Leasing and buying are only comparable as total costs over the same period, after what the asset is worth at the end.</p>
+<p class="formula"><strong>Formula:</strong> buy total = deposit + loan payment × months − resale value; lease total = lease payment × months + buyout − resale value (resale counts only if you buy the asset out at the end).</p>
+
+<form class="tool" id="f">
+  <fieldset><legend>Buying</legend>
+  <label>Purchase price<br><input type="number" id="price" min="0.01" step="any" value="30000" required></label>
+  <label>Deposit paid upfront<br><input type="number" id="deposit" min="0" step="any" value="0"></label>
+  <label>Loan annual rate (%)<br><input type="number" id="rate" min="0" step="any" value="6"></label>
+  <label>Loan term (months)<br><input type="number" id="loanm" min="1" step="1" value="60" required></label>
+  <label>Expected resale value at the end<br><input type="number" id="resale" min="0" step="any" value="9000"></label>
+  </fieldset>
+  <fieldset><legend>Leasing</legend>
+  <label>Lease payment per month<br><input type="number" id="lease" min="0" step="any" value="550" required></label>
+  <label>Lease term (months)<br><input type="number" id="leasem" min="1" step="1" value="60" required></label>
+  <label>Buyout at the end (0 if you hand it back)<br><input type="number" id="buyout" min="0" step="any" value="3000"></label>
+  </fieldset>
+  <p><button class="primary" type="submit">Compare</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { leaseVsBuy } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = leaseVsBuy({ price: Number($("price").value), deposit: Number($("deposit").value) || 0, loanRatePercent: Number($("rate").value) || 0, loanMonths: Number($("loanm").value), resaleValue: Number($("resale").value) || 0, leaseMonthly: Number($("lease").value), leaseMonths: Number($("leasem").value), leaseBuyout: Number($("buyout").value) || 0 });
+    const verdict = r.cheaper === "same" ? "Both routes cost the same." : `<strong>${r.cheaper === "buy" ? "Buying" : "Leasing"} is cheaper by ${fmt(r.difference)}.</strong>`;
+    $("out").innerHTML = `<p>${verdict}</p><table><tr><th></th><th>Buy</th><th>Lease</th></tr><tr><td>Monthly payment</td><td>${fmt(r.loanPayment)}</td><td>${fmt(Number($("lease").value))}</td></tr><tr><td>Total cost over the term</td><td><strong>${fmt(r.buyTotal)}</strong></td><td><strong>${fmt(r.leaseTotal)}</strong></td></tr><tr><td>Average per month</td><td>${fmt(r.buyMonthlyEquivalent)}</td><td>${fmt(r.leaseMonthlyEquivalent)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Comparing like with like</h2>
+<p>A lease payment is usually lower than a loan payment on the same asset, because the lease only covers the part of the value you use up. That makes leasing look cheaper month by month even when it is not. The fair comparison is the total cost over the same period, with the asset's value at the end counted on whichever side ends up owning it. If you buy, the resale value comes back to you. If you lease and hand the asset back, it does not; if you lease and pay the buyout, you own it and the resale counts for the lease too, which is how this calculator treats it.</p>
+
+<h2>What the totals leave out</h2>
+<p>The comparison is cash over the term. It does not include tax treatment, which differs between leasing and owning and between countries; maintenance, which some leases include; mileage or usage limits and the charges for exceeding them; or the value of keeping cash in the business instead of paying a deposit. Each of these can tip a close result, so use the calculator to find out whether the gap is large or small, and then weigh the rest. For the loan side alone, the <a href="/business-loan-calculator/">business loan calculator</a> gives the payment and interest in more detail.</p>
+
+<h2>Resale value is a guess</h2>
+<p>The buy total depends heavily on what the asset is worth at the end, and that number is uncertain. Try a low and a high estimate: if buying wins in both, the decision is clear; if it only wins with an optimistic resale figure, leasing has transferred that risk to the lessor and may be worth the premium. Loan affordability should also be checked against income with the <a href="/dscr-calculator/">DSCR calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What if the lease and loan terms differ?</h3>
+<p>Set both to the period you will actually keep the asset. The average per month line helps when terms cannot be matched.</p>
+<h3>Should I include the deposit on the lease side?</h3>
+<p>If the lease requires an upfront payment, add it to the buyout field so it is counted in the total.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/business-loan-calculator/">Business loan calculator</a></li>
+  <li><a href="/dscr-calculator/">DSCR calculator</a></li>
+  <li><a href="/saas-cost-calculator/">SaaS cost calculator</a></li>
+</ul>

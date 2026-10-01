@@ -1,0 +1,54 @@
+<!-- title: Loan APR Calculator -->
+<!-- description: The annual percentage rate of a loan once arrangement and other upfront fees are included, with the monthly payment, net amount advanced and total cost of credit. -->
+<h1>Loan APR Calculator</h1>
+<p>Enter the loan amount, the quoted annual rate, the term and any upfront fees. You get the monthly payment, the amount you actually receive after fees, the total cost of credit and the APR that reflects fees as well as interest. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> APR is the interest rate that would produce the same payments if the fees were charged as interest instead, so loans with different fees can be compared on one number.</p>
+<p class="formula"><strong>Formula:</strong> payment is calculated from the quoted rate on the full amount; APR = 12 × the monthly rate at which that same payment repays the amount net of fees over the term, found by bisection.</p>
+
+<form class="tool" id="f">
+  <label>Loan amount<br><input type="number" id="principal" min="0.01" step="any" value="10000" required></label>
+  <label>Quoted annual interest rate (%)<br><input type="number" id="rate" min="0" step="any" value="8" required></label>
+  <label>Term (months)<br><input type="number" id="term" min="1" step="1" value="36" required></label>
+  <label>Upfront fees (arrangement, origination, broker)<br><input type="number" id="fees" min="0" step="any" value="300"></label>
+  <p><button class="primary" type="submit">Calculate APR</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { loanApr } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = loanApr({ principal: Number($("principal").value), annualRatePercent: Number($("rate").value), termMonths: Number($("term").value), fees: Number($("fees").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Monthly payment</td><td>${fmt(r.payment)}</td></tr><tr><td>Amount received after fees</td><td>${fmt(r.netAdvance)}</td></tr><tr><td>Fees as a share of the loan</td><td>${fmt(r.feesPercent)}%</td></tr><tr><td>Total repaid</td><td>${fmt(r.totalRepaid)}</td></tr><tr><td>Total cost of credit (interest + fees)</td><td><strong>${fmt(r.totalCost)}</strong></td></tr><tr><td>APR</td><td><strong>${fmt(r.aprPercent)}%</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why the rate and the APR differ</h2>
+<p>A lender's quoted rate describes the interest. Fees charged upfront are a cost of the same loan, and because they are paid at the start they weigh more heavily on a short loan than a long one. APR folds the fees into a single annual rate by asking what interest rate, with no fees, would give the same payments on the money you actually received. On the example, a 300 fee turns an 8% loan into roughly a 10% one over three years; over one year the same fee would push it far higher. That is why two offers should be compared by APR and total cost, not by headline rate.</p>
+
+<h2>Which fees to include</h2>
+<p>Include fees that are a condition of getting the loan and are paid upfront or deducted from the advance: arrangement, origination, documentation, broker and valuation fees. Leave out optional extras and penalties that only apply if you break the terms. Regulated lenders in many countries must publish an APR calculated to a standard formula that may treat some items differently; this calculator uses the straightforward definition above and is for comparison, not a legal disclosure.</p>
+
+<h2>Using the number</h2>
+<p>Put each offer through the calculator and line up APR and total cost. A lower APR with a higher payment usually means a shorter term, which the <a href="/business-loan-calculator/">business loan calculator</a> can explore; a lower payment with a higher total cost means a longer one. If you intend to repay early, fees matter more and the <a href="/extra-payment-calculator/">extra payment calculator</a> shows what overpaying saves.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What if fees are added to the loan rather than deducted?</h3>
+<p>Enter the loan amount including the fees and the fees separately; the payment then reflects the larger balance, and the APR reflects receiving less than you repay.</p>
+<h3>Does APR include monthly account fees?</h3>
+<p>Not here. Add a monthly fee to the payment mentally or treat it as a higher rate.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/business-loan-calculator/">Business loan calculator</a></li>
+  <li><a href="/extra-payment-calculator/">Extra payment calculator</a></li>
+  <li><a href="/early-payment-discount/">Early payment discount calculator</a></li>
+</ul>

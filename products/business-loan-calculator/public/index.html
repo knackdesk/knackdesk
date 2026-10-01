@@ -1,0 +1,64 @@
+<!-- title: Business Loan Calculator -->
+<!-- description: Monthly payment, total interest and total repaid on an amortising business loan from the amount, annual rate and term, or the largest loan a monthly payment can support. -->
+<h1>Business Loan Calculator</h1>
+<p>Enter the loan amount, the annual interest rate and the term in months to get the monthly payment, the total interest and the total repaid. Or switch to the affordability mode and enter the payment you can manage to see the loan it supports. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> An amortising loan is repaid in equal monthly payments that cover that month's interest and chip away at the balance until it reaches zero.</p>
+<p class="formula"><strong>Formula:</strong> payment = P × r ÷ (1 − (1 + r)^−n), where r is the annual rate ÷ 12 and n the term in months; total repaid = payment × n; interest = total − P; largest loan = payment × (1 − (1 + r)^−n) ÷ r.</p>
+
+<form class="tool" id="f">
+  <label>I want to find<br><select id="mode"><option value="payment" selected>The monthly payment on a loan</option><option value="principal">The loan a monthly payment supports</option></select></label>
+  <div id="paymentWrap"><label>Loan amount<br><input type="number" id="principal" min="0.01" step="any" value="50000" required></label></div>
+  <div id="principalWrap" hidden><label>Monthly payment I can afford<br><input type="number" id="payment" min="0.01" step="any" value="1000" required></label></div>
+  <label>Annual interest rate (%)<br><input type="number" id="rate" min="0" step="any" value="6" required></label>
+  <label>Term (months)<br><input type="number" id="term" min="1" step="1" value="60" required></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { loanPayment, maxPrincipal } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const p = $("mode").value === "principal"; $("principalWrap").hidden = !p; $("paymentWrap").hidden = p; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const annualRatePercent = Number($("rate").value), termMonths = Number($("term").value);
+    if ($("mode").value === "principal") {
+      const p = maxPrincipal({ payment: Number($("payment").value), annualRatePercent, termMonths });
+      const r = loanPayment({ principal: p, annualRatePercent, termMonths });
+      $("out").innerHTML = `<table><tr><td>Largest loan at this payment</td><td><strong>${fmt(p)}</strong></td></tr><tr><td>Total repaid</td><td>${fmt(r.totalRepaid)}</td></tr><tr><td>Total interest</td><td>${fmt(r.totalInterest)}</td></tr></table>`;
+    } else {
+      const r = loanPayment({ principal: Number($("principal").value), annualRatePercent, termMonths });
+      $("out").innerHTML = `<table><tr><td>Monthly payment</td><td><strong>${fmt(r.payment)}</strong></td></tr><tr><td>Total repaid over ${termMonths} months</td><td>${fmt(r.totalRepaid)}</td></tr><tr><td>Total interest</td><td><strong>${fmt(r.totalInterest)}</strong></td></tr></table>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Rate, term and the real cost</h2>
+<p>The monthly payment is what fits the cash flow; the total interest is what the loan costs. The two pull in opposite directions. Stretching the same amount over a longer term lowers the payment and raises the interest, because the balance stays higher for longer. Run the calculator with two or three terms before deciding; a term that is a year shorter often costs surprisingly little more per month and saves a meaningful sum overall. The rate quoted by the lender should be the annual nominal rate; if the offer includes an arrangement fee, the <a href="/loan-apr-calculator/">loan APR calculator</a> shows the true rate once the fee is counted.</p>
+
+<h2>Affordability first</h2>
+<p>Lenders size loans from the payment the business can carry, and so should you. The second mode turns a monthly budget into the largest loan it supports at a given rate and term. Compare the result with the net operating income the business produces: most lenders want income to cover debt payments with room to spare, and the <a href="/dscr-calculator/">DSCR calculator</a> shows the coverage ratio and the payment a target ratio allows. A loan that fits only when every month goes well is too large.</p>
+
+<h2>Paying it down faster</h2>
+<p>Most business loans allow overpayments, sometimes with a fee. Even a modest extra amount each month shortens the term and cuts the interest, and the <a href="/extra-payment-calculator/">extra payment calculator</a> shows by how much. Figures here assume a fixed rate and equal monthly payments; variable-rate loans, interest-only periods and balloon payments change the arithmetic and need the lender's own schedule.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is the rate here the APR?</h3>
+<p>No. Enter the nominal annual rate. The APR includes fees and is usually higher; use the APR calculator for that.</p>
+<h3>Why does the first payment mostly go to interest?</h3>
+<p>Interest is charged on the outstanding balance, which is largest at the start. As the balance falls, more of each equal payment goes to principal.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/loan-apr-calculator/">Loan APR calculator</a></li>
+  <li><a href="/extra-payment-calculator/">Extra payment calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>
