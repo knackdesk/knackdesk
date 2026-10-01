@@ -3,6 +3,9 @@ slug: commission-calculator
 name: Sales Commission Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Sales Commission Calculator: Flat Rate or Tiered Plans
 tagline: Commission on a sale at a flat rate or in tiers, and the sale needed to hit a commission target
 description: Work out commission at a flat percentage or with tiered rates, see the effective rate, and find the sales total needed to earn a target commission.
 ---

@@ -3,6 +3,9 @@ slug: effective-hourly-rate
 name: Effective Hourly Rate Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Effective Hourly Rate Calculator for Fixed-Price Projects
 tagline: What a fixed-price project really paid per hour, compared with your target rate
 description: Divide a fixed project fee, minus expenses, by the hours you actually spent to see your real hourly rate and how it compares with your target.
 ---

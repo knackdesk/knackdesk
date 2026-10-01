@@ -3,6 +3,9 @@ slug: late-fee-calculator
 name: Late Payment Fee Calculator
 lane: tool
 status: live
+category: invoicing
+reviewed: 2026-10-01
+headline: Late Payment Fee Calculator: Flat Fee or Monthly Interest
 tagline: Flat fees or monthly interest on overdue invoices, prorated by day
 description: Calculate the late fee or interest owed on an overdue invoice using the rate in your own contract, prorated by days late.
 ---

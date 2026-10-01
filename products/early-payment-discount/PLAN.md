@@ -3,6 +3,9 @@ slug: early-payment-discount
 name: Early Payment Discount Calculator
 lane: tool
 status: live
+category: invoicing
+reviewed: 2026-10-01
+headline: Early Payment Discount Calculator: Is 2/10 Net 30 Worth It?
 tagline: Is 2/10 net 30 worth taking? See the saving and the implied annual rate
 description: Work out what an early payment discount such as 2/10 net 30 saves you, and the annualised interest rate you give up by paying late, so you can decide whether to pay early.
 ---

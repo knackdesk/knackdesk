@@ -3,6 +3,9 @@ slug: hours-to-decimal
 name: Hours to Decimal Converter
 lane: tool
 status: live
+category: time
+reviewed: 2026-10-01
+headline: Hours to Decimal Converter for Timesheets and Invoices
 tagline: Turn hours and minutes into decimal hours for timesheets and invoices, and back
 description: Convert hours and minutes to decimal hours and back, add up a list of time entries, and multiply by a rate for the invoice line.
 ---

@@ -3,6 +3,9 @@ slug: deposit-split-calculator
 name: Deposit and Milestone Split Calculator
 lane: tool
 status: live
+category: invoicing
+reviewed: 2026-10-01
+headline: Deposit and Milestone Payment Calculator for Projects
 tagline: Split a project fee into a deposit and milestone payments
 description: Split a project total into a deposit and equal or custom milestone payments, with due dates spaced across the project.
 ---

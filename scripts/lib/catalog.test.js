@@ -8,6 +8,7 @@ const plan = (slug, status) => `---
 slug: ${slug}
 name: ${slug} name
 lane: tool
+category: time
 status: ${status}
 tagline: t
 description: d

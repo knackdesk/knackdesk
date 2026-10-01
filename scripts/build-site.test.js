@@ -4,6 +4,47 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildSite } from "./build-site.js";
 
+const ldGraph = (html) => {
+  const scripts = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+  expect(scripts).toHaveLength(1);
+  return JSON.parse(scripts[0][1])["@graph"];
+};
+const types = (graph) => graph.map((n) => n["@type"]);
+const KIT_PLAN = `---
+polar_url: https://buy.polar.sh/abc
+slug: kit
+name: The Kit
+lane: digital
+price_cents: 1200
+status: live
+tagline: kit tagline
+description: A whole kit.
+---`;
+const FEE_PAGE = `<!-- title: Late Fee Calculator -->
+<!-- description: Work out a late fee. -->
+<h1>Late Fee Calculator</h1>
+<p>Enter the amount and days late.</p>
+<p class="definition"><strong>In one sentence:</strong> A late fee is extra money charged on an overdue invoice.</p>
+<p class="formula"><strong>Formula:</strong> fee = amount &times; rate &divide; 100 &times; days &divide; 30</p>
+<h2>Frequently asked questions</h2>
+<h3>Do I count the due date?</h3>
+<p>No. Day one is the day <em>after</em> the due date.</p>
+<h2>Related tools</h2>`;
+function addFeeTool(root, extra = "reviewed: 2026-10-01\nheadline: Late Payment Fee Calculator: Flat Fee or Interest") {
+  mkdirSync(join(root, "products", "fee", "public"), { recursive: true });
+  writeFileSync(join(root, "products", "fee", "public", "index.html"), FEE_PAGE);
+  writeFileSync(join(root, "products", "fee", "PLAN.md"), `---
+slug: fee
+name: Late Fee Calculator
+lane: tool
+category: invoicing
+status: live
+tagline: Late fees on overdue invoices
+description: d
+${extra}
+---`);
+}
+
 let root, out;
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), "kd-"));
@@ -16,6 +57,7 @@ beforeEach(() => {
 slug: conv
 name: Converter
 lane: tool
+category: time
 status: live
 tagline: converts
 description: d
@@ -39,6 +81,7 @@ describe("buildSite", () => {
 slug: conv
 name: Converter
 lane: tool
+category: time
 status: live
 tagline: Save $$ now and $& more
 description: d
@@ -107,6 +150,7 @@ description: d
 slug: wrap
 name: Wrap Tool
 lane: tool
+category: pricing
 status: live
 tagline: wraps
 description: d
@@ -119,5 +163,108 @@ description: d
     expect(page).toContain("<h1>Wrap</h1>");
     expect(readFileSync(join(out, "wrap", "calc.js"), "utf8")).toBe("export const x = 1;");
     expect(readFileSync(join(out, "conv", "index.html"), "utf8")).toBe("<h1>conv</h1>");
+  });
+  it("emits one valid JSON-LD graph with WebApplication, FAQPage and breadcrumbs on tool pages", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const page = readFileSync(join(out, "fee", "index.html"), "utf8");
+    const graph = ldGraph(page);
+    expect(types(graph)).toEqual(expect.arrayContaining(["Organization", "BreadcrumbList", "WebApplication", "FAQPage"]));
+    expect(types(graph)).not.toContain("WebSite");
+    const app = graph.find((n) => n["@type"] === "WebApplication");
+    expect(app).toMatchObject({ name: "Late Fee Calculator", url: "https://knackdesk.com/fee/", description: "Work out a late fee." });
+    const faq = graph.find((n) => n["@type"] === "FAQPage");
+    expect(faq.mainEntity).toEqual([{ "@type": "Question", name: "Do I count the due date?", acceptedAnswer: { "@type": "Answer", text: "No. Day one is the day after the due date." } }]);
+    expect(graph.find((n) => n["@type"] === "BreadcrumbList").itemListElement[1]).toMatchObject({ name: "Late Fee Calculator", item: "https://knackdesk.com/fee/" });
+    expect(page).toContain('<meta property="og:type" content="article">');
+  });
+  it("omits FAQPage when a tool page has no FAQ section", async () => {
+    addFeeTool(root);
+    writeFileSync(join(root, "products", "fee", "public", "index.html"), "<!-- title: Fee -->\n<!-- description: d -->\n<h1>Fee</h1>\n<p>intro</p>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const graph = ldGraph(readFileSync(join(out, "fee", "index.html"), "utf8"));
+    expect(types(graph)).toContain("WebApplication");
+    expect(types(graph)).not.toContain("FAQPage");
+  });
+  it("inserts the reviewed byline right after the intro paragraph", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const page = readFileSync(join(out, "fee", "index.html"), "utf8");
+    const byline = '<p class="byline">By the Knackdesk team · Last reviewed <time datetime="2026-10-01">1 October 2026</time></p>';
+    expect(page).toContain(byline);
+    expect(page.indexOf("<p>Enter the amount and days late.</p>")).toBeLessThan(page.indexOf(byline));
+    expect(page.indexOf(byline)).toBeLessThan(page.indexOf('<p class="definition">'));
+  });
+  it("leaves out the byline when no reviewed date is set", async () => {
+    addFeeTool(root, "");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    expect(readFileSync(join(out, "fee", "index.html"), "utf8")).not.toContain('class="byline"');
+  });
+  it("uses the PLAN headline for <title> and og:title but keeps the h1", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const page = readFileSync(join(out, "fee", "index.html"), "utf8");
+    expect(page).toContain("<title>Late Payment Fee Calculator: Flat Fee or Interest · Knackdesk</title>");
+    expect(page).toContain('<meta property="og:title" content="Late Payment Fee Calculator: Flat Fee or Interest">');
+    expect(page).toContain("<h1>Late Fee Calculator</h1>");
+  });
+  it("groups home page tools by category, lists kits in their own section and describes kits as Products", async () => {
+    addFeeTool(root);
+    mkdirSync(join(root, "products", "kit"), { recursive: true });
+    writeFileSync(join(root, "products", "kit", "PLAN.md"), KIT_PLAN);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const index = readFileSync(join(out, "index.html"), "utf8");
+    const inv = index.indexOf("<h2>Invoicing &amp; payment</h2>");
+    const time = index.indexOf("<h2>Time &amp; pay</h2>");
+    const kits = index.indexOf("<h2>Kits</h2>");
+    expect(inv).toBeGreaterThan(-1);
+    expect(inv).toBeLessThan(time);
+    expect(time).toBeLessThan(kits);
+    expect(index.slice(inv, time)).toContain('href="/fee/"');
+    expect(index.slice(time, kits)).toContain('href="/conv/"');
+    expect(index.slice(kits)).toContain('href="https://buy.polar.sh/abc"');
+    expect(index).not.toContain("<!--PRODUCTS-->");
+    const graph = ldGraph(index);
+    expect(types(graph)).toEqual(expect.arrayContaining(["Organization", "WebSite", "Product"]));
+    expect(graph.find((n) => n["@type"] === "Product").offers).toMatchObject({ price: "12.00", priceCurrency: "USD", url: "https://buy.polar.sh/abc" });
+  });
+  it("gives every site page valid JSON-LD with breadcrumbs except the home page", async () => {
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const about = ldGraph(readFileSync(join(out, "about", "index.html"), "utf8"));
+    expect(types(about)).toEqual(expect.arrayContaining(["Organization", "BreadcrumbList"]));
+    expect(types(ldGraph(readFileSync(join(out, "index.html"), "utf8")))).not.toContain("BreadcrumbList");
+  });
+  it("writes llms.txt listing tools, kits with prices and the about page", async () => {
+    addFeeTool(root);
+    mkdirSync(join(root, "products", "kit"), { recursive: true });
+    writeFileSync(join(root, "products", "kit", "PLAN.md"), KIT_PLAN);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const txt = readFileSync(join(out, "llms.txt"), "utf8");
+    expect(txt.startsWith("# Knackdesk\n")).toBe(true);
+    expect(txt).toContain("## Tools");
+    expect(txt).toContain("- [Late Fee Calculator](https://knackdesk.com/fee/): Late fees on overdue invoices");
+    expect(txt).toContain("- [Converter](https://knackdesk.com/conv/): converts");
+    expect(txt).toContain("## Kits");
+    expect(txt).toContain("- [The Kit](https://buy.polar.sh/abc): kit tagline ($12, one-time)");
+    expect(txt).toContain("## About");
+    expect(txt).toContain("https://knackdesk.com/about/");
+    expect(txt).not.toContain("In one sentence");
+    expect(txt.indexOf("## Tools")).toBeLessThan(txt.indexOf("## Kits"));
+  });
+  it("writes llms-full.txt with each tool's definition and formula", async () => {
+    addFeeTool(root);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const txt = readFileSync(join(out, "llms-full.txt"), "utf8");
+    expect(txt).toContain("- [Late Fee Calculator](https://knackdesk.com/fee/): Late fees on overdue invoices");
+    expect(txt).toContain("In one sentence: A late fee is extra money charged on an overdue invoice.");
+    expect(txt).toContain("Formula: fee = amount × rate ÷ 100 × days ÷ 30");
+    expect(txt).toContain("## About");
+  });
+  it("allows AI crawlers explicitly in robots.txt and points to llms.txt", async () => {
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const robots = readFileSync(join(out, "robots.txt"), "utf8");
+    for (const bot of ["GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]) expect(robots).toContain(`User-agent: ${bot}\nAllow: /`);
+    expect(robots).toContain("User-agent: *\nAllow: /");
+    expect(robots).toContain("# llms.txt: https://knackdesk.com/llms.txt");
   });
 });

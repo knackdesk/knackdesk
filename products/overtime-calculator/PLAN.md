@@ -3,6 +3,9 @@ slug: overtime-calculator
 name: Overtime Pay Calculator
 lane: tool
 status: live
+category: time
+reviewed: 2026-10-01
+headline: Overtime Pay Calculator: Time and a Half and Double Time
 tagline: Overtime pay from hours over a threshold, your base rate and a multiplier, plus the total for the period
 description: Calculate overtime pay from the hours worked over a weekly threshold, the base hourly rate and an overtime multiplier such as 1.5, and see regular pay, overtime pay and the total.
 ---

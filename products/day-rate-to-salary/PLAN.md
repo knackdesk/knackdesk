@@ -3,6 +3,9 @@ slug: day-rate-to-salary
 name: Day Rate to Salary Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Day Rate to Salary Calculator for Contractors
 tagline: Compare a contractor day rate with an equivalent employee salary, both ways
 description: Convert a contractor day or hourly rate to the equivalent permanent salary, and a salary to the day rate a contractor would need, accounting for days off and non-billable time.
 ---

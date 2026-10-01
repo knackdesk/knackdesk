@@ -3,6 +3,9 @@ slug: discount-calculator
 name: Discount Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Discount Calculator: Sale Price, Percent Off, Stacked Deals
 tagline: Price after a discount, the percentage between two prices, and what stacked discounts really add up to
 description: Calculate a discounted price, the discount percentage from two prices, and the true combined rate of stacked discounts such as 20% then 10%.
 ---

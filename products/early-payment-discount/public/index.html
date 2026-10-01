@@ -2,6 +2,8 @@
 <!-- description: See what an early payment discount such as 2/10 net 30 saves, and the annualised rate you give up by paying on the net date instead. -->
 <h1>Early Payment Discount Calculator</h1>
 <p>Enter the invoice amount and the terms, for example "2/10 net 30" means a 2% discount if paid within 10 days, otherwise the full amount in 30 days. You get the saving, the amount to pay early, and the annualised cost of not taking the discount. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> An early payment discount, such as 2/10 net 30, cuts the invoice by a percentage if it is paid within the discount window.</p>
+<p class="formula"><strong>Formula:</strong> saving = amount × discount%; implied annual rate = d ÷ (1 − d) × 365 ÷ (net days − discount days), where d is the discount as a decimal.</p>
 
 <form class="tool" id="f">
   <label>Invoice amount<br><input type="number" id="amount" min="0" step="0.01" value="10000" required></label>

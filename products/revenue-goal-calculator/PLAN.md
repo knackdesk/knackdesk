@@ -3,6 +3,9 @@ slug: revenue-goal-calculator
 name: Revenue Goal Calculator
 lane: tool
 status: live
+category: planning
+reviewed: 2026-10-01
+headline: Revenue Goal Calculator: Clients and Proposals You Need
 tagline: How many clients, projects and proposals you need to hit a revenue goal
 description: Turn an annual revenue goal into the projects, clients and proposals you need per month, from your average project value, repeat rate and win rate.
 ---

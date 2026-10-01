@@ -2,6 +2,8 @@
 <!-- description: Work out exactly when an invoice is due from its issue date and payment terms such as net 30, with optional business-day counting and weekend roll-forward. -->
 <h1>Invoice Due Date Calculator</h1>
 <p>Enter the date on the invoice and the payment terms. The calculator gives you the due date, the weekday, and how many days are left. Runs in your browser; nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The due date is the issue date plus the payment term in days, counted as calendar days unless your terms say business days.</p>
+<p class="formula"><strong>Formula:</strong> due date = issue date + term days (business-day mode skips Saturdays and Sundays; optional roll-forward moves a weekend due date to Monday).</p>
 
 <form class="tool" id="f">
   <label>Invoice issue date<br><input type="date" id="issue" required></label>

@@ -3,6 +3,9 @@ slug: price-increase-calculator
 name: Price Increase Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Price Increase Calculator: Percent Rise and Keeping Margin
 tagline: Raise a price by a percentage, or find the increase needed to keep your margin after costs go up
 description: Work out a new price from a percentage increase, the percentage between two prices, and the rise you need to protect your margin when your costs go up.
 ---

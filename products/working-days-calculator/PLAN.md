@@ -3,6 +3,9 @@ slug: working-days-calculator
 name: Working Days Calculator
 lane: tool
 status: live
+category: time
+reviewed: 2026-10-01
+headline: Working Days Calculator: Business Days Between Two Dates
 tagline: Count working days between two dates, or add working days to a date, skipping weekends and your own holidays
 description: Count the working days between two dates, or find the date a number of working days from today, skipping weekends and any holiday dates you list.
 ---

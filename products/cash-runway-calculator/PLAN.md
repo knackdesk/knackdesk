@@ -3,6 +3,9 @@ slug: cash-runway-calculator
 name: Cash Runway Calculator
 lane: tool
 status: live
+category: planning
+reviewed: 2026-10-01
+headline: Cash Runway Calculator: Months Left and Run-Out Date
 tagline: How many months your cash lasts at your current burn, and the date it runs out
 description: Find how many months of runway you have from cash on hand, monthly income and monthly costs, and the month the money runs out, with the cut you would need to make to reach a target runway.
 ---

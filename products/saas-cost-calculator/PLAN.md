@@ -3,6 +3,9 @@ slug: saas-cost-calculator
 name: Software Subscription Cost Calculator
 lane: tool
 status: live
+category: planning
+reviewed: 2026-10-01
+headline: SaaS Cost Calculator: Monthly and Yearly Software Spend
 tagline: Add up your software stack per month and per year, and see what annual plans would save
 description: List your software subscriptions with monthly or annual pricing and seat counts; get the true monthly and yearly cost of the stack and the saving from switching to annual billing.
 ---

@@ -2,6 +2,8 @@
 <!-- description: Split a fixed project fee into a deposit and milestone payments with due dates across the project, so you get paid as you deliver. -->
 <h1>Deposit and Milestone Split Calculator</h1>
 <p>Enter the project total, the deposit you want up front, how many milestone payments to spread the rest over, and the project dates. You get a payment schedule you can paste into a proposal. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A deposit split takes a percentage of the project fee up front and divides the rest into milestone payments spread across the project.</p>
+<p class="formula"><strong>Formula:</strong> deposit = total × deposit%; each milestone = (total − deposit) ÷ milestones, with any rounding difference on the last one.</p>
 
 <form class="tool" id="f">
   <label>Project total<br><input type="number" id="total" min="0.01" step="0.01" value="5000" required></label>

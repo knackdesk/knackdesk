@@ -3,6 +3,9 @@ slug: markup-margin-calculator
 name: Markup and Margin Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Markup vs Margin Calculator: Cost, Price and Profit
 tagline: Convert between markup, margin, cost and price without confusing the two
 description: Enter any two of cost, price, markup or margin and get the rest, with the difference between markup and margin explained.
 ---

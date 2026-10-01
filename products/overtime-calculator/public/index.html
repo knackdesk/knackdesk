@@ -2,6 +2,8 @@
 <!-- description: Calculate overtime pay from hours over a weekly threshold, a base hourly rate and a multiplier such as 1.5, with optional double time. -->
 <h1>Overtime Pay Calculator</h1>
 <p>Enter the hours worked, the point where overtime starts, the base hourly rate and the overtime multiplier. You get regular pay, overtime pay, optional double-time pay and the total for the period. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Overtime pay is the extra rate paid for hours worked beyond a threshold, such as 40 hours a week.</p>
+<p class="formula"><strong>Formula:</strong> regular pay = min(hours, threshold) × rate; overtime pay = hours above threshold × rate × multiplier; double-time hours, if set, use the double multiplier instead.</p>
 
 <form class="tool" id="f">
   <label>Hours worked in the week (or the day, if your threshold is daily)<br><input type="number" id="hours" min="0" max="168" step="any" value="48" required></label>

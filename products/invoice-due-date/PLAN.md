@@ -3,6 +3,9 @@ slug: invoice-due-date
 name: Invoice Due Date Calculator
 lane: tool
 status: live
+category: invoicing
+reviewed: 2026-10-01
+headline: Invoice Due Date Calculator (Net 30, Net 60, Business Days)
 tagline: Net 30, net 60 or custom terms, with business-day and weekend handling
 description: Work out exactly when an invoice is due from its issue date and payment terms, skipping weekends if you need to.
 ---

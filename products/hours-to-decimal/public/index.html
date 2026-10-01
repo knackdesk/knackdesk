@@ -2,6 +2,8 @@
 <!-- description: Convert hours and minutes to decimal hours, total a list of time entries, and multiply by a rate for the invoice. -->
 <h1>Hours to Decimal Converter</h1>
 <p>Paste one time entry per line, such as <code>1:30</code>, <code>2h 15m</code>, <code>90m</code> or <code>1.5h</code>. You get each entry in decimal hours, the total in both formats, and the invoice amount if you enter a rate. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Decimal hours express time as a number of hours, so 1 hour 30 minutes becomes 1.5 for timesheets and invoices.</p>
+<p class="formula"><strong>Formula:</strong> decimal hours = hours + minutes ÷ 60, rounded to two places; invoice amount = decimal hours × hourly rate.</p>
 
 <form class="tool" id="f">
   <label>Time entries (one per line)<br><textarea id="entries" rows="6">1:30

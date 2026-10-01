@@ -3,6 +3,9 @@ slug: hourly-rate-calculator
 name: Freelance Hourly Rate Calculator
 lane: tool
 status: live
+category: pricing
+reviewed: 2026-10-01
+headline: Freelance Hourly Rate Calculator from Your Income Goal
 tagline: Turn a target income into an hourly and day rate, with the math shown
 description: Find the hourly rate you need from your income goal, expenses, billable hours and time off, and see every step of the calculation.
 ---

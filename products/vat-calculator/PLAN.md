@@ -3,6 +3,9 @@ slug: vat-calculator
 name: VAT Calculator
 lane: tool
 status: live
+category: invoicing
+reviewed: 2026-10-01
+headline: VAT Calculator: Add or Remove VAT at Any Rate
 tagline: Add VAT to a net price or remove it from a gross price at any rate
 description: Add or remove VAT at any rate, see the tax amount, and switch between net and gross in one step.
 ---
