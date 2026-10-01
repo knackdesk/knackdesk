@@ -77,7 +77,7 @@ ${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Site">${menu || CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}<a class="navlink" href="/kits/">Kits</a></nav></header>
+<header class="top"><a class="brand" href="/"><img src="/icon.svg" alt="" width="28" height="28"><span>Knackdesk</span></a><nav aria-label="Site">${menu || CATEGORY_SECTIONS.map((c) => `<a class="navlink" href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}<a class="navlink" href="/kits/">Kits</a><a class="navlink" href="/about/">About</a></nav></header>
 <main>
 ${crumbs({ title, path, parent })}${body}
 </main>

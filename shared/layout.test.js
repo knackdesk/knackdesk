@@ -39,7 +39,6 @@ describe("renderPage", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/", menu });
     const header = html.split("</header>")[0];
     expect(header).toContain('href="/a/"');
-    expect(header).not.toContain('href="/about/"');
     expect(html).toContain("details.menu");
     const footer = html.split("<footer>")[1];
     expect(footer).toContain('href="/about/"');
@@ -56,6 +55,16 @@ describe("renderPage", () => {
     for (const p of ["/about/", "/contact/", "/kits/", "/privacy/", "/terms/"]) expect(footer).toContain(`href="${p}"`);
     expect(footer).toContain("not legal, tax or financial advice");
     expect(footer).toContain(`© ${new Date().getUTCFullYear()} Knackdesk`);
+  });
+  it("renders a sticky header with the logo mark, Tools menu slot, Kits and About links", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/", menu: "<details class=\"menu\"><summary>Tools</summary></details>" });
+    const header = html.split("</header>")[0];
+    expect(header).toContain('<header class="top">');
+    expect(header).toContain('src="/icon.svg"');
+    expect(header).toContain('class="brand"');
+    expect(header).toContain('<details class="menu">');
+    expect(header).toContain('class="navlink" href="/kits/"');
+    expect(header).toContain('class="navlink" href="/about/"');
   });
   it("includes a back-to-top button", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
