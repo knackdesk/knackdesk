@@ -25,3 +25,15 @@ Sign up at adsense.google.com with knackdesk.com, paste the `ca-pub-...` id into
 
 ## 5. Chrome Web Store (later, when the first extension is ready)
 Pay the 5 USD registration at chrome.google.com/webstore/devconsole.
+
+## 6. Search Console API (automatic sitemap submission)
+After every deploy the `notify` job submits the sitemap to Google Search Console and IndexNow. Each step prints "skipped" until its secret exists.
+1. console.cloud.google.com > New project "knackdesk".
+2. APIs & Services > Library > enable "Google Search Console API".
+3. APIs & Services > Credentials > Create credentials > Service account "knackdesk-ci".
+4. Open the service account > Keys > Add key > Create new key > JSON (downloads a file).
+5. search.google.com/search-console > property `sc-domain:knackdesk.com` > Settings > Users and permissions > Add user > paste the service account's email (`client_email` in the JSON) > permission Owner.
+6. GitHub repo > Settings > Secrets and variables > Actions > New repository secret:
+   - `GSC_SERVICE_ACCOUNT_JSON` = the JSON file contents on one line (or base64 of the file: `base64 -i key.json | tr -d '\n'`).
+   - `INDEXNOW_KEY` = the `INDEXNOW_KEY` value from `.env`.
+Local run: `npm run submit:gsc` / `npm run submit:indexnow`.
