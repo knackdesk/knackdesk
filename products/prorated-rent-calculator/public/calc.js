@@ -15,7 +15,8 @@ function parseIso(s) {
 const actualDaysInMonth = (d) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
 
 // Days charged always come from the real calendar: a move-in on the 31st is one day,
-// even when the daily rate uses a 30-day month.
+// even when the daily rate uses a 30-day month. A partial month is never charged more
+// than the monthly rent (31 days at a 30-day rate would be), so the charge is capped.
 export function proratedRent({ monthlyRent, date, mode, basis = "actual" }) {
   if (typeof monthlyRent !== "number" || !Number.isFinite(monthlyRent) || monthlyRent < 0) throw new Error("Monthly rent must be a number of 0 or more.");
   const d = parseIso(date);
@@ -27,5 +28,7 @@ export function proratedRent({ monthlyRent, date, mode, basis = "actual" }) {
   const daysInMonth = basis === "30" ? 30 : actual;
   const daysCharged = mode === "move-in" ? actual - day + 1 : day;
   const rate = monthlyRent / daysInMonth;
-  return { daysInMonth, daysCharged, dailyRate: round2(rate), prorated: round2(rate * daysCharged) };
+  const raw = round2(rate * daysCharged);
+  const capped = raw > monthlyRent;
+  return { daysInMonth, daysCharged, dailyRate: round2(rate), prorated: capped ? monthlyRent : raw, capped };
 }

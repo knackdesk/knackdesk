@@ -32,5 +32,5 @@ export function capCheck({ oldRent, newRent, capPercent }) {
   nonNeg(newRent, "New rent");
   nonNeg(capPercent, "Cap");
   const maxRentAtCap = round2(oldRent * (1 + capPercent / 100));
-  return { percent: round2(((newRent - oldRent) / oldRent) * 100), capPercent, withinCap: newRent <= maxRentAtCap, maxRentAtCap };
+  return { percent: round2(((newRent - oldRent) / oldRent) * 100), capPercent, withinCap: round2(newRent) <= maxRentAtCap, maxRentAtCap };
 }

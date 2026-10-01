@@ -24,11 +24,11 @@
     </label>
   </div>
   <div id="betweenWrap" hidden>
-    <label>Old monthly rent<br><input type="number" id="old" min="0" step="any" value="1200" required></label>
+    <label>Old monthly rent<br><input type="number" id="old" min="0.01" step="any" value="1200" required></label>
     <label>New monthly rent<br><input type="number" id="new" min="0" step="any" value="1300" required></label>
   </div>
   <div id="capWrap" hidden>
-    <label>Old monthly rent<br><input type="number" id="old2" min="0" step="any" value="1200" required></label>
+    <label>Old monthly rent<br><input type="number" id="old2" min="0.01" step="any" value="1200" required></label>
     <label>Proposed new rent<br><input type="number" id="new2" min="0" step="any" value="1300" required></label>
     <label>Cap that applies to you (%)<br><input type="number" id="cap" min="0" step="any" value="5" required></label>
   </div>
@@ -55,18 +55,18 @@ $("f").addEventListener("submit", (e) => {
       const inc = Number($("increase").value);
       if ($("unit").value === "amount") {
         const p = percentBetween({ oldRent: rent, newRent: rent + inc });
-        $("out").innerHTML = `<p><strong>New rent: ${fmt(rent + inc)}</strong>, a ${p.percent}% change (${diffs(p)}).</p>`;
+        $("out").innerHTML = `<p><strong>New rent: ${fmt(rent + inc)}</strong>, a ${fmt(p.percent)}% change (${diffs(p)}).</p>`;
       } else {
         const r = applyIncrease({ rent, percent: inc });
         $("out").innerHTML = `<p><strong>New rent: ${fmt(r.newRent)}</strong> (${diffs(r)}).</p>`;
       }
     } else if (mode === "between") {
       const p = percentBetween({ oldRent: Number($("old").value), newRent: Number($("new").value) });
-      $("out").innerHTML = `<p>That is a <strong>${p.percent}% change</strong> (${diffs(p)}).</p>`;
+      $("out").innerHTML = `<p>That is a <strong>${fmt(p.percent)}% change</strong> (${diffs(p)}).</p>`;
     } else {
       const c = capCheck({ oldRent: Number($("old2").value), newRent: Number($("new2").value), capPercent: Number($("cap").value) });
       const verdict = c.withinCap ? "is within" : "is above";
-      $("out").innerHTML = `<p>The proposed rent is a <strong>${c.percent}% change</strong> and <strong>${verdict}</strong> the ${c.capPercent}% cap you entered.</p><p>The highest rent at that cap is ${fmt(c.maxRentAtCap)}.</p>`;
+      $("out").innerHTML = `<p>The proposed rent is a <strong>${fmt(c.percent)}% change</strong> and <strong>${verdict}</strong> the ${fmt(c.capPercent)}% cap you entered.</p><p>The highest rent at that cap is ${fmt(c.maxRentAtCap)}.</p>`;
     }
   } catch (err) { showError($("out"), err.message); }
 });
@@ -84,9 +84,9 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Checking against a cap</h2>
 <p>Some cities and countries limit how much rent can rise in a year, some link increases to an inflation index, and many have no cap at all. Rules on rent control, notice periods and deposits vary by country and city, and they change. This calculator does not know which rules apply to your tenancy. In cap mode you enter the percentage that applies to you, and the tool does the arithmetic: the percentage the proposed rent represents, whether it is at or below your cap, and the highest rent that cap allows.</p>
-<p>Treat the result as a starting point for a conversation, not as legal advice. If a proposed rent is above a cap you believe applies, check the current rules with the local authority, a tenants' organisation or an adviser before replying. Landlords can use the same mode to confirm a planned rise stays within whatever limit applies to them.</p>
+<p>Treat the result as a starting point for a conversation, not as legal advice. If a proposed rent is above a cap you believe applies, check the current rules with the local housing office, a tenants' association or an advisor before replying. Landlords can use the same mode to confirm a planned rise stays within whatever limit applies to them.</p>
 
-<p>Keep a record of each increase: the date, the old and new rent and the percentage. Over a few years that history shows how fast your rent has moved, and it is useful evidence if you ever need to discuss a rise with a landlord or an adviser.</p>
+<p>Keep a record of each increase: the date, the old and new rent and the percentage. Over a few years that history shows how fast your rent has moved, and it is useful evidence if you ever need to discuss a rise with a landlord or an advisor.</p>
 
 <h2>Frequently asked questions</h2>
 <h3>Why is my percentage different from the one my landlord quoted?</h3>

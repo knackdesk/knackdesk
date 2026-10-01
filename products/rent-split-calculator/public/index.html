@@ -1,7 +1,7 @@
 <!-- title: Rent Split Calculator -->
 <!-- description: Split a shared rent between two to six people equally, by room size or by income, with each share and a check that they add up. -->
 <h1>Rent Split Calculator</h1>
-<p>Split a shared rent between two to six flatmates equally, in proportion to room size, or in proportion to income. Each share is rounded to the cent and the shares always add up to the total. Nothing is sent anywhere.</p>
+<p>Split a shared rent between two to six roommates equally, in proportion to room size, or in proportion to income. Each share is rounded to the cent and the shares always add up to the total. Nothing is sent anywhere.</p>
 <p class="definition"><strong>In one sentence:</strong> A proportional rent split gives each person a share of the rent equal to their room size or income divided by the total of everyone's.</p>
 <p class="formula"><strong>Formula:</strong> equal share = total rent ÷ people; proportional share = total rent × your weight ÷ sum of weights, where weight is room size or income.</p>
 
@@ -33,7 +33,7 @@ const ROWS = 6;
 const DEFAULT_NAMES = ["Alex", "Sam", "Jo"];
 const DEFAULT_WEIGHTS = ["12", "15", "10"];
 $("rows").innerHTML = Array.from({ length: ROWS }, (_, i) => `<p><label>Name ${i + 1}<br><input type="text" id="name${i}" maxlength="40" value="${DEFAULT_NAMES[i] || ""}"></label>
-<span id="weight${i}Wrap"><label><span class="wlabel">Room size (m²)</span><br><input type="number" id="weight${i}" min="0" step="any" value="${DEFAULT_WEIGHTS[i] || ""}"></label></span></p>`).join("");
+<span id="weight${i}Wrap"><label><span class="wlabel">Room size (m²)</span><br><input type="number" id="weight${i}" min="0.01" step="any" value="${DEFAULT_WEIGHTS[i] || ""}"></label></span></p>`).join("");
 const toggleMethod = () => {
   const m = $("method").value;
   for (let i = 0; i < ROWS; i++) $(`weight${i}Wrap`).hidden = m === "equal";
@@ -61,9 +61,9 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>Three ways to split rent</h2>
-<p>The equal split is the default in most shared homes: divide the rent by the number of people. It is simple and works well when the rooms are similar and everyone earns roughly the same. When they are not, an equal split can feel unfair to the person in the box room or the person on the lowest income.</p>
+<p>The equal split is the default in most shared homes: divide the rent by the number of people. It is simple and works well when the rooms are similar and everyone earns roughly the same. When they are not, an equal split can feel unfair to the person in the smallest bedroom or the person on the lowest income.</p>
 <p>Splitting by room size gives a bigger share to whoever has more private space. Measure each bedroom's floor area in square metres, enter it as the weight, and each person pays the rent multiplied by their room's share of the total bedroom area. With rooms of 10 and 20 square metres and a rent of 1,500, the shares are 500 and 1,000. Shared spaces such as the kitchen and living room are, in effect, split in the same proportion.</p>
-<p>Splitting by income asks everyone to pay the same percentage of what they earn. Enter each person's monthly income as the weight. If one flatmate earns twice as much as the other, they pay twice as much rent, and both spend the same share of their income on housing. Couples often use this method; flatmates who are not a couple tend to prefer room size, since income is a more personal thing to share.</p>
+<p>Splitting by income asks everyone to pay the same percentage of what they earn. Enter each person's monthly income as the weight. If one roommate earns twice as much as the other, they pay twice as much rent, and both spend the same share of their income on housing. Some households split by income, others by room size.</p>
 
 <p>Whichever method you choose, show everyone the numbers. The results table lists each person's share and percentage, with a totals row that matches the rent, so the split can be checked at a glance and pasted into a group chat or a shared note.</p>
 
@@ -74,7 +74,7 @@ $("f").addEventListener("submit", (e) => {
 <p>A fair split is the one everyone in the home agrees to, and the arithmetic is the easy part. Some households combine methods, for example splitting half of the rent equally and half by room size, or adjusting for a private bathroom or a parking space. You can do this by running the calculator twice on the two halves and adding the results.</p>
 <p>Write the agreed split down, including how bills are shared and what happens when someone moves out mid-month. Rules on who is liable for the rent, how deposits are held and how much notice tenants must give vary by country and city, and depend on whether you are joint tenants or have separate agreements. This tool only applies the numbers you enter. For a partial month, work out the prorated rent first with the <a href="/prorated-rent-calculator/">prorated rent calculator</a>, then split that amount here.</p>
 
-<p>Revisit the split when something changes: a new flatmate, a rent increase, or someone moving into a bigger room. Rerun the calculation with the new numbers rather than adjusting shares by hand, so the total still matches the rent exactly.</p>
+<p>Revisit the split when something changes: a new roommate, a rent increase, or someone moving into a bigger room. Rerun the calculation with the new numbers rather than adjusting shares by hand, so the total still matches the rent exactly.</p>
 
 <h2>Frequently asked questions</h2>
 <h3>Why does the last person pay a cent more?</h3>
@@ -82,7 +82,7 @@ $("f").addEventListener("submit", (e) => {
 <h3>Can I split by income and room size at once?</h3>
 <p>Not in one step. Split part of the rent by one method and the rest by the other, then add each person's two shares.</p>
 <h3>What happens to empty rows?</h3>
-<p>Rows with no name and no weight are ignored. A row with a weight but no name is called Person and its row number.</p>
+<p>Empty rows are ignored. When splitting by room size or income, a row with a value but no name is called "Person N", where N is its row number. When splitting equally, a row needs a name to count.</p>
 <h3>Is my data stored?</h3>
 <p>No. Everything runs in your browser.</p>
 

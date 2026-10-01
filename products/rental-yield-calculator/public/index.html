@@ -8,7 +8,7 @@
 <form class="tool" id="f">
   <label>Purchase price<br><input type="number" id="price" min="0" step="any" value="200000" required></label>
   <label>Monthly rent<br><input type="number" id="rent" min="0" step="any" value="1000" required></label>
-  <label>Yearly running costs<br><input type="number" id="costs" min="0" step="any" value="2400"></label>
+  <label>Yearly running costs (optional)<br><input type="number" id="costs" min="0" step="any" value="2400"></label>
   <label>Empty weeks per year (0 to 52)<br><input type="number" id="vacancy" min="0" max="52" step="any" value="2"></label>
   <label>Monthly mortgage payment (optional)<br><input type="number" id="mortgage" min="0" step="any" value="500"></label>
   <p><button class="primary" type="submit">Calculate</button></p>
@@ -40,19 +40,19 @@ $("f").addEventListener("submit", (e) => {
 <p>This calculator uses the purchase price as the base. Some investors use the current market value instead, or add buying costs such as taxes and legal fees to the price. Use whichever base you want to compare, as long as you use the same one for every property.</p>
 
 <h2>What goes into yearly running costs</h2>
-<p>Running costs are the regular bills a landlord pays that the tenant does not. Typical lines include building and landlord insurance, repairs and maintenance, letting or management fees if an agent is involved, service charges or ground rent on some flats, safety checks and certificates required where you are, and accounting fees. Property taxes and income tax on rent vary widely by country and are often left out of yield and treated separately.</p>
+<p>Running costs are the regular bills a landlord pays that the tenant does not. Typical lines include building and landlord insurance, repairs and maintenance, property-management fees if a manager or agent is involved, homeowner-association or building fees, safety checks and certificates required where you are, and accounting fees. Property taxes and income tax on rent vary widely by country and are often left out of yield and treated separately.</p>
 <p>The calculator does not suggest figures for any of these. The right numbers depend on the property, its age, its location and how it is managed. Add up your own estimates or past bills and enter the yearly total. If you are unsure, run the calculation twice with a low and a high estimate to see how sensitive the net yield is to costs.</p>
 
 <h2>Cash flow is not the same as yield</h2>
 <p>Yield measures the return on the whole price of the property, whether or not you borrowed to buy it. Cash flow is what is left each month after the mortgage payment. Using the example above, a net income of 9,138.46 a year is 761.54 a month; after a 500 mortgage payment, cash flow is 261.54 a month. A negative cash flow means you are topping up the property from other income.</p>
-<p>The mortgage figure should be the payment you actually make. On a repayment mortgage part of it repays the loan, which builds equity rather than being a cost, so cash flow here is a cautious measure. Tax rules on mortgage interest, deposits and rental income vary by country and change over time; this tool only applies the numbers you enter and is not financial or tax advice.</p>
+<p>The mortgage figure should be the payment you actually make. On a repayment mortgage part of it repays the loan, which builds equity rather than being a cost, so cash flow here is a cautious measure. Tax rules on mortgage interest, down payments and rental income vary by country and change over time; this tool only applies the numbers you enter and is not financial or tax advice.</p>
 
 <p>Yield is one input to an investment decision, not the whole picture. It does not include any change in the property's value, the cost of buying and selling, or the time you spend managing it. Compare yields between properties on the same basis, and test the result with higher costs, more empty weeks and a higher mortgage payment to see how much room for error the numbers leave.</p>
 
 <h2>Frequently asked questions</h2>
 <h3>Why does gross yield ignore empty weeks?</h3>
 <p>That is the standard definition: gross yield assumes a full year of rent with no costs. Empty weeks and costs are both deducted in the net yield.</p>
-<h3>Should I include the deposit or the loan in the price?</h3>
+<h3>Should I include the down payment or the loan in the price?</h3>
 <p>Use the full purchase price for yield. If you want the return on the cash you put in, that is a different measure, often called cash-on-cash return.</p>
 <h3>Can I leave the mortgage blank?</h3>
 <p>Yes. Leave it blank or enter 0 and cash flow is simply net income divided by twelve.</p>
