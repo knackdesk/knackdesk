@@ -236,6 +236,13 @@ description: d
     expect(kits).toMatch(/alt="[^"]*Team[^"]*"/);
     expect(existsSync(join(out, "kits", "img", "kitimg", "cover.png"))).toBe(true);
     expect(kits).toMatch(/"image":\s*"https:\/\/knackdesk\.com\/kits\/img\/kitimg\/cover\.png"/);
+    // lightbox: every image is a link tagged with its kit gallery and index; one dialog and script on the page
+    expect(kits).toContain('<a href="/kits/img/kitimg/cover.png" data-gallery="kitimg" data-index="0"');
+    expect(kits).toContain('<a href="/kits/img/kitimg/sheet-1-team.png" data-gallery="kitimg" data-index="1"');
+    expect((kits.match(/<dialog class="lightbox"/g) || []).length).toBe(1);
+    expect(kits).toContain('class="lb-prev"');
+    expect(kits).toContain('class="lb-next"');
+    expect(kits).toContain("data-gallery");
   });
   it("writes a /kits/ page listing every kit with buy links, listing copy, Product schema and FAQ", async () => {
     mkdirSync(join(root, "products", "kit1"), { recursive: true });

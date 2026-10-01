@@ -20,8 +20,11 @@ export function sheetAlt(name, file) {
 function kitImages({ data, images = [] }) {
   if (images.length === 0) return "";
   const base = `/kits/img/${escapeHtml(data.slug)}`;
-  const cover = images.includes("cover.png") ? `<img class="kit-cover" src="${base}/cover.png" alt="${escapeHtml(data.name)} cover" width="1200" height="800" loading="lazy">` : "";
-  const shots = images.filter((f) => f !== "cover.png").map((f) => `<a href="${base}/${escapeHtml(f)}"><img src="${base}/${escapeHtml(f)}" alt="${escapeHtml(sheetAlt(data.name, f))}" loading="lazy"></a>`).join("");
+  const g = escapeHtml(data.slug);
+  const ordered = [...images.filter((f) => f === "cover.png"), ...images.filter((f) => f !== "cover.png")];
+  const link = (f, i, inner) => `<a href="${base}/${escapeHtml(f)}" data-gallery="${g}" data-index="${i}" data-alt="${escapeHtml(f === "cover.png" ? `${data.name} cover` : sheetAlt(data.name, f))}">${inner}</a>`;
+  const cover = ordered[0] === "cover.png" ? link("cover.png", 0, `<img class="kit-cover" src="${base}/cover.png" alt="${escapeHtml(data.name)} cover" width="1200" height="800" loading="lazy">`) : "";
+  const shots = ordered.map((f, i) => (f === "cover.png" ? "" : link(f, i, `<img src="${base}/${escapeHtml(f)}" alt="${escapeHtml(sheetAlt(data.name, f))}" loading="lazy">`))).join("");
   return `${cover}${shots ? `<div class="kit-shots">${shots}</div>` : ""}`;
 }
 
@@ -40,6 +43,10 @@ ${copy.outro ? `<p class="small">${inline(copy.outro)}</p>` : ""}
 </article>`;
 }
 
+
+export const LIGHTBOX = `<dialog class="lightbox" aria-label="Image viewer"><button type="button" class="lb-close" aria-label="Close">×</button><button type="button" class="lb-prev" aria-label="Previous image">‹</button><figure><img alt=""><figcaption></figcaption></figure><button type="button" class="lb-next" aria-label="Next image">›</button></dialog>
+<script>(()=>{const dlg=document.querySelector("dialog.lightbox");if(!dlg||!dlg.showModal)return;const img=dlg.querySelector("img"),cap=dlg.querySelector("figcaption");let items=[],i=0;const show=(n)=>{i=(n+items.length)%items.length;const a=items[i];img.src=a.getAttribute("href");img.alt=a.dataset.alt||"";cap.textContent=(a.dataset.alt||"")+" ("+(i+1)+"/"+items.length+")";dlg.querySelector(".lb-prev").hidden=dlg.querySelector(".lb-next").hidden=items.length<2};document.addEventListener("click",(e)=>{const a=e.target.closest("a[data-gallery]");if(!a)return;e.preventDefault();items=[...document.querySelectorAll('a[data-gallery="'+a.dataset.gallery+'"]')];show(Number(a.dataset.index)||0);dlg.showModal()});dlg.querySelector(".lb-close").addEventListener("click",()=>dlg.close());dlg.querySelector(".lb-prev").addEventListener("click",()=>show(i-1));dlg.querySelector(".lb-next").addEventListener("click",()=>show(i+1));dlg.addEventListener("click",(e)=>{if(e.target===dlg)dlg.close()});dlg.addEventListener("keydown",(e)=>{if(e.key==="ArrowLeft")show(i-1);if(e.key==="ArrowRight")show(i+1)});let sx=null;dlg.addEventListener("touchstart",(e)=>{sx=e.touches[0].clientX},{passive:true});dlg.addEventListener("touchend",(e)=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)show(dx<0?i+1:i-1)})})();</script>`;
+
 export function renderKitsPage(kits) {
   const articles = kits.map(kitArticle).join("\n");
   return `<h1>Spreadsheet kits</h1>
@@ -55,5 +62,5 @@ ${articles}
 <h3>Is VAT or sales tax added?</h3>
 <p>Polar adds the tax that applies in your country at checkout and issues the receipt, so the price shown is before any tax that applies to you.</p>
 <h3>Can I use a kit for my clients or team?</h3>
-<p>Each kit is licensed for personal or single-business use. Use it for your own business and clients; please do not resell or redistribute the file itself.</p>`;
+<p>Each kit is licensed for personal or single-business use. Use it for your own business and clients; please do not resell or redistribute the file itself.</p>` + LIGHTBOX;
 }
