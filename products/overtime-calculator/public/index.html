@@ -1,0 +1,70 @@
+<!-- title: Overtime Pay Calculator -->
+<!-- description: Calculate overtime pay from hours over a weekly threshold, a base hourly rate and a multiplier such as 1.5, with optional double time. -->
+<h1>Overtime Pay Calculator</h1>
+<p>Enter the hours worked, the point where overtime starts, the base hourly rate and the overtime multiplier. You get regular pay, overtime pay, optional double-time pay and the total for the period. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Hours worked in the week<br><input type="number" id="hours" min="0" max="168" step="any" value="48" required></label>
+  <label>Overtime starts after (hours)<br><input type="number" id="threshold" min="0" step="any" value="40" required></label>
+  <label>Base hourly rate<br><input type="number" id="rate" min="0" step="any" value="20" required></label>
+  <label>Overtime multiplier<br><input type="number" id="mult" min="1" step="any" value="1.5" required></label>
+  <label>Double time starts after (hours, optional)<br><input type="number" id="dtAfter" min="0" step="any" value=""></label>
+  <label>Double time multiplier<br><input type="number" id="dtMult" min="1" step="any" value="2"></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { overtime } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const numOrNaN = (id) => { const v = $(id).value.trim(); return v === "" ? NaN : Number(v); };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const dt = $("dtAfter").value.trim();
+    const r = overtime({
+      hoursWorked: numOrNaN("hours"), thresholdHours: numOrNaN("threshold"), hourlyRate: numOrNaN("rate"), multiplier: numOrNaN("mult"),
+      doubleTimeAfter: dt === "" ? null : Number(dt), doubleMultiplier: numOrNaN("dtMult"),
+    });
+    const hrs = (n) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    $("out").innerHTML = `<p>Total pay: <strong>${fmt(r.total)}</strong>, an effective rate of <strong>${fmt(r.effectiveRate)}</strong> an hour.</p>
+      <table><thead><tr><th></th><th>Hours</th><th>Pay</th></tr></thead><tbody>
+      <tr><td>Regular</td><td>${hrs(r.regularHours)}</td><td>${fmt(r.regularPay)}</td></tr>
+      <tr><td>Overtime</td><td>${hrs(r.overtimeHours)}</td><td>${fmt(r.overtimePay)}</td></tr>
+      <tr><td>Double time</td><td>${hrs(r.doubleHours)}</td><td>${fmt(r.doublePay)}</td></tr>
+      </tbody><tfoot><tr><th>Total</th><th>${hrs(r.regularHours + r.overtimeHours + r.doubleHours)}</th><th>${fmt(r.total)}</th></tr></tfoot></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How overtime pay is worked out</h2>
+<p>Overtime pay splits the hours in a period into bands. Hours up to the threshold are paid at the base rate. Hours above it are paid at the base rate times a multiplier. With a 40-hour threshold, a rate of 20 and a multiplier of 1.5, someone who works 48 hours earns 40 × 20 = 800 for the regular hours and 8 × 20 × 1.5 = 240 for the overtime, 1,040 in all.</p>
+<p>Some arrangements add a second band, often called double time, for hours beyond a higher point. If double time starts after 50 hours and the same person works 60, the hours split into 40 regular, 10 at time and a half and 10 at double time: 800 + 300 + 400 = 1,500. Leave the double time field blank if your arrangement has no second band.</p>
+<p>The multiplier applies to the base rate, not on top of earlier bands. An hour of double time is paid at twice the base rate, not twice the overtime rate. If your arrangement pays a fixed overtime rate instead of a multiple, divide that rate by the base rate and enter the result as the multiplier: an overtime rate of 27 on a base of 18 is a multiplier of 1.5.</p>
+
+<h2>The rules vary, so enter your own</h2>
+<p>Whether overtime is owed at all, where the threshold sits, which multiplier applies and who is exempt are all set by local law, collective agreements and individual contracts. They differ between countries, between states or regions within a country, and between types of work. Some rules count hours per day rather than per week, some treat weekends or public holidays separately, and some workers are not entitled to overtime at all. The defaults here, 40 hours and 1.5×, are just a common starting point, not a statement of what applies to you.</p>
+<p>This tool does not decide any of that. It applies the threshold, rate and multipliers you enter and does the arithmetic. If you are unsure what applies, check your contract or the official guidance where you work, or ask a qualified adviser.</p>
+
+<h2>Using it for quotes and budgets</h2>
+<p>Overtime is not only a payroll question. If you employ or subcontract people and a job runs over, the extra hours cost more than the base rate suggests. Knowing the effective hourly rate for a heavy week helps you decide whether to push a deadline, bring in extra help or price a rush fee. The effective rate shown is total pay divided by total hours, so you can compare it directly with what you charge. Running a few scenarios, such as a normal week, a busy week and a crunch week, shows how quickly costs climb once overtime kicks in.</p>
+<p>Contractors who bill by the hour can use the same arithmetic in reverse: if a client wants evenings or weekends, a multiplier on your normal rate is a clear way to price it. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> helps set the base rate, and the <a href="/hours-to-decimal/">hours to decimal converter</a> turns timesheet entries like 7:45 into 7.75 for this form.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I calculate daily overtime?</h3>
+<p>Yes. Enter the hours for one day and the daily threshold, then repeat for each day and add the results.</p>
+<h3>Why is the limit 168 hours?</h3>
+<p>That is the number of hours in a week, so anything higher is almost certainly a typing mistake.</p>
+<h3>Does this include tax or deductions?</h3>
+<p>No. The figures are gross pay before any tax, social contributions or other deductions, which depend on where you are.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+  <li><a href="/hours-to-decimal/">Hours to decimal converter</a></li>
+  <li><a href="/working-days-calculator/">Working days calculator</a></li>
+</ul>

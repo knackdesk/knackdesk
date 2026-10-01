@@ -1,0 +1,66 @@
+<!-- title: Cash Runway Calculator -->
+<!-- description: See how many months your cash lasts at your current burn, the month it runs out, and the cost cut needed to reach a target runway. -->
+<h1>Cash Runway Calculator</h1>
+<p>Enter the cash you have, what comes in each month and what goes out. You get your monthly burn, how many months the money lasts, the month it runs out, and, if you set a target, how far costs would need to fall to get there. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>Cash on hand<br><input type="number" id="cash" min="0" step="any" value="24000" required></label>
+  <label>Monthly income<br><input type="number" id="income" min="0" step="any" value="3000" required></label>
+  <label>Monthly costs<br><input type="number" id="costs" min="0" step="any" value="7000" required></label>
+  <label>Target runway in months (optional)<br><input type="number" id="target" min="0" step="any" value="12"></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { runway } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const monthName = (ym) => new Date(`${ym}-01T00:00:00Z`).toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const t = $("target").value.trim();
+    const r = runway({ cash: Number($("cash").value), monthlyIncome: Number($("income").value), monthlyCosts: Number($("costs").value), targetMonths: t === "" ? undefined : Number(t) });
+    if (r.months === null) {
+      $("out").innerHTML = `<p><strong>No burn.</strong> Income covers costs with ${fmt(-r.burn)} a month to spare, so the cash is not being drawn down.</p>`;
+      return;
+    }
+    let html = `<p>Monthly burn: <strong>${fmt(r.burn)}</strong>. Runway: <strong>${r.months.toLocaleString()} months</strong>, running out around <strong>${monthName(r.runOutDate)}</strong>.</p>`;
+    if (r.costsForTarget !== null) html += `<p>To reach your target, monthly costs would need to be <strong>${fmt(r.costsForTarget)}</strong> or less, a cut of <strong>${fmt(r.cutNeeded)}</strong> a month (or the same amount of extra income).</p>`;
+    else if (t !== "") html += `<p>You already meet your target runway.</p>`;
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What cash runway means</h2>
+<p>Runway is the number of months your business can keep paying its bills from the money it already has, if nothing changes. It is a simple division: cash on hand divided by monthly burn. Burn is what goes out each month minus what comes in. If you spend 7,000 a month and bring in 3,000, you burn 4,000. With 24,000 in the bank, that is six months.</p>
+<p>The number is useful because it turns a bank balance, which feels abstract, into a date. "We have 24,000" sounds comfortable. "The money runs out in April" makes it clear when decisions have to be made. The calculator shows the month in which the last full month of runway ends, counting from the current month.</p>
+<p>Runway is also a planning tool rather than just a warning light. Knowing you have nine months instead of four changes which work you can afford to turn down, whether a new hire or a piece of equipment is realistic this year, and how hard you need to push on sales right now. Checking it once a month, on the same day you review your accounts, turns it into a habit rather than a panic.</p>
+
+<h2>Getting honest inputs</h2>
+<p>The result is only as good as the figures you enter. For costs, include everything that leaves the account in a typical month: rent, software, contractors, insurance, loan repayments, your own drawings or salary, and an average for things that are billed quarterly or yearly. A yearly expense divided by twelve belongs in the monthly figure even though it does not hit every month.</p>
+<p>For income, use money you can reasonably expect to receive, not money you hope to invoice. If income swings a lot, try the calculation with a cautious month and with an average month to see the range. Some owners only count cash that has already been invoiced or is under contract, which gives a conservative floor. For cash, use what is actually available. Money set aside for tax or VAT you have collected on someone else's behalf is not really yours to spend, so leave it out.</p>
+
+<h2>Using a target runway</h2>
+<p>Many owners like to keep a cushion of a certain number of months, though there is no single right figure and it depends on how predictable your work is. If you enter a target, the calculator works out the highest monthly costs that would stretch your cash that far, given your current income. The gap between that figure and your actual costs is the monthly cut needed. The same gap can be closed by raising income instead, or by a mix of both.</p>
+<p>Runway is a snapshot. It assumes income and costs stay flat, which they rarely do. Revisit it whenever a big client starts or ends, prices change, or you take on a new fixed cost. If income already covers costs, there is no burn, and the calculator says so instead of showing an infinite number.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include money owed to me?</h3>
+<p>Not in cash on hand. Unpaid invoices are not cash until they arrive. You can add expected payments to monthly income if you are confident about when they will land.</p>
+<h3>Why does the run-out month use whole months?</h3>
+<p>A runway of 6.5 months means the cash lasts through six full months and part of the seventh. The month shown is when the last full month ends, which errs on the side of caution.</p>
+<h3>Is this financial advice?</h3>
+<p>No. The tool applies the numbers you enter. Tax, lending and accounting rules vary by country, so check anything important with a qualified adviser.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+  <li><a href="/revenue-goal-calculator/">Revenue goal calculator</a></li>
+  <li><a href="/saas-cost-calculator/">Software subscription cost calculator</a></li>
+</ul>

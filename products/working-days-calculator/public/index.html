@@ -1,0 +1,82 @@
+<!-- title: Working Days Calculator -->
+<!-- description: Count the working days between two dates, or find the date a number of working days ahead, skipping weekends and holidays you list. -->
+<h1>Working Days Calculator</h1>
+<p>Count the working days between two dates, or find the date that falls a given number of working days after a start date. Weekends are skipped, and so is any holiday you list. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <label>What do you want to do?<br>
+    <select id="mode">
+      <option value="between" selected>Count working days between two dates</option>
+      <option value="add">Add working days to a date</option>
+    </select>
+  </label>
+  <label>Start date<br><input type="date" id="start" required></label>
+  <div id="betweenWrap">
+    <label>End date<br><input type="date" id="end"></label>
+    <label><input type="checkbox" id="includeEnd" checked>Count the end date</label>
+  </div>
+  <div id="addWrap" hidden>
+    <label>Working days to add<br><input type="number" id="days" min="0" max="3650" step="1" value="10"></label>
+  </div>
+  <label>Holidays to skip, one date per line (YYYY-MM-DD, optional)<br><textarea id="holidays" rows="4" placeholder="2026-12-25"></textarea></label>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { workingDaysBetween, addWorkingDays, localIsoDate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const longDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const today = localIsoDate();
+$("start").value = today;
+$("end").value = addWorkingDays({ start: today, days: 9 });
+$("mode").addEventListener("change", () => { for (const m of ["between", "add"]) $(`${m}Wrap`).hidden = $("mode").value !== m; });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const holidays = $("holidays").value.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+    if ($("mode").value === "between") {
+      const r = workingDaysBetween({ start: $("start").value, end: $("end").value, holidays, includeEnd: $("includeEnd").checked });
+      $("out").innerHTML = `<p><strong>${r.workingDays.toLocaleString()} working days</strong> out of ${r.calendarDays.toLocaleString()} calendar days (${r.weekendDays.toLocaleString()} weekend days, ${r.holidayDays.toLocaleString()} holidays skipped).</p>`;
+    } else {
+      const raw = $("days").value.trim();
+      const due = addWorkingDays({ start: $("start").value, days: raw === "" ? NaN : Number(raw), holidays });
+      $("out").innerHTML = `<p>The date is <strong>${esc(longDate(due))}</strong> (${esc(due)}).</p>`;
+    }
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why working days get counted differently</h2>
+<p>"Ten working days" sounds precise, yet two people can land on different dates. One counts the day the request arrived, the other starts tomorrow. One skips a public holiday, the other forgets it exists. In a contract, a quote or a delivery promise, that one-day gap can be the difference between on time and late.</p>
+<p>This calculator makes the rules visible. In counting mode, both the start date and, by default, the end date are included, so Monday to Friday of the same week is five working days. Untick "Count the end date" if you want to count the days up to but not including the end. In adding mode, the start date itself is never counted: one working day after a Friday is the following Monday.</p>
+
+<p>Neither convention is wrong. What matters is that everyone involved uses the same one, and that the date you promise is written down. If a client sends a brief late on a Friday, agreeing whether Friday counts as day one avoids an awkward conversation two weeks later.</p>
+
+<h2>Weekends and holidays</h2>
+<p>Saturdays and Sundays are always treated as non-working days. Public holidays differ by country, region and sometimes by industry, so the tool does not guess them. Paste the dates that apply to you, one per line, and they are skipped. A holiday that falls on a weekend is only counted once, as a weekend day.</p>
+<p>If you work a different pattern, such as a four-day week or shifts that include weekends, the result will not match your calendar. Treat it as a standard Monday to Friday count and adjust from there. Company shutdown periods, such as a week off at the end of the year, can be entered as a run of individual holiday dates.</p>
+<p>It helps to keep a short list of the holiday dates you observe for the year in a note somewhere, so you can paste the same list each time. Remember that holidays in your client's country may differ from yours. If you work across borders, a deadline might need to skip both sets of dates, or you may want to agree whose calendar applies before the work starts.</p>
+
+<h2>Using working days in quotes and deadlines</h2>
+<p>Quoting turnaround in working days protects you from weekends eating into the schedule, but it only works if the client reads the date the same way you do. A good habit is to give both: "ten working days, so by Friday 16 October". Writing the actual date removes any argument about what was meant.</p>
+<p>The same idea applies to payment terms. Invoices are often due a number of calendar days after issue, but some contracts use business days. If you need to work out an invoice due date specifically, the <a href="/invoice-due-date/">invoice due date calculator</a> handles both. For planning capacity, counting the working days in a month or a project window also tells you how many billable days you actually have, which is a useful check before you commit to a fixed-price deadline. Notice periods and statutory deadlines follow rules that vary by country and contract, so check the wording that applies to you; this tool only counts the days you give it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does the count include the start date?</h3>
+<p>Yes, when counting between two dates. When adding working days, counting starts from the next day, which is how most deadlines are read.</p>
+<h3>Which public holidays are included?</h3>
+<p>None by default. Holidays vary by location, so add the dates that apply to you in the holidays box.</p>
+<h3>How far ahead can I add?</h3>
+<p>Up to 3,650 working days, which is well over a decade.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/invoice-due-date/">Invoice due date calculator</a></li>
+  <li><a href="/overtime-calculator/">Overtime pay calculator</a></li>
+  <li><a href="/hours-to-decimal/">Hours to decimal converter</a></li>
+</ul>

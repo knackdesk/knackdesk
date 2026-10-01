@@ -1,0 +1,100 @@
+<!-- title: Software Subscription Cost Calculator -->
+<!-- description: Add up your software subscriptions per month and per year, with seats and annual billing, and see what switching to annual plans would save. -->
+<h1>Software Subscription Cost Calculator</h1>
+<p>List the tools you pay for, with their price, billing period and number of seats. You get the real monthly and yearly cost of each one, the total for your whole stack, and how much you could save by moving monthly plans to annual billing. Nothing is sent anywhere.</p>
+
+<form class="tool" id="f">
+  <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Name</th><th>Price</th><th>Billed per</th><th>Seats</th><th>Annual plan discount (%)</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <p>Leave unused rows blank. The annual plan discount is the saving a vendor offers for paying yearly; it only applies to monthly plans.</p>
+  <p><button class="primary" type="submit">Calculate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { stackCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const ROWS = 8;
+const EXAMPLES = [
+  { name: "Design tool", price: 20, period: "month", seats: 1, discount: 20 },
+  { name: "Accounting", price: 30, period: "month", seats: 1, discount: 15 },
+  { name: "Domain", price: 15, period: "year", seats: 1, discount: 0 },
+];
+$("rows").innerHTML = Array.from({ length: ROWS }, (_, i) => {
+  const ex = EXAMPLES[i] || { name: "", price: "", period: "month", seats: 1, discount: "" };
+  const n = i + 1;
+  return `<tr>
+    <td><input type="text" id="name${n}" aria-label="Name, row ${n}" value="${esc(ex.name)}"></td>
+    <td><input type="number" id="price${n}" aria-label="Price, row ${n}" min="0" step="any" value="${esc(ex.price)}"></td>
+    <td><select id="period${n}" aria-label="Billing period, row ${n}"><option value="month"${ex.period === "month" ? " selected" : ""}>Month</option><option value="year"${ex.period === "year" ? " selected" : ""}>Year</option></select></td>
+    <td><input type="number" id="seats${n}" aria-label="Seats, row ${n}" min="1" step="1" value="${esc(ex.seats)}"></td>
+    <td><input type="number" id="disc${n}" aria-label="Annual plan discount, row ${n}" min="0" max="100" step="any" value="${esc(ex.discount)}"></td>
+  </tr>`;
+}).join("");
+const readRows = () => {
+  const items = [];
+  for (let n = 1; n <= ROWS; n += 1) {
+    const name = $(`name${n}`).value.trim();
+    const price = $(`price${n}`).value.trim();
+    if (name === "" && price === "") continue;
+    const seats = $(`seats${n}`).value.trim();
+    const disc = $(`disc${n}`).value.trim();
+    items.push({
+      name: name || `Row ${n}`,
+      price: price === "" ? NaN : Number(price),
+      period: $(`period${n}`).value,
+      seats: seats === "" ? 1 : Number(seats),
+      annualDiscountPercent: disc === "" ? 0 : Number(disc),
+    });
+  }
+  return items;
+};
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = stackCost({ items: readRows() });
+    const body = r.items.map((it) => `<tr><td>${esc(it.name)}</td><td>${fmt(it.monthly)}</td><td>${fmt(it.yearly)}</td><td>${fmt(it.saving)}</td></tr>`).join("");
+    $("out").innerHTML = `<p>Your stack costs <strong>${fmt(r.totalMonthly)} a month</strong>, or <strong>${fmt(r.totalYearly)} a year</strong>. Switching monthly plans to annual billing could save <strong>${fmt(r.totalSaving)}</strong> a year.</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>Subscription</th><th>Per month</th><th>Per year</th><th>Annual plan saving</th></tr></thead>
+      <tbody>${body}</tbody><tfoot><tr><th>Total</th><th>${fmt(r.totalMonthly)}</th><th>${fmt(r.totalYearly)}</th><th>${fmt(r.totalSaving)}</th></tr></tfoot></table></div>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why small subscriptions add up</h2>
+<p>Software is easy to sign up for and easy to forget. Each tool looks cheap on its own, a few dollars or euros a month, and the charges arrive on different days from different vendors. Because no single bill feels large, few people ever add the whole stack together. When they do, the yearly figure is usually higher than they expected.</p>
+<p>This calculator puts every subscription on the same footing. Monthly plans are multiplied by seats; yearly plans are divided by twelve, so a 120 yearly domain or backup plan shows up as 10 a month alongside everything else. The total gives you one monthly number you can compare with your income, and one yearly number you can compare with your other overheads.</p>
+<p>Seats matter more than people expect. A plan priced per user doubles the moment a second person joins, and the price on the vendor's homepage is often the single-seat figure. Enter the number of seats you actually pay for, not the number you think you use, so the result matches the charge on your statement. If a vendor bills a flat team price regardless of headcount, enter that price with one seat.</p>
+
+<h2>Monthly versus annual billing</h2>
+<p>Many vendors offer a discount for paying a year in advance. If you know you will keep a tool for the next twelve months, the annual plan is usually cheaper. Enter the discount the vendor advertises in the last column and the calculator shows how much you would save over a year by switching. Items you already pay yearly show no saving, because you are already on that plan.</p>
+<p>The trade-off is flexibility. An annual plan ties up cash up front and commits you for the year, which matters if your work is uneven or you are still deciding between tools. Cancellation and refund terms differ from vendor to vendor, so read them before committing. A sensible approach is to move only the tools you rely on every week, and keep anything experimental on monthly billing until it proves its worth.</p>
+
+<h2>Trimming your stack</h2>
+<p>Once you can see the full list, look for overlap. It is common to pay for two tools that do the same job, or for seats belonging to people who no longer need them. Check each line and ask whether you used it in the last month. If not, it is a candidate for cancelling or downgrading.</p>
+<p>Also check prices against what you signed up for. Introductory rates end, seat counts creep up, and some plans renew at a higher tier. Re-running this calculation once or twice a year, perhaps when you review your prices or your <a href="/cash-runway-calculator/">cash runway</a>, keeps the stack honest. Every amount saved here is a fixed cost removed, which lowers the revenue you need to <a href="/break-even-calculator/">break even</a>.</p>
+<p>When you find a tool you still need, it is worth asking the vendor about cheaper tiers, nonprofit or small-business pricing, or a discount for staying. You lose nothing by asking, and the yearly figure from this page gives you a concrete number to point to.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include sales tax or VAT?</h3>
+<p>Enter prices the way you want to see them. If you can reclaim VAT, the price before tax is usually the real cost to you, but rules vary by country, so check your own situation. The <a href="/vat-calculator/">VAT calculator</a> can help with the conversion.</p>
+<h3>What about tools billed in another currency?</h3>
+<p>Convert them to your own currency at a rate you are comfortable with before entering them, so the totals add up correctly.</p>
+<h3>How many subscriptions can I enter?</h3>
+<p>Up to eight at a time. For a longer list, group similar small tools into one row or run the calculator twice.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+  <li><a href="/price-increase-calculator/">Price increase calculator</a></li>
+</ul>
