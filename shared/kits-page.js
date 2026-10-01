@@ -23,7 +23,7 @@ function kitImages({ data, images = [] }) {
   const g = escapeHtml(data.slug);
   const ordered = [...images.filter((f) => f === "cover.png"), ...images.filter((f) => f !== "cover.png")];
   const link = (f, i, inner) => `<a href="${base}/${escapeHtml(f)}" data-gallery="${g}" data-index="${i}" data-alt="${escapeHtml(f === "cover.png" ? `${data.name} cover` : sheetAlt(data.name, f))}">${inner}</a>`;
-  const cover = ordered[0] === "cover.png" ? link("cover.png", 0, `<img class="kit-cover" src="${base}/cover.png" alt="${escapeHtml(data.name)} cover" width="1200" height="800" loading="lazy">`) : "";
+  const cover = ordered[0] === "cover.png" ? link("cover.png", 0, `<img class="kit-cover" src="${base}/cover.png" alt="${escapeHtml(data.name)} cover" width="1200" height="675" loading="lazy">`) : "";
   const shots = ordered.map((f, i) => (f === "cover.png" ? "" : link(f, i, `<img src="${base}/${escapeHtml(f)}" alt="${escapeHtml(sheetAlt(data.name, f))}" loading="lazy">`))).join("");
   return `${cover}${shots ? `<div class="kit-shots">${shots}</div>` : ""}`;
 }

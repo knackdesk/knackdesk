@@ -6,6 +6,7 @@ import { loadCatalog } from "./lib/catalog.js";
 import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, renderFinder, escapeHtml } from "../shared/layout.js";
 import { CATEGORY_COPY } from "../shared/category-copy.js";
 import { renderKitsPage } from "../shared/kits-page.js";
+import { parseLedger } from "./lib/ledger.js";
 import { articleNode, webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
 import { collectionPageNode } from "../shared/seo.js";
 import { renderLlmsTxt, renderLlmsFullTxt } from "./lib/llms.js";
@@ -168,6 +169,10 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
       return { ...item, images };
     });
     const coverUrl = (item) => (item.images?.includes("cover.png") ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null);
+    // Order kits by units sold (pipeline/LEDGER.md), then by name, so best sellers lead the page.
+    const ledgerPath = join(rootDir, "pipeline", "LEDGER.md");
+    const unitsBySlug = existsSync(ledgerPath) ? Object.fromEntries(parseLedger(readFileSync(ledgerPath, "utf8")).rows.map((r) => [r.slug, Number(r.units) || 0])) : {};
+    withImages.sort((a, b) => (unitsBySlug[b.data.slug] || 0) - (unitsBySlug[a.data.slug] || 0) || a.data.name.localeCompare(b.data.name));
     const body = renderKitsPage(withImages);
     const schema = [...withImages.map((item) => productNode(item.data, coverUrl(item))), faqPageNode(body)].filter(Boolean);
     writePage(outDir, "/kits/", renderPage({ title: "Spreadsheet Kits", headline: "Spreadsheet Kits for Freelancers and Landlords: Buy Once, Keep Forever", description: "Workbooks for invoicing and cash flow, pricing and quotes, and rent tracking. Formulas only, no macros; work in Excel, Google Sheets and Numbers. One-time purchase.", body, path: "/kits/", adsenseId, schema, menu, assetVersion, footerKits }));

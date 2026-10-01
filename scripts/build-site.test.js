@@ -216,6 +216,18 @@ description: d
     expect(readFileSync(join(out, "llms.txt"), "utf8")).toContain("https://knackdesk.com/guides/price-a-project/");
     expect(readFileSync(join(out, "index.html"), "utf8")).toContain('href="/guides/"');
   });
+  it("orders kits on /kits/ by units sold in pipeline/LEDGER.md, then by name", async () => {
+    for (const slug of ["kit-a", "kit-b", "kit-c"]) {
+      mkdirSync(join(root, "products", slug), { recursive: true });
+      writeFileSync(join(root, "products", slug, "PLAN.md"), KIT_PLAN.replace("slug: kit", `slug: ${slug}`).replace("name: The Kit", `name: Kit ${slug.slice(-1).toUpperCase()}`).replace("https://buy.polar.sh/abc", `https://buy.polar.sh/${slug}`));
+    }
+    mkdirSync(join(root, "pipeline"), { recursive: true });
+    writeFileSync(join(root, "pipeline", "LEDGER.md"), `# Ledger\n\n| slug | lane | launched | url | price_usd | units | gross_usd | net_usd |\n|---|---|---|---|---|---|---|---|\n| kit-a | digital | 2026-10-01 | u | 12.00 | 0 | 0.00 | 0.00 |\n| kit-c | digital | 2026-10-01 | u | 12.00 | 5 | 60.00 | 50.00 |\n| kit-b | digital | 2026-10-01 | u | 12.00 | 2 | 24.00 | 20.00 |\n`);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const kits = readFileSync(join(out, "kits", "index.html"), "utf8");
+    const order = [...kits.matchAll(/<article class="kit" id="(kit-[abc])"/g)].map((m) => m[1]);
+    expect(order).toEqual(["kit-c", "kit-b", "kit-a"]);
+  });
   it("writes a category hub page per category with the tools, breadcrumb schema and sitemap entry", async () => {
     addFeeTool(root);
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });

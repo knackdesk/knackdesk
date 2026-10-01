@@ -6,7 +6,7 @@
 - [ ] security-reviewer agent: no CRITICAL/HIGH open
 - [x] LICENSES.md lists every third-party asset/library (MIT/CC0 only)
 - [x] Deliverable built (`assets/*.zip` for kits, `public/` for tools, `dist.zip` for extensions)
-- [ ] Cover image generated and saved to `assets/cover.png`
+- [x] Cover image: cover.png + 3 sheet shots in assets/images, on Polar and /kits/
 - [x] Pushed to main (product is draft; not on the site until listed)
 - [ ] Polar listing created (`npm run polar:create -- <slug>`), URL recorded below
 - [ ] Row added to pipeline/LEDGER.md

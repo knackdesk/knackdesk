@@ -10,7 +10,7 @@ FONT_DIR = "/System/Library/Fonts/Supplemental"
 REG = os.path.join(FONT_DIR, "Arial.ttf"); BOLD = os.path.join(FONT_DIR, "Arial Bold.ttf")
 BG = (251, 250, 247); FG = (29, 29, 27); MUTED = (107, 107, 102); ACCENT = (15, 107, 92); LINE = (230, 227, 220); CARD = (255, 255, 255)
 BLUE = (0, 0, 255); YELLOW = (255, 249, 196); HEAD = (231, 230, 230)
-COVER_W, COVER_H = 1200, 800; SHOT_W = 1200; SCALE = 2  # render at 2x for crisp text
+COVER_W, COVER_H = 1200, 675; SHOT_W = 1200; SCALE = 2  # render at 2x for crisp text
 
 
 def font(path, size): return ImageFont.truetype(path, size)
@@ -46,16 +46,16 @@ def cover(slug, data, sheets, out):
     d.text((pad + 72 * SCALE, pad + 12 * SCALE), "Knackdesk", font=font(BOLD, 30 * SCALE), fill=FG)
     d.text((W - pad - d.textlength("Spreadsheet kit", font=font(REG, 26 * SCALE)), pad + 14 * SCALE), "Spreadsheet kit", font=font(REG, 26 * SCALE), fill=MUTED)
     # title + tagline
-    y = pad + 130 * SCALE
-    tf = font(BOLD, 64 * SCALE)
+    y = pad + 104 * SCALE
+    tf = font(BOLD, 60 * SCALE)
     for line in wrap(d, data["name"], tf, W - 2 * pad)[:2]:
-        d.text((pad, y), line, font=tf, fill=FG); y += 76 * SCALE
+        d.text((pad, y), line, font=tf, fill=FG); y += 70 * SCALE
     y += 10 * SCALE
     gf = font(REG, 30 * SCALE)
     for line in wrap(d, data.get("tagline", ""), gf, W - 2 * pad)[:3]:
         d.text((pad, y), line, font=gf, fill=MUTED); y += 40 * SCALE
     # sheet pills
-    y += 30 * SCALE; x = pad; pf = font(REG, 24 * SCALE)
+    y += 22 * SCALE; x = pad; pf = font(REG, 24 * SCALE)
     for s in sheets:
         tw = d.textlength(s, font=pf); bw = tw + 36 * SCALE
         if x + bw > W - pad: x = pad; y += 60 * SCALE
