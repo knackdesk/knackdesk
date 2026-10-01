@@ -33,7 +33,10 @@ import { dueDate, localIsoDate } from "./calc.js";
 const $ = (id) => document.getElementById(id);
 const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 $("issue").value = localIsoDate();
-$("term").addEventListener("change", () => { $("customWrap").hidden = $("term").value !== "custom"; });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleTerm = () => { $("customWrap").hidden = $("term").value !== "custom"; syncWraps(); };
+$("term").addEventListener("change", toggleTerm);
+toggleTerm();
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {

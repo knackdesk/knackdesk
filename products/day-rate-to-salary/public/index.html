@@ -24,7 +24,10 @@ import { dayRateToSalary, salaryToDayRate } from "./calc.js";
 const $ = (id) => document.getElementById(id);
 const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-$("mode").addEventListener("change", () => { const s = $("mode").value === "toRate"; $("salaryWrap").hidden = !s; $("rateWrap").hidden = s; });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleMode = () => { const s = $("mode").value === "toRate"; $("salaryWrap").hidden = !s; $("rateWrap").hidden = s; syncWraps(); };
+$("mode").addEventListener("change", toggleMode);
+toggleMode();
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {

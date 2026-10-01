@@ -1,7 +1,7 @@
 <!-- title: Software Subscription Cost Calculator -->
 <!-- description: Add up your software subscriptions per month and per year, with seats and annual billing, and see what switching to annual plans would save. -->
 <h1>Software Subscription Cost Calculator</h1>
-<p>List the tools you pay for, with their price, billing period and number of seats. You get the real monthly and yearly cost of each one, the total for your whole stack, and how much you could save by moving monthly plans to annual billing. Nothing is sent anywhere.</p>
+<p>List the tools you pay for, with their price, billing period and number of seats. You get the real monthly and yearly cost of each one, the total for your whole stack, and how much you could save by moving monthly plans to annual billing. Blank seats count as 1. Nothing is sent anywhere.</p>
 
 <form class="tool" id="f">
   <div style="overflow-x:auto">
@@ -69,7 +69,7 @@ $("f").addEventListener("submit", (e) => {
 </script>
 
 <h2>Why small subscriptions add up</h2>
-<p>Software is easy to sign up for and easy to forget. Each tool looks cheap on its own, a few dollars or euros a month, and the charges arrive on different days from different vendors. Because no single bill feels large, few people ever add the whole stack together. When they do, the yearly figure is usually higher than they expected.</p>
+<p>Software is easy to sign up for and easy to forget. Each tool looks cheap on its own, a few dollars or euros a month, and the charges arrive on different days from different vendors. Because no single bill feels large, few people ever add the whole stack together. When they do, the yearly figure can be a surprise.</p>
 <p>This calculator puts every subscription on the same footing. Monthly plans are multiplied by seats; yearly plans are divided by twelve, so a 120 yearly domain or backup plan shows up as 10 a month alongside everything else. The total gives you one monthly number you can compare with your income, and one yearly number you can compare with your other overheads.</p>
 <p>Seats matter more than people expect. A plan priced per user doubles the moment a second person joins, and the price on the vendor's homepage is often the single-seat figure. Enter the number of seats you actually pay for, not the number you think you use, so the result matches the charge on your statement. If a vendor bills a flat team price regardless of headcount, enter that price with one seat.</p>
 
@@ -84,7 +84,7 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Frequently asked questions</h2>
 <h3>Should I include sales tax or VAT?</h3>
-<p>Enter prices the way you want to see them. If you can reclaim VAT, the price before tax is usually the real cost to you, but rules vary by country, so check your own situation. The <a href="/vat-calculator/">VAT calculator</a> can help with the conversion.</p>
+<p>Enter prices the way you want to see them. If you can reclaim VAT, the price before tax may be the real cost to you, depending on whether you can reclaim it; check your own situation. The <a href="/vat-calculator/">VAT calculator</a> can help with the conversion.</p>
 <h3>What about tools billed in another currency?</h3>
 <p>Convert them to your own currency at a rate you are comfortable with before entering them, so the totals add up correctly.</p>
 <h3>How many subscriptions can I enter?</h3>

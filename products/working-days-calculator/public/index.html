@@ -32,7 +32,10 @@ const longDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefi
 const today = localIsoDate();
 $("start").value = today;
 $("end").value = addWorkingDays({ start: today, days: 9 });
-$("mode").addEventListener("change", () => { for (const m of ["between", "add"]) $(`${m}Wrap`).hidden = $("mode").value !== m; });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleMode = () => { for (const m of ["between", "add"]) $(`${m}Wrap`).hidden = $("mode").value !== m; syncWraps(); };
+$("mode").addEventListener("change", toggleMode);
+toggleMode();
 $("f").addEventListener("submit", (e) => {
   e.preventDefault();
   try {
@@ -66,7 +69,7 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Frequently asked questions</h2>
 <h3>Does the count include the start date?</h3>
-<p>Yes, when counting between two dates. When adding working days, counting starts from the next day, which is how most deadlines are read.</p>
+<p>Yes, when counting between two dates. When adding working days, counting starts from the next day, which is the usual convention, but confirm it with whoever set the deadline.</p>
 <h3>Which public holidays are included?</h3>
 <p>None by default. Holidays vary by location, so add the dates that apply to you in the holidays box.</p>
 <h3>How far ahead can I add?</h3>

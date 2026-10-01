@@ -39,7 +39,10 @@ const $ = (id) => document.getElementById(id);
 const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
 const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const numOrNaN = (id) => { const v = $(id).value.trim(); return v === "" ? NaN : Number(v); };
-$("mode").addEventListener("change", () => { for (const m of ["flat", "tiered", "target"]) $(`${m}Wrap`).hidden = $("mode").value !== m; });
+const syncWraps = () => { for (const w of document.querySelectorAll("#f [id$='Wrap']")) for (const i of w.querySelectorAll("input, select, textarea")) i.disabled = w.hidden; };
+const toggleMode = () => { for (const m of ["flat", "tiered", "target"]) $(`${m}Wrap`).hidden = $("mode").value !== m; syncWraps(); };
+$("mode").addEventListener("change", toggleMode);
+toggleMode();
 const readTiers = () => {
   const tiers = [];
   for (const n of [1, 2, 3]) {
@@ -81,13 +84,13 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>Working back from a target</h2>
 <p>Target mode answers a planning question: how much do I need to sell to earn a given amount? Divide the target commission by the rate. To earn 3,000 at 6%, you need 50,000 in sales. If you set income goals for the year, the <a href="/revenue-goal-calculator/">revenue goal calculator</a> can break that sales figure into monthly or weekly targets.</p>
-<p>If you pay commission to someone else, such as a referral partner or subcontractor who brings in work, the same arithmetic tells you what each deal really costs. Commission is a cost of sale, so it belongs in your pricing: a quote that ignores a 10% referral fee is 10% thinner than it looks. The <a href="/markup-margin-calculator/">markup and margin calculator</a> can help you price with that in mind. Agree the rate and the basis, such as invoiced or paid amounts, in writing before the first deal closes.</p>
+<p>If you pay commission to someone else, such as a referral partner or subcontractor who brings in work, the same arithmetic tells you what each deal really costs. Commission is a cost of sale, so it belongs in your pricing: a quote that ignores a 10% referral fee takes 10% of the quote. The <a href="/markup-margin-calculator/">markup and margin calculator</a> can help you price with that in mind. Agree the rate and the basis, such as invoiced or paid amounts, in writing before the first deal closes.</p>
 
 <h2>Frequently asked questions</h2>
 <h3>Is commission calculated before or after tax?</h3>
-<p>That depends on your agreement. Many plans use the net sale value before sales tax or VAT, but check yours. This tool applies the rate to whatever amount you enter.</p>
+<p>That depends on your agreement. This tool applies the rate to whatever amount you enter.</p>
 <h3>Can I use fewer than three tiers?</h3>
-<p>Yes. Clear both fields of any tier you do not need, and leave the upper limit of your last tier blank.</p>
+<p>Yes. Clear both fields of any tier you do not need. To drop the last tier, also clear the upper limit of the tier above it.</p>
 <h3>What about refunds or cancelled deals?</h3>
 <p>Rules for clawing back commission vary by contract. Subtract the refunded amount from sales and recalculate if your plan works that way.</p>
 <h3>Is my data stored?</h3>

@@ -24,7 +24,7 @@ $("f").addEventListener("submit", (e) => {
     const t = $("target").value.trim();
     const r = runway({ cash: Number($("cash").value), monthlyIncome: Number($("income").value), monthlyCosts: Number($("costs").value), targetMonths: t === "" ? undefined : Number(t) });
     if (r.months === null) {
-      $("out").innerHTML = `<p><strong>No burn.</strong> Income covers costs with ${fmt(-r.burn)} a month to spare, so the cash is not being drawn down.</p>`;
+      $("out").innerHTML = `<p><strong>No burn.</strong> Income covers costs with ${fmt(Math.abs(r.burn))} a month to spare, so the cash is not being drawn down.</p>`;
       return;
     }
     let html = `<p>Monthly burn: <strong>${fmt(r.burn)}</strong>. Runway: <strong>${r.months.toLocaleString()} months</strong>, running out around <strong>${monthName(r.runOutDate)}</strong>.</p>`;
@@ -37,7 +37,7 @@ $("f").addEventListener("submit", (e) => {
 
 <h2>What cash runway means</h2>
 <p>Runway is the number of months your business can keep paying its bills from the money it already has, if nothing changes. It is a simple division: cash on hand divided by monthly burn. Burn is what goes out each month minus what comes in. If you spend 7,000 a month and bring in 3,000, you burn 4,000. With 24,000 in the bank, that is six months.</p>
-<p>The number is useful because it turns a bank balance, which feels abstract, into a date. "We have 24,000" sounds comfortable. "The money runs out in April" makes it clear when decisions have to be made. The calculator shows the month in which the last full month of runway ends, counting from the current month.</p>
+<p>The number is useful because it turns a bank balance, which feels abstract, into a date. "We have 24,000" sounds comfortable. "The money runs out in April" makes it clear when decisions have to be made. The month shown is the month the cash runs out, counting from the current month. Part months are rounded down.</p>
 <p>Runway is also a planning tool rather than just a warning light. Knowing you have nine months instead of four changes which work you can afford to turn down, whether a new hire or a piece of equipment is realistic this year, and how hard you need to push on sales right now. Checking it once a month, on the same day you review your accounts, turns it into a habit rather than a panic.</p>
 
 <h2>Getting honest inputs</h2>
@@ -52,7 +52,7 @@ $("f").addEventListener("submit", (e) => {
 <h3>Should I include money owed to me?</h3>
 <p>Not in cash on hand. Unpaid invoices are not cash until they arrive. You can add expected payments to monthly income if you are confident about when they will land.</p>
 <h3>Why does the run-out month use whole months?</h3>
-<p>A runway of 6.5 months means the cash lasts through six full months and part of the seventh. The month shown is when the last full month ends, which errs on the side of caution.</p>
+<p>A runway of 6.5 months means the cash lasts through six full months and part of the seventh. The month shown is the month the cash runs out, counting from the current month. Part months are rounded down.</p>
 <h3>Is this financial advice?</h3>
 <p>No. The tool applies the numbers you enter. Tax, lending and accounting rules vary by country, so check anything important with a qualified adviser.</p>
 <h3>Is my data stored?</h3>

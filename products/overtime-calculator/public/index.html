@@ -4,7 +4,7 @@
 <p>Enter the hours worked, the point where overtime starts, the base hourly rate and the overtime multiplier. You get regular pay, overtime pay, optional double-time pay and the total for the period. Nothing is sent anywhere.</p>
 
 <form class="tool" id="f">
-  <label>Hours worked in the week<br><input type="number" id="hours" min="0" max="168" step="any" value="48" required></label>
+  <label>Hours worked in the week (or the day, if your threshold is daily)<br><input type="number" id="hours" min="0" max="168" step="any" value="48" required></label>
   <label>Overtime starts after (hours)<br><input type="number" id="threshold" min="0" step="any" value="40" required></label>
   <label>Base hourly rate<br><input type="number" id="rate" min="0" step="any" value="20" required></label>
   <label>Overtime multiplier<br><input type="number" id="mult" min="1" step="any" value="1.5" required></label>
