@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
-  "workspaces": ["products/*"],
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "products/*"
+  ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -14,7 +18,8 @@
     "polar:sales": "node scripts/polar-sales.js",
     "dns": "node scripts/cloudflare-dns.js",
     "submit:gsc": "node scripts/gsc-submit.js",
-    "submit:indexnow": "node scripts/indexnow.js"
+    "submit:indexnow": "node scripts/indexnow.js",
+    "research": "node scripts/research-signals.js"
   },
   "devDependencies": {
     "vitest": "^2.1.0"
