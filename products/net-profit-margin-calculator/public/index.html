@@ -1,0 +1,55 @@
+<!-- title: Net Profit Margin Calculator -->
+<!-- description: Walk from revenue to gross profit, operating profit and net profit with each margin as a percentage of revenue, from cost of sales, operating expenses, interest and tax. -->
+<h1>Net Profit Margin Calculator</h1>
+<p>Enter revenue, cost of sales, operating expenses, interest and tax for the same period. You get gross profit, operating profit and net profit, each with its margin as a percentage of revenue. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Net margin is what remains of each unit of revenue after every cost, including interest and tax.</p>
+<p class="formula"><strong>Formula:</strong> gross profit = revenue − cost of sales; operating profit = gross − operating expenses; net profit = operating − interest − tax; each margin = profit ÷ revenue × 100.</p>
+
+<form class="tool" id="f">
+  <label>Revenue<br><input type="number" id="rev" min="0.01" step="any" value="100000" required></label>
+  <label>Cost of sales (direct costs)<br><input type="number" id="cogs" min="0" step="any" value="40000"></label>
+  <label>Operating expenses (rent, salaries, marketing, software)<br><input type="number" id="opex" min="0" step="any" value="35000"></label>
+  <label>Interest paid<br><input type="number" id="int" min="0" step="any" value="2000"></label>
+  <label>Tax on profit<br><input type="number" id="tax" min="0" step="any" value="4600"></label>
+  <p><button class="primary" type="submit">Calculate margins</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { netMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = netMargin({ revenue: Number($("rev").value), cogs: Number($("cogs").value) || 0, operatingExpenses: Number($("opex").value) || 0, interest: Number($("int").value) || 0, taxes: Number($("tax").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Gross profit</td><td>${fmt(r.grossProfit)} (${fmt(r.grossMarginPercent)}%)</td></tr><tr><td>Operating profit</td><td>${fmt(r.operatingProfit)} (${fmt(r.operatingMarginPercent)}%)</td></tr><tr><td>Net profit</td><td><strong>${fmt(r.netProfit)}</strong></td></tr><tr><td>Net profit margin</td><td><strong>${fmt(r.netMarginPercent)}%</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Three margins, one story</h2>
+<p>The three margins describe where revenue goes. Gross margin shows how much is left after the direct cost of what you sold; it reflects pricing and purchasing. Operating margin shows what is left after running the business: rent, salaries, marketing, software, insurance. The gap between gross and operating margin is the cost of the organisation around the product. Net margin takes off the cost of money, interest, and the tax on profit, and is the figure that ends up in reserves or in the owners' pockets. A business with a strong gross margin and a weak net margin has an overhead problem; one with a weak gross margin has a pricing or cost-of-sales problem that no overhead cut will fix.</p>
+
+<h2>Reading your own number</h2>
+<p>Net margins vary enormously by industry, so compare your figure with your own past periods and with businesses that look like yours rather than with a single rule of thumb. Trend matters more than level: a net margin falling while revenue grows usually means costs are being added faster than sales, and the <a href="/revenue-per-employee-calculator/">revenue per employee calculator</a> is a quick way to see whether headcount is the cause. Owner-managers should also check whether their own pay is in operating expenses; if it is not, the net margin is flattering.</p>
+
+<h2>Which figures to use</h2>
+<p>Use the same period for every input and exclude sales tax or VAT you collect. Depreciation and amortisation belong in operating expenses if you want a margin comparable to accounts; leave them out for a cash view. If you have the gross margin already, the <a href="/gross-profit-margin-calculator/">gross profit margin calculator</a> shows it with markup and target revenue, and the <a href="/cash-runway-calculator/">cash runway calculator</a> turns a negative net result into months of cash left.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is operating profit the same as EBIT?</h3>
+<p>Broadly yes: earnings before interest and tax. Add back depreciation and amortisation to get EBITDA.</p>
+<h3>What if I pay tax personally rather than through the business?</h3>
+<p>Enter zero for tax to get a pre-tax net margin, and use the <a href="/tax-set-aside-calculator/">tax set-aside calculator</a> for what to put away.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/gross-profit-margin-calculator/">Gross profit margin calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+  <li><a href="/revenue-per-employee-calculator/">Revenue per employee calculator</a></li>
+</ul>

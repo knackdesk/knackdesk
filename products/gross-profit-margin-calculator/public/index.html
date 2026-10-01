@@ -1,0 +1,56 @@
+<!-- title: Gross Profit Margin Calculator -->
+<!-- description: Gross profit and gross margin from revenue and cost of goods sold, the equivalent markup on cost, and the revenue a target gross margin would need on the same cost base. -->
+<h1>Gross Profit Margin Calculator</h1>
+<p>Enter revenue and the cost of the goods or services sold over the same period. You get gross profit, gross margin and the markup on cost, plus the revenue a target margin would need on the same cost. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Gross margin is the share of revenue left after the direct cost of what you sold, before overheads.</p>
+<p class="formula"><strong>Formula:</strong> gross profit = revenue − cost of goods sold; margin = gross profit ÷ revenue × 100; markup = gross profit ÷ cost × 100; revenue for a target margin = cost ÷ (1 − target %).</p>
+
+<form class="tool" id="f">
+  <label>Revenue (sales in the period)<br><input type="number" id="rev" min="0.01" step="any" value="50000" required></label>
+  <label>Cost of goods or services sold<br><input type="number" id="cogs" min="0" step="any" value="30000" required></label>
+  <label>Target gross margin (%) for the comparison<br><input type="number" id="target" min="0" max="99.99" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate margin</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { grossMargin, revenueForMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const cogs = Number($("cogs").value);
+    const r = grossMargin({ revenue: Number($("rev").value), cogs });
+    const t = Number($("target").value);
+    const need = t > 0 && t < 100 ? revenueForMargin({ cogs, targetMarginPercent: t }) : null;
+    $("out").innerHTML = `<table><tr><td>Gross profit</td><td><strong>${fmt(r.grossProfit)}</strong></td></tr><tr><td>Gross margin</td><td><strong>${fmt(r.marginPercent)}%</strong> of revenue</td></tr><tr><td>Markup on cost</td><td>${r.markupPercent === null ? "n/a" : fmt(r.markupPercent) + "%"}</td></tr>${need !== null ? `<tr><td>Revenue needed for a ${fmt(t)}% margin on the same cost</td><td>${fmt(need)}</td></tr>` : ""}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What counts as cost of goods sold</h2>
+<p>Cost of goods sold, or cost of sales for a service business, is the cost that rises and falls with what you sell: materials, stock bought for resale, direct labour on the product or service, manufacturing or fulfilment, and payment processing if you treat it as direct. It excludes rent, salaries of people not producing the work, marketing, software and other overheads, which come off later to give operating profit. Drawing the line consistently matters more than drawing it perfectly, because gross margin is mostly used to compare periods and products.</p>
+
+<h2>Margin is not markup</h2>
+<p>A 40% gross margin and a 40% markup are different numbers from the same sale. Margin is profit as a share of the selling price; markup is profit as a share of cost. Twenty thousand profit on fifty thousand revenue is a 40% margin and a 66.67% markup. Suppliers and retailers often talk in markup while accountants and lenders talk in margin, and quoting one when the other is expected overstates or understates profit by a wide amount. The <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between them for a single price.</p>
+
+<h2>Using the target line</h2>
+<p>The last line answers a practical question: with the same cost of sales, what revenue would a higher margin need? It is the price increase, in total, that gets you there without changing costs. If that revenue is unrealistic, margin has to come from the cost side instead. Gross margin feeds straight into the <a href="/break-even-calculator/">break-even calculator</a>, where it is the contribution that covers fixed costs, and into the <a href="/net-profit-margin-calculator/">net profit margin calculator</a>, which continues the walk down to net profit.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is gross margin before or after VAT or sales tax?</h3>
+<p>Use revenue and costs excluding tax you collect or reclaim; the tax is not yours.</p>
+<h3>Can gross margin be negative?</h3>
+<p>Yes. If cost of sales exceeds revenue you lose money on every sale before overheads, and the margin shows as a negative percentage.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

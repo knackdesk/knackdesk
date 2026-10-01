@@ -1,0 +1,54 @@
+<!-- title: Revenue per Employee Calculator -->
+<!-- description: Revenue and profit per employee from annual figures and headcount, with payroll per employee, the revenue-to-payroll ratio and payroll as a share of revenue when payroll is known. -->
+<h1>Revenue per Employee Calculator</h1>
+<p>Enter annual revenue and headcount, and optionally profit and total payroll cost. You get revenue and profit per employee and, when payroll is entered, payroll per employee, how many times revenue covers payroll, and payroll as a share of revenue. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Revenue per employee is sales divided by the people it took to make them, a simple measure of how productively a business uses its team.</p>
+<p class="formula"><strong>Formula:</strong> revenue per employee = revenue ÷ employees; profit per employee = profit ÷ employees; revenue to payroll = revenue ÷ payroll; payroll share = payroll ÷ revenue × 100.</p>
+
+<form class="tool" id="f">
+  <label>Annual revenue<br><input type="number" id="rev" min="0" step="any" value="1200000" required></label>
+  <label>Employees (full-time equivalent)<br><input type="number" id="emp" min="0.01" step="any" value="15" required></label>
+  <label>Annual profit (optional, may be negative)<br><input type="number" id="profit" step="any" value="180000"></label>
+  <label>Total annual payroll cost (optional)<br><input type="number" id="pay" min="0" step="any" value="600000"></label>
+  <p><button class="primary" type="submit">Calculate per employee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { revenuePerEmployee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = revenuePerEmployee({ revenue: Number($("rev").value), employees: Number($("emp").value), profit: Number($("profit").value) || 0, payroll: Number($("pay").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Revenue per employee</td><td><strong>${fmt(r.revenuePerEmployee)}</strong></td></tr><tr><td>Profit per employee</td><td>${fmt(r.profitPerEmployee)}</td></tr><tr><td>Payroll per employee</td><td>${r.payrollPerEmployee === null ? "n/a" : fmt(r.payrollPerEmployee)}</td></tr><tr><td>Revenue to payroll</td><td>${r.revenueToPayroll === null ? "n/a" : fmt(r.revenueToPayroll) + "×"}</td></tr><tr><td>Payroll as a share of revenue</td><td>${r.payrollPercent === null ? "n/a" : fmt(r.payrollPercent) + "%"}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What the number tells you</h2>
+<p>Revenue per employee strips size out of the comparison. A business doubling its revenue while tripling its staff is getting less productive even though every headline number is growing, and this ratio is where that shows first. It is most useful tracked over time within one business and compared with businesses of the same kind; software companies, agencies, retailers and manufacturers have very different natural levels, so a single benchmark is misleading. Use full-time equivalents so that part-time staff do not distort the figure, and include owners who work in the business.</p>
+
+<h2>Payroll ratios</h2>
+<p>When payroll is known the calculator adds two checks. Revenue to payroll says how many times sales cover the cost of the people; payroll as a share of revenue is the same idea the other way round. In services businesses payroll is usually the largest cost and the share of revenue it takes is the main driver of margin. If the share is rising, either prices have lagged pay or utilization has fallen, and the <a href="/utilization-rate-calculator/">utilization rate calculator</a> is the next place to look. Include employer contributions and benefits in payroll; the <a href="/employee-cost-calculator/">employee cost calculator</a> gives the full figure per person.</p>
+
+<h2>Before hiring</h2>
+<p>Run the calculator with the planned headcount and the revenue the new hire is expected to add. If revenue per employee falls, the hire needs a clear reason, such as capacity that is currently turning work away or a role that unlocks sales later. Profit per employee adds the margin view: the <a href="/net-profit-margin-calculator/">net profit margin calculator</a> gives the profit figure to enter here.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Do contractors count as employees?</h3>
+<p>Include them as fractional FTEs if they do work employees would otherwise do; otherwise their cost belongs in expenses, not headcount.</p>
+<h3>Which revenue should I use?</h3>
+<p>Net revenue for a full year, excluding sales tax or VAT. For a shorter period, annualise both revenue and payroll.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+</ul>

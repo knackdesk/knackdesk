@@ -1,0 +1,54 @@
+<!-- title: Tax Set-Aside Calculator -->
+<!-- description: How much of your self-employed or business profit to put aside for tax each month, quarter and year, using a percentage you choose, from income and expenses for any period. -->
+<h1>Tax Set-Aside Calculator</h1>
+<p>Enter income and expenses for a month, a quarter or a year, and the percentage of profit you want to put aside for tax. You get the profit, the amount to set aside, and what that is per month, quarter and year. The percentage is yours to choose; the tool does not know your tax rate. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Setting aside a fixed share of each period's profit means the tax bill is already in the bank when it arrives.</p>
+<p class="formula"><strong>Formula:</strong> profit = income − expenses; set-aside = profit × percent (zero when profit is negative); then converted to per month, quarter and year from the period entered.</p>
+
+<form class="tool" id="f">
+  <label>Figures are for<br><select id="period"><option value="month" selected>One month</option><option value="quarter">One quarter</option><option value="year">One year</option></select></label>
+  <label>Income in the period (before tax)<br><input type="number" id="inc" min="0" step="any" value="8000" required></label>
+  <label>Business expenses in the period<br><input type="number" id="exp" min="0" step="any" value="2000"></label>
+  <label>Share of profit to set aside (%)<br><input type="number" id="pct" min="0" max="100" step="any" value="25" required></label>
+  <p><button class="primary" type="submit">Calculate set-aside</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { taxSetAside } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = taxSetAside({ income: Number($("inc").value), expenses: Number($("exp").value) || 0, setAsidePercent: Number($("pct").value), period: $("period").value });
+    $("out").innerHTML = `<table><tr><td>Profit in the period</td><td>${fmt(r.profit)}</td></tr><tr><td>Set aside for this period</td><td><strong>${fmt(r.setAside)}</strong></td></tr><tr><td>Per month</td><td>${fmt(r.perMonth)}</td></tr><tr><td>Per quarter</td><td>${fmt(r.perQuarter)}</td></tr><tr><td>Per year</td><td>${fmt(r.perYear)}</td></tr><tr><td>Share of profit you keep</td><td>${fmt(r.keepPercent)}%</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Choosing the percentage</h2>
+<p>The right share depends on your country, your other income, whether you pay social contributions alongside income tax, and how much of your income is above the tax-free amount. It is not something a calculator can know. A practical approach is to look at last year's total tax and contributions as a share of last year's profit and use that, rounded up a little. If this is your first year, your tax authority's published rates for your expected profit band give a starting point, and an accountant can refine it. Many self-employed people settle on a figure between a quarter and a third of profit; yours may be different.</p>
+
+<h2>Profit, not income</h2>
+<p>Tax is charged on profit, so expenses reduce what you need to save. Enter the expenses you will actually be able to deduct. Money spent on equipment or stock is often treated differently from day-to-day costs, and personal spending does not count. If expenses exceed income in a period, there is no profit and nothing to set aside; the loss may reduce tax on later profit, which is another reason to keep the figures.</p>
+
+<h2>Making it automatic</h2>
+<p>The monthly figure is the one to act on. Move it to a separate account the day income arrives, before anything else is spent, and leave it there. If you are paid irregularly, apply the percentage to each payment instead and let the monthly total take care of itself. For the rest of the finances, the <a href="/cash-runway-calculator/">cash runway calculator</a> shows how long reserves last and the <a href="/hourly-rate-calculator/">hourly rate calculator</a> builds tax into the rate you charge. Nothing here is tax advice; it is arithmetic on a percentage you choose.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I set aside tax on income from employment too?</h3>
+<p>Not if tax is already deducted at source. Enter only income that is paid to you gross.</p>
+<h3>What about VAT or sales tax I collect?</h3>
+<p>That is never your money. Keep it entirely separate; this calculator is for tax on your profit.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+  <li><a href="/vat-calculator/">VAT calculator</a></li>
+</ul>

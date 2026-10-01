@@ -1,0 +1,64 @@
+<!-- title: Profit Split Calculator -->
+<!-- description: Split a profit or project fee between partners by percentage shares, with an optional reserve held back for the business first. Shares must total 100. -->
+<h1>Profit Split Calculator</h1>
+<p>Enter the profit to divide, an optional percentage to keep in the business first, and each partner's share. Shares must add up to 100. You get the reserve, the amount to distribute and each partner's payout. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A profit split takes any agreed reserve off the top and divides the rest by the partners' percentages.</p>
+<p class="formula"><strong>Formula:</strong> reserve = profit × reserve %; distributable = profit − reserve; payout = distributable × share %; shares must total 100.</p>
+
+<form class="tool" id="f">
+  <label>Profit to divide<br><input type="number" id="profit" min="0" step="any" value="30000" required></label>
+  <label>Reserve kept in the business first (%)<br><input type="number" id="reserve" min="0" max="100" step="any" value="10"></label>
+  <table class="rows">
+    <tr><th>Partner</th><th>Share (%)</th></tr>
+    <tr><td><input type="text" id="n0" value="Partner A" aria-label="Partner 1"></td><td><input type="number" id="s0" min="0" max="100" step="any" value="50" aria-label="Share 1"></td></tr>
+    <tr><td><input type="text" id="n1" value="Partner B" aria-label="Partner 2"></td><td><input type="number" id="s1" min="0" max="100" step="any" value="30" aria-label="Share 2"></td></tr>
+    <tr><td><input type="text" id="n2" value="Partner C" aria-label="Partner 3"></td><td><input type="number" id="s2" min="0" max="100" step="any" value="20" aria-label="Share 3"></td></tr>
+    <tr><td><input type="text" id="n3" value="" aria-label="Partner 4"></td><td><input type="number" id="s3" min="0" max="100" step="any" value="" aria-label="Share 4"></td></tr>
+    <tr><td><input type="text" id="n4" value="" aria-label="Partner 5"></td><td><input type="number" id="s4" min="0" max="100" step="any" value="" aria-label="Share 5"></td></tr>
+    <tr><td><input type="text" id="n5" value="" aria-label="Partner 6"></td><td><input type="number" id="s5" min="0" max="100" step="any" value="" aria-label="Share 6"></td></tr>
+  </table>
+  <p><button class="primary" type="submit">Split profit</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { profitSplit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const names = [], shares = [];
+    for (let i = 0; i < 6; i++) { const s = $(`s${i}`).value; if (s !== "") { shares.push(Number(s)); names.push($(`n${i}`).value || `Partner ${i + 1}`); } }
+    const r = profitSplit({ profit: Number($("profit").value), reservePercent: Number($("reserve").value) || 0, shares });
+    const rows = r.payouts.map((p, i) => `<tr><td>${names[i].replace(/[<>&]/g, "")}</td><td>${fmt(shares[i])}%</td><td><strong>${fmt(p)}</strong></td></tr>`).join("");
+    $("out").innerHTML = `<p>Reserve kept: ${fmt(r.reserve)}. Distributed: ${fmt(r.distributable)}.</p><table><tr><th>Partner</th><th>Share</th><th>Payout</th></tr>${rows}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Agreeing the shares</h2>
+<p>Percentages are usually set when the partnership or project starts, based on capital put in, time committed, skills brought, or simply equal shares. Whatever the basis, write it down and apply it to every distribution; the calculator enforces that the shares total 100 so that nothing is left over or double counted. For project fees between collaborators, a common approach is a share for who brought the client plus shares for the work done, which can be expressed as percentages here once the pieces are agreed.</p>
+
+<h2>Why hold a reserve</h2>
+<p>Paying out every unit of profit leaves the business with nothing for the next tax bill, a slow month or a piece of equipment. A reserve taken off the top before the split is the simplest way to build that cushion, and because it is applied before shares it is fair to everyone. Ten to twenty percent is common; a business expecting a tax bill should hold at least what the <a href="/tax-set-aside-calculator/">tax set-aside calculator</a> suggests if tax is paid at the business level.</p>
+
+<h2>Profit before the split</h2>
+<p>The figure to divide is profit after all costs, including any salaries or drawings partners have already taken during the period, otherwise those who drew more are paid twice. The <a href="/net-profit-margin-calculator/">net profit margin calculator</a> walks from revenue to net profit, and the <a href="/deposit-split-calculator/">deposit split calculator</a> handles the related problem of dividing a project fee into payment stages.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I split by ratio instead of percentage?</h3>
+<p>Convert the ratio to percentages first: a 3:2 ratio is 60% and 40%.</p>
+<h3>What about a loss?</h3>
+<p>Enter the loss as a positive number and read the payouts as each partner's share of the shortfall, if your agreement shares losses the same way.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/deposit-split-calculator/">Deposit split calculator</a></li>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+  <li><a href="/tax-set-aside-calculator/">Tax set-aside calculator</a></li>
+</ul>
