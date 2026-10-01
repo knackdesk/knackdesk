@@ -116,6 +116,41 @@ description: d
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
     expect(existsSync(join(out, "ads.txt"))).toBe(false);
   });
+  it("prefers kits in the page's category in the cross-sell block and falls back to all kits", async () => {
+    for (const [slug, cat] of [["kitf", "pricing"], ["kitp", "property"]]) {
+      mkdirSync(join(root, "products", slug), { recursive: true });
+      writeFileSync(join(root, "products", slug, "PLAN.md"), `---
+polar_url: https://buy.polar.sh/${slug}
+slug: ${slug}
+name: Kit ${cat}
+lane: digital
+category: ${cat}
+price_cents: 1200
+status: live
+tagline: t
+description: d
+---`);
+    }
+    mkdirSync(join(root, "products", "ptool", "public"), { recursive: true });
+    writeFileSync(join(root, "products", "ptool", "public", "index.html"), "<!-- title: P -->\n<!-- description: p -->\n<h1>P</h1>");
+    writeFileSync(join(root, "products", "ptool", "PLAN.md"), `---
+slug: ptool
+name: P tool
+lane: tool
+category: property
+status: live
+tagline: t
+description: d
+---`);
+    writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const prop = readFileSync(join(out, "ptool", "index.html"), "utf8");
+    expect(prop).toContain("Kit property");
+    expect(prop).not.toContain("Kit pricing");
+    const conv = readFileSync(join(out, "conv", "index.html"), "utf8");
+    expect(conv).toContain("Kit pricing");
+    expect(conv).toContain("Kit property");
+  });
   it("appends a cross-sell block for listed digital products to tool pages", async () => {
     mkdirSync(join(root, "products", "kit"), { recursive: true });
     writeFileSync(join(root, "products", "kit", "PLAN.md"), `---

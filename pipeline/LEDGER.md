@@ -6,3 +6,4 @@ Refreshed by `npm run polar:sales`. Amounts in USD.
 |---|---|---|---|---|---|---|---|
 | freelancer-finance-kit | digital | 2026-09-30 | https://buy.polar.sh/polar_cl_1kxM2saIYYrH9BHa9p1Yp1V7mSAUgu68kmN170pYLqo | 12.00 | 1 | 0.00 | 0.00 |
 | freelance-pricing-kit | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_OBBsiKSM4hFSr1kEAo4BmryGy2P76krpK5WPl4UeeFA | 9.00 | 0 | 0.00 | 0.00 |
+| landlord-rent-tracker | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_Qw4fGfBbhsVtV6plMwQVe5kGdsnm346HD3BU53Pmv8l | 12.00 | 0 | 0.00 | 0.00 |

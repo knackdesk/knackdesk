@@ -94,7 +94,10 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   });
   const digital = items.filter(({ data }) => data.lane === "digital");
   const sections = renderCatalogSections(items);
-  const crossSell = renderCrossSell(digital);
+  const crossSellFor = (category) => {
+    const matching = digital.filter(({ data }) => data.category && data.category === category);
+    return renderCrossSell(matching.length > 0 ? matching : digital);
+  };
   const pagesDir = join(rootDir, "site", "pages");
   for (const file of readdirSync(pagesDir).filter((f) => f.endsWith(".html"))) {
     const raw = readFileSync(join(pagesDir, file), "utf8");
@@ -109,7 +112,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const pub = join(dir, "public");
     if (!existsSync(pub)) continue;
     cpSync(pub, join(outDir, data.slug), { recursive: true });
-    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSell, data);
+    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data);
     if (d) details[data.slug] = d;
   }
   writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items));
