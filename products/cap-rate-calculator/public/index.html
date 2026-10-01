@@ -1,0 +1,56 @@
+<!-- title: Cap Rate Calculator -->
+<!-- description: Net operating income and capitalisation rate of a rental property from purchase price, annual rent, a vacancy allowance and operating expenses, plus the price a target cap rate implies for the same income. -->
+<h1>Cap Rate Calculator</h1>
+<p>Enter the purchase price, the annual rent, a vacancy allowance and the annual operating expenses. You get the effective income, net operating income and cap rate, and the price a target cap rate would justify for the same income. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The cap rate is a property's net operating income as a percentage of its price, before any mortgage.</p>
+<p class="formula"><strong>Formula:</strong> effective income = rent × (1 − vacancy %); NOI = effective income − operating expenses; cap rate = NOI ÷ price × 100; price for a target cap rate = NOI ÷ target %.</p>
+
+<form class="tool" id="f">
+  <label>Purchase price<br><input type="number" id="price" min="0.01" step="any" value="300000" required></label>
+  <label>Annual gross rent<br><input type="number" id="rent" min="0" step="any" value="30000" required></label>
+  <label>Vacancy and credit loss (% of rent)<br><input type="number" id="vac" min="0" max="99.99" step="any" value="5"></label>
+  <label>Annual operating expenses (tax, insurance, repairs, management, not the mortgage)<br><input type="number" id="opex" min="0" step="any" value="9000"></label>
+  <label>Target cap rate (%) for the price comparison<br><input type="number" id="target" min="0" step="any" value="7"></label>
+  <p><button class="primary" type="submit">Calculate cap rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { capRate, priceForCapRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = capRate({ purchasePrice: Number($("price").value), annualRent: Number($("rent").value), vacancyPercent: Number($("vac").value) || 0, operatingExpenses: Number($("opex").value) || 0 });
+    const t = Number($("target").value); const need = t > 0 ? priceForCapRate({ noi: r.noi, targetCapPercent: t }) : null;
+    $("out").innerHTML = `<table><tr><td>Vacancy loss</td><td>${fmt(r.vacancyLoss)}</td></tr><tr><td>Effective gross income</td><td>${fmt(r.effectiveIncome)}</td></tr><tr><td>Net operating income (NOI)</td><td><strong>${fmt(r.noi)}</strong> per year (${fmt(r.monthlyNoi)} per month)</td></tr><tr><td>Operating expense ratio</td><td>${r.expenseRatioPercent === null ? "n/a" : fmt(r.expenseRatioPercent) + "%"}</td></tr><tr><td>Cap rate</td><td><strong>${fmt(r.capRatePercent)}%</strong></td></tr>${need !== null ? `<tr><td>Price at a ${fmt(t)}% cap rate</td><td>${fmt(need)}</td></tr>` : ""}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What the cap rate measures</h2>
+<p>The capitalisation rate strips financing out of the picture and asks one question: what does this property earn on its price, if bought for cash? Net operating income is rent after vacancy and after the costs of running the building, but before mortgage payments, depreciation and income tax. Dividing it by the price gives a rate that can be compared across properties regardless of how each buyer finances them. A higher cap rate means more income per unit of price, which usually comes with more risk, an older building or a weaker location; a lower one means buyers are paying more for each unit of income.</p>
+
+<h2>Getting NOI right</h2>
+<p>Most cap rates quoted in listings are too high because they use full rent and leave costs out. Use a vacancy allowance even if the property is let today; a month empty every two years is about four percent. Operating expenses include property tax, insurance, maintenance and repairs, management, utilities you pay, and a reserve for roofs and boilers. They exclude the mortgage, which belongs in the <a href="/cash-on-cash-return-calculator/">cash on cash return calculator</a>, and capital improvements. The expense ratio line is a sanity check: a figure far below what similar properties run suggests costs are missing.</p>
+
+<h2>Using the price line</h2>
+<p>The last line turns the cap rate round: given the income, what price delivers the rate you want? That is the number to negotiate from. If the asking price is above it, the seller is pricing a lower cap rate than you accept. For a faster screen before working out expenses, the <a href="/gross-rent-multiplier-calculator/">gross rent multiplier calculator</a> uses gross rent alone, and the <a href="/rental-yield-calculator/">rental yield calculator</a> gives gross and net yields in the terms used outside North America.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What is a good cap rate?</h3>
+<p>It depends on the market, the property type and interest rates, and it changes over time. Compare with recent sales of similar properties in the same area rather than a fixed number.</p>
+<h3>Should I include my own management time?</h3>
+<p>Yes, as a management cost at the rate you would pay someone else. Otherwise the cap rate rewards you for working free.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cash-on-cash-return-calculator/">Cash on cash return calculator</a></li>
+  <li><a href="/rental-yield-calculator/">Rental yield calculator</a></li>
+  <li><a href="/gross-rent-multiplier-calculator/">Gross rent multiplier calculator</a></li>
+</ul>

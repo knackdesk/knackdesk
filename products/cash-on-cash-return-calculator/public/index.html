@@ -1,0 +1,53 @@
+<!-- title: Cash on Cash Return Calculator -->
+<!-- description: Cash on cash return of a financed rental property from the cash invested, the annual net operating income and the annual mortgage payments, with monthly cash flow and years to recover the cash. -->
+<h1>Cash on Cash Return Calculator</h1>
+<p>Enter the cash you put in (deposit, closing costs, initial repairs), the annual net operating income and the annual mortgage payments. You get the annual and monthly cash flow, the cash on cash return and how many years of cash flow it takes to get your cash back. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cash on cash return is the yearly cash a property puts in your pocket as a percentage of the cash you actually invested.</p>
+<p class="formula"><strong>Formula:</strong> annual cash flow = NOI − annual debt service; cash on cash = annual cash flow ÷ cash invested × 100; monthly cash flow = annual ÷ 12; years to recover = cash invested ÷ annual cash flow.</p>
+
+<form class="tool" id="f">
+  <label>Cash invested (deposit + closing costs + initial repairs)<br><input type="number" id="cash" min="0.01" step="any" value="75000" required></label>
+  <label>Annual net operating income (rent after vacancy and expenses, before mortgage)<br><input type="number" id="noi" step="any" value="19500" required></label>
+  <label>Annual mortgage payments (principal and interest)<br><input type="number" id="ds" min="0" step="any" value="15000"></label>
+  <p><button class="primary" type="submit">Calculate return</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { cashOnCash } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = cashOnCash({ cashInvested: Number($("cash").value), annualNoi: Number($("noi").value), annualDebtService: Number($("ds").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Annual cash flow</td><td><strong>${fmt(r.annualCashFlow)}</strong></td></tr><tr><td>Monthly cash flow</td><td>${fmt(r.monthlyCashFlow)}</td></tr><tr><td>Cash on cash return</td><td><strong>${fmt(r.cocPercent)}%</strong></td></tr><tr><td>Years of cash flow to recover the cash</td><td>${r.yearsToRecoverCash === null ? "never at this cash flow" : fmt(r.yearsToRecoverCash)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why financing changes the answer</h2>
+<p>Two investors can buy the same property at the same cap rate and earn very different returns on their money. One pays cash and earns the cap rate. The other puts down a quarter of the price and borrows the rest; the mortgage takes a slice of the income, but the cash at risk is far smaller, so the return on that cash can be higher or lower than the cap rate depending on the interest rate. Cash on cash return captures exactly that: cash flow after the mortgage, divided by cash actually invested. It is the figure to compare with what the same cash would earn elsewhere.</p>
+
+<h2>What to count as cash invested</h2>
+<p>Everything that left your account to get the property rented: the deposit, legal and closing costs, loan fees, and repairs before the first tenant. Leave out the loan itself. Net operating income is the figure from the <a href="/cap-rate-calculator/">cap rate calculator</a>: rent after vacancy and operating expenses, before the mortgage. Annual debt service is twelve months of mortgage payments, principal and interest together; the <a href="/business-loan-calculator/">business loan calculator</a> gives the payment from the loan amount, rate and term.</p>
+
+<h2>Reading the result</h2>
+<p>A negative return means the property costs you money each year after the mortgage, which some investors accept for expected appreciation but should be a deliberate choice. The years-to-recover line is a plain way to see how long the cash is tied up. Cash on cash ignores principal repayment, appreciation and tax; it is a cash measure, which is its strength. For the month-by-month view, the <a href="/rental-cash-flow-calculator/">rental cash flow calculator</a> starts from monthly rent.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include the principal part of the mortgage?</h3>
+<p>Yes, in annual debt service. Cash on cash measures cash out, and principal is cash out even though it builds equity.</p>
+<h3>How does this differ from ROI?</h3>
+<p>ROI usually adds equity built and appreciation to the return. Cash on cash counts only the cash flow.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cap-rate-calculator/">Cap rate calculator</a></li>
+  <li><a href="/rental-cash-flow-calculator/">Rental cash flow calculator</a></li>
+  <li><a href="/dscr-calculator/">DSCR calculator</a></li>
+</ul>

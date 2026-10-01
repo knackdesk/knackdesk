@@ -1,0 +1,54 @@
+<!-- title: Rental Cash Flow Calculator -->
+<!-- description: Monthly and annual cash flow of a rental property after a vacancy allowance, operating expenses and the mortgage payment, with net operating income and the operating expense ratio. -->
+<h1>Rental Cash Flow Calculator</h1>
+<p>Enter the monthly rent, a vacancy allowance, the monthly operating expenses and the mortgage payment. You get the effective rent, the monthly net operating income, the cash flow per month and per year, and the expense ratio. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cash flow is what is left of the rent each month after vacancy, running costs and the mortgage.</p>
+<p class="formula"><strong>Formula:</strong> effective rent = rent × (1 − vacancy %); NOI = effective rent − operating expenses; cash flow = NOI − mortgage payment; annual cash flow = × 12; expense ratio = expenses ÷ effective rent × 100.</p>
+
+<form class="tool" id="f">
+  <label>Monthly rent<br><input type="number" id="rent" min="0.01" step="any" value="2500" required></label>
+  <label>Vacancy allowance (% of rent)<br><input type="number" id="vac" min="0" max="99.99" step="any" value="5"></label>
+  <label>Monthly operating expenses (tax, insurance, repairs, management, utilities you pay)<br><input type="number" id="opex" min="0" step="any" value="750"></label>
+  <label>Monthly mortgage payment (principal and interest)<br><input type="number" id="mort" min="0" step="any" value="1250"></label>
+  <p><button class="primary" type="submit">Calculate cash flow</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { rentalCashFlow } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = rentalCashFlow({ monthlyRent: Number($("rent").value), vacancyPercent: Number($("vac").value) || 0, monthlyExpenses: Number($("opex").value) || 0, mortgagePayment: Number($("mort").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Effective rent after vacancy</td><td>${fmt(r.effectiveRent)}</td></tr><tr><td>Net operating income per month</td><td>${fmt(r.monthlyNoi)} (${fmt(r.annualNoi)} per year)</td></tr><tr><td>Operating expense ratio</td><td>${r.expenseRatioPercent === null ? "n/a" : fmt(r.expenseRatioPercent) + "%"}</td></tr><tr><td>Cash flow per month</td><td><strong>${fmt(r.cashFlow)}</strong></td></tr><tr><td>Cash flow per year</td><td><strong>${fmt(r.annualCashFlow)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>The four deductions</h2>
+<p>Rent minus mortgage is the calculation most first-time landlords do, and it is why so many are surprised by the first year. Four things come off the rent before anything is yours. Vacancy: the unit will be empty sometimes, so a share of rent is never collected. Operating expenses: property tax, insurance, repairs and maintenance, management, any utilities or service charges you pay, and a reserve for the big items. The mortgage: principal and interest. And, outside this calculator, income tax on the profit. The result after the first three is cash flow, and it is often a small fraction of the rent.</p>
+
+<h2>Estimating expenses</h2>
+<p>Actual bills beat rules of thumb, but for a property you do not own yet, work from the known items (tax, insurance, management fee) and add a maintenance reserve. The expense ratio line, expenses as a share of effective rent, is a check against similar properties: a very low ratio usually means something is missing rather than that the building is cheap to run. The mortgage payment comes from the <a href="/business-loan-calculator/">business loan calculator</a> or your lender's quote.</p>
+
+<h2>From cash flow to returns</h2>
+<p>Monthly cash flow times twelve is the annual cash flow that the <a href="/cash-on-cash-return-calculator/">cash on cash return calculator</a> divides by your cash invested, and the annual NOI line is what the <a href="/cap-rate-calculator/">cap rate calculator</a> divides by the price. A property with negative cash flow may still be worth owning for appreciation or equity build-up, but that is a decision to make knowingly, with the monthly shortfall in front of you.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include a management fee if I manage it myself?</h3>
+<p>Yes, at the rate a manager would charge. It shows the true return and makes the day you hand it over painless.</p>
+<h3>Where do capital improvements go?</h3>
+<p>Not in monthly expenses. Treat a new kitchen or roof as investment, and keep a monthly reserve in expenses for the wear that leads to it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cash-on-cash-return-calculator/">Cash on cash return calculator</a></li>
+  <li><a href="/cap-rate-calculator/">Cap rate calculator</a></li>
+  <li><a href="/vacancy-rate-calculator/">Vacancy rate calculator</a></li>
+</ul>

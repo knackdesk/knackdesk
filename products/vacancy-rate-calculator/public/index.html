@@ -1,0 +1,53 @@
+<!-- title: Vacancy Rate Calculator -->
+<!-- description: Vacancy and occupancy rate of a building or portfolio from total units and vacant units, with the rent lost per month and per year and the rent actually collected. -->
+<h1>Vacancy Rate Calculator</h1>
+<p>Enter the number of units, how many are vacant and the average monthly rent. You get the vacancy rate, the occupancy rate, the rent collected and the rent lost per month and per year. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Vacancy rate is the share of units standing empty, and lost rent is what that share costs.</p>
+<p class="formula"><strong>Formula:</strong> vacancy rate = vacant units ÷ total units × 100; occupancy = 100 − vacancy; lost rent per month = vacant units × average rent; per year = × 12; collected = occupied units × average rent.</p>
+
+<form class="tool" id="f">
+  <label>Total units (or rooms, beds, desks)<br><input type="number" id="units" min="1" step="any" value="20" required></label>
+  <label>Vacant units<br><input type="number" id="vac" min="0" step="any" value="2" required></label>
+  <label>Average monthly rent per unit<br><input type="number" id="rent" min="0" step="any" value="1000"></label>
+  <p><button class="primary" type="submit">Calculate vacancy</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { vacancyRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = vacancyRate({ units: Number($("units").value), vacantUnits: Number($("vac").value), averageMonthlyRent: Number($("rent").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Vacancy rate</td><td><strong>${fmt(r.vacancyPercent)}%</strong></td></tr><tr><td>Occupancy rate</td><td>${fmt(r.occupancyPercent)}%</td></tr><tr><td>Potential rent per month</td><td>${fmt(r.potentialPerMonth)}</td></tr><tr><td>Rent collected per month</td><td>${fmt(r.collectedPerMonth)}</td></tr><tr><td>Rent lost per month</td><td>${fmt(r.lostRentPerMonth)}</td></tr><tr><td>Rent lost per year at this rate</td><td><strong>${fmt(r.lostRentPerYear)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Physical and economic vacancy</h2>
+<p>This calculator measures physical vacancy: units with nobody in them. Economic vacancy is wider and includes units occupied by tenants who are not paying, units let below market and units used free by staff. Lenders and buyers look at economic vacancy, which is why the rent collected line matters as much as the rate. For a single property over time, count vacancy in months: a unit empty for one month in a year is an 8.3% vacancy for that unit, and the <a href="/cap-rate-calculator/">cap rate calculator</a> takes that figure as its vacancy allowance.</p>
+
+<h2>What drives the rate</h2>
+<p>Turnover is the main cause: every move-out produces at least a few days empty for cleaning and viewings, and often weeks. Lowering the vacancy rate is therefore mostly about keeping good tenants, which is why a modest rent increase that keeps a tenant usually beats a larger one that loses them; the <a href="/rent-increase-calculator/">rent increase calculator</a> shows the trade-off. Pricing above market, slow repairs and slow re-letting add to it. A vacancy rate well below the local average may also mean rents are set too low.</p>
+
+<h2>Budgeting for it</h2>
+<p>No building runs at 100% occupancy for long, so budgets should assume a vacancy allowance rather than full rent. The rent-lost-per-year line converts the current rate into the amount to plan for, and the <a href="/rental-cash-flow-calculator/">rental cash flow calculator</a> applies the allowance to a single property's monthly figures.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I use this for rooms, beds or desks?</h3>
+<p>Yes. Any countable rentable unit works; use the average rent per unit of that type.</p>
+<h3>How do I handle units of different rents?</h3>
+<p>Use the average rent for the rate and lost rent, or run the calculator once per rent band and add the results.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/rental-cash-flow-calculator/">Rental cash flow calculator</a></li>
+  <li><a href="/rent-increase-calculator/">Rent increase calculator</a></li>
+  <li><a href="/prorated-rent-calculator/">Prorated rent calculator</a></li>
+</ul>

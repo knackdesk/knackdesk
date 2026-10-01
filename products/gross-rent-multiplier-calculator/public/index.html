@@ -1,0 +1,55 @@
+<!-- title: Gross Rent Multiplier Calculator -->
+<!-- description: Gross rent multiplier, gross yield and monthly rent-to-price ratio of a rental from price and annual rent, plus the price a target multiplier implies for the same rent. -->
+<h1>Gross Rent Multiplier Calculator</h1>
+<p>Enter the price and the annual gross rent. You get the gross rent multiplier, the gross yield, and monthly rent as a share of price; enter a target multiplier to see the price it implies. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The gross rent multiplier is how many years of gross rent it takes to add up to the price, before any costs.</p>
+<p class="formula"><strong>Formula:</strong> GRM = price ÷ annual gross rent; gross yield = annual rent ÷ price × 100; rent to price = monthly rent ÷ price × 100; price for a target GRM = annual rent × target.</p>
+
+<form class="tool" id="f">
+  <label>Price (asking or purchase)<br><input type="number" id="price" min="0.01" step="any" value="300000" required></label>
+  <label>Annual gross rent<br><input type="number" id="rent" min="0.01" step="any" value="30000" required></label>
+  <label>Target multiplier for the price comparison<br><input type="number" id="target" min="0" step="any" value="8"></label>
+  <p><button class="primary" type="submit">Calculate multiplier</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { grossRentMultiplier, priceForGrm } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const annualRent = Number($("rent").value);
+    const r = grossRentMultiplier({ price: Number($("price").value), annualRent });
+    const t = Number($("target").value); const need = t > 0 ? priceForGrm({ annualRent, targetGrm: t }) : null;
+    $("out").innerHTML = `<table><tr><td>Gross rent multiplier</td><td><strong>${fmt(r.grm)}</strong></td></tr><tr><td>Gross yield</td><td>${fmt(r.grossYieldPercent)}%</td></tr><tr><td>Monthly rent</td><td>${fmt(r.monthlyRent)}</td></tr><tr><td>Monthly rent as a share of price</td><td>${fmt(r.rentToPricePercent)}%</td></tr>${need !== null ? `<tr><td>Price at a multiplier of ${fmt(t)}</td><td>${fmt(need)}</td></tr>` : ""}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>A screen, not an analysis</h2>
+<p>The gross rent multiplier needs only two numbers that every listing shows, which is why investors use it to sort a long list of properties in minutes. A lower multiplier means more rent per unit of price. It ignores everything that makes properties differ once you own them: vacancy, taxes, insurance, repairs and management. Two buildings with the same multiplier can have very different net incomes if one is new and the other needs a roof. Use it to decide which properties deserve a full look, then move to the <a href="/cap-rate-calculator/">cap rate calculator</a> with real expenses.</p>
+
+<h2>The rent-to-price line</h2>
+<p>Some investors prefer the monthly version: rent as a percentage of price. A multiplier of 10 is a gross yield of 10% and monthly rent of 0.83% of price. Rules of thumb such as a one percent monthly rent-to-price ratio circulate widely; they are shortcuts that worked in particular markets at particular interest rates, not laws, and the calculator shows the figure without claiming a target. Compare with what similar properties in the same area actually let for.</p>
+
+<h2>Working back to a price</h2>
+<p>If properties in an area trade at a multiplier of about eight, then eight times the rent is roughly what the market pays, and the last line gives that figure for any rent. It is useful as a first offer anchor and as a check on an asking price that assumes a rent the property has never achieved. For the full picture with financing, continue to the <a href="/cash-on-cash-return-calculator/">cash on cash return calculator</a>; the <a href="/rental-yield-calculator/">rental yield calculator</a> covers gross and net yield in the terms used in the UK and Europe.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I use current rent or market rent?</h3>
+<p>Use the rent the property achieves today for the multiplier, and run it again with market rent if the current rent is clearly below it. Note which one you used.</p>
+<h3>Does GRM include other income such as parking or laundry?</h3>
+<p>Gross rent is usually rent only. Add other income if you compare consistently across properties.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cap-rate-calculator/">Cap rate calculator</a></li>
+  <li><a href="/rental-yield-calculator/">Rental yield calculator</a></li>
+  <li><a href="/rent-to-income-calculator/">Rent to income calculator</a></li>
+</ul>
