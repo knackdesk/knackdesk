@@ -37,3 +37,5 @@ After every deploy the `notify` job submits the sitemap to Google Search Console
    - `GSC_SERVICE_ACCOUNT_JSON` = the JSON file contents on one line (or base64 of the file: `base64 -i key.json | tr -d '\n'`).
    - `INDEXNOW_KEY` = the `INDEXNOW_KEY` value from `.env`.
 Local run: `npm run submit:gsc` / `npm run submit:indexnow`.
+
+AdSense: the publisher id lives in the repository variable `ADSENSE_CLIENT_ID`; the build injects the script and writes `ads.txt` when it is set.
