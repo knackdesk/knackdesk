@@ -11,13 +11,28 @@ export function parseListingCopy(body = "") {
   return { intro: prose[0] || "", bullets, outro: prose.slice(1).join(" ") };
 }
 
-function kitArticle({ data, body }) {
+export function sheetAlt(name, file) {
+  const sheet = file.replace(/^sheet-\d+-/, "").replace(/\.png$/, "").replace(/-/g, " ");
+  const pretty = sheet.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\bP L\b/, "P&L").replace(/\bPto\b/, "PTO").replace(/\bSaas\b/, "SaaS");
+  return `${pretty} sheet of ${name}`;
+}
+
+function kitImages({ data, images = [] }) {
+  if (images.length === 0) return "";
+  const base = `/kits/img/${escapeHtml(data.slug)}`;
+  const cover = images.includes("cover.png") ? `<img class="kit-cover" src="${base}/cover.png" alt="${escapeHtml(data.name)} cover" width="1200" height="800" loading="lazy">` : "";
+  const shots = images.filter((f) => f !== "cover.png").map((f) => `<a href="${base}/${escapeHtml(f)}"><img src="${base}/${escapeHtml(f)}" alt="${escapeHtml(sheetAlt(data.name, f))}" loading="lazy"></a>`).join("");
+  return `${cover}${shots ? `<div class="kit-shots">${shots}</div>` : ""}`;
+}
+
+function kitArticle({ data, body, images }) {
   const copy = parseListingCopy(body);
   const price = `$${(data.price_cents / 100).toFixed(0)}`;
   const bullets = copy.bullets.map((b) => `<li>${inline(b)}</li>`).join("");
   return `<article class="kit" id="${escapeHtml(data.slug)}">
 <h2>${escapeHtml(data.name)} <span class="kit-price">${price}</span></h2>
 <p class="kit-tagline">${escapeHtml(data.tagline)}</p>
+${kitImages({ data, images })}
 ${copy.intro ? `<p>${inline(copy.intro)}</p>` : ""}
 ${bullets ? `<ul class="kit-features">${bullets}</ul>` : ""}
 ${copy.outro ? `<p class="small">${inline(copy.outro)}</p>` : ""}

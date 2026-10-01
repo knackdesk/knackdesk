@@ -224,6 +224,19 @@ description: d
     expect(html).toMatch(/href="\/styles\.css\?v=[0-9a-f]{8,}"/);
     expect(readFileSync(join(out, "conv", "index.html"), "utf8")).toMatch(/styles\.css\?v=[0-9a-f]{8,}/);
   });
+  it("shows a kit's cover and sheet screenshots on /kits/ and copies them into the site when assets/images exists", async () => {
+    mkdirSync(join(root, "products", "kitimg", "assets", "images"), { recursive: true });
+    writeFileSync(join(root, "products", "kitimg", "PLAN.md"), KIT_PLAN.replace("slug: kit", "slug: kitimg").replace("name: The Kit", "name: Image Kit"));
+    writeFileSync(join(root, "products", "kitimg", "assets", "images", "cover.png"), "png");
+    writeFileSync(join(root, "products", "kitimg", "assets", "images", "sheet-1-team.png"), "png");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const kits = readFileSync(join(out, "kits", "index.html"), "utf8");
+    expect(kits).toContain('<img class="kit-cover" src="/kits/img/kitimg/cover.png"');
+    expect(kits).toContain('src="/kits/img/kitimg/sheet-1-team.png"');
+    expect(kits).toMatch(/alt="[^"]*Team[^"]*"/);
+    expect(existsSync(join(out, "kits", "img", "kitimg", "cover.png"))).toBe(true);
+    expect(kits).toMatch(/"image":\s*"https:\/\/knackdesk\.com\/kits\/img\/kitimg\/cover\.png"/);
+  });
   it("writes a /kits/ page listing every kit with buy links, listing copy, Product schema and FAQ", async () => {
     mkdirSync(join(root, "products", "kit1"), { recursive: true });
     writeFileSync(join(root, "products", "kit1", "PLAN.md"), `---

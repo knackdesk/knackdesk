@@ -146,3 +146,29 @@ describe("uploadFile + benefit", () => {
     expect(calls.at(-1).body).toEqual({ benefits: ["b1"] });
   });
 });
+
+describe("product media", () => {
+  const mediaFetch = (calls) => async (url, init) => {
+    calls.push({ url, init });
+    if (url.endsWith("/v1/files/")) return { status: 200, headers: new Map(), text: async () => JSON.stringify({ id: "img1", upload: { id: "u1", path: "p", parts: [{ number: 1, url: "https://s3.test/put", headers: {} }] } }) };
+    if (url === "https://s3.test/put") return { status: 200, headers: new Map([["etag", '"e1"']]), text: async () => "" };
+    return { status: 200, headers: new Map(), text: async () => JSON.stringify({ id: "prod1", medias: [{ id: "img1" }] }) };
+  };
+  it("uploads a file with the product_media service when asked", async () => {
+    const calls = [];
+    const c = createPolarClient({ token: "polar_oat_x", orgId: "org", fetchImpl: mediaFetch(calls) });
+    const id = await c.uploadFile({ name: "cover.png", buffer: Buffer.from("png"), mimeType: "image/png", service: "product_media" });
+    expect(id).toBe("img1");
+    const create = calls.find((x) => x.url.endsWith("/v1/files/"));
+    expect(JSON.parse(create.init.body).service).toBe("product_media");
+  });
+  it("sets the product medias in order with a PATCH", async () => {
+    const calls = [];
+    const c = createPolarClient({ token: "polar_oat_x", orgId: "org", fetchImpl: mediaFetch(calls) });
+    const json = await c.setProductMedias("prod1", ["img1", "img2"]);
+    const patch = calls.find((x) => x.url.endsWith("/v1/products/prod1"));
+    expect(patch.init.method).toBe("PATCH");
+    expect(JSON.parse(patch.init.body)).toEqual({ medias: ["img1", "img2"] });
+    expect(json.medias[0].id).toBe("img1");
+  });
+});

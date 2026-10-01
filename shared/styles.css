@@ -58,3 +58,7 @@ details.menu>summary::-webkit-details-marker{display:none}details.menu[open]>sum
 #finder-empty{color:var(--muted);margin:.75rem 0 0}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 body.finding section.category h2{font-size:1.1rem}body.finding .category-intro{display:none}
+
+.kit-cover{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px;margin:.75rem 0 1rem}
+.kit-shots{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:0 0 1rem}.kit-shots a{display:block;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}.kit-shots img{display:block;width:100%;height:auto}
+@media(max-width:640px){.kit-shots{grid-template-columns:repeat(2,1fr)}}

@@ -118,7 +118,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const name = basename(file, ".html");
     const path = name === "index" ? "/" : `/${name}/`;
     const body = raw.replace("<!--FINDER-->", () => renderFinder(items)).replace("<!--PRODUCTS-->", () => sections);
-    const schema = path === "/" ? digital.map(({ data }) => productNode(data)) : [];
+    const schema = path === "/" ? digital.map((item) => productNode(item.data, existsSync(join(item.dir, "assets", "images", "cover.png")) ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null)) : [];
     writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion, footerKits }));
   }
   const details = {};
@@ -142,8 +142,15 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     writePage(outDir, path, renderPage({ title: copy.title, description: copy.description, headline: copy.headline, body, path, adsenseId, schema, menu, assetVersion, footerKits }));
   }
   if (digital.length > 0) {
-    const body = renderKitsPage(digital);
-    const schema = [...digital.map(({ data }) => productNode(data)), faqPageNode(body)].filter(Boolean);
+    const withImages = digital.map((item) => {
+      const imgDir = join(item.dir, "assets", "images");
+      const images = existsSync(imgDir) ? readdirSync(imgDir).filter((f) => f.endsWith(".png")).sort((a, b) => (a === "cover.png" ? -1 : b === "cover.png" ? 1 : a.localeCompare(b))) : [];
+      if (images.length) cpSync(imgDir, join(outDir, "kits", "img", item.data.slug), { recursive: true });
+      return { ...item, images };
+    });
+    const coverUrl = (item) => (item.images?.includes("cover.png") ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null);
+    const body = renderKitsPage(withImages);
+    const schema = [...withImages.map((item) => productNode(item.data, coverUrl(item))), faqPageNode(body)].filter(Boolean);
     writePage(outDir, "/kits/", renderPage({ title: "Spreadsheet Kits", headline: "Spreadsheet Kits for Freelancers and Landlords: Buy Once, Keep Forever", description: "Workbooks for invoicing and cash flow, pricing and quotes, and rent tracking. Formulas only, no macros; work in Excel, Google Sheets and Numbers. One-time purchase.", body, path: "/kits/", adsenseId, schema, menu, assetVersion, footerKits }));
   }
   const categoryLinks = categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` }));

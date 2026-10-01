@@ -71,9 +71,10 @@ export function webApplicationNode({ name, path, description }) {
   };
 }
 
-export function productNode({ name, description, price_cents, polar_url }) {
+export function productNode({ name, description, price_cents, polar_url }, image = null) {
   return {
     "@type": "Product",
+    ...(image ? { image } : {}),
     name,
     description,
     offers: {

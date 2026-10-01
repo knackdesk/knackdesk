@@ -44,12 +44,12 @@ export function createPolarClient({ token, orgId, fetchImpl = fetch }) {
     return json;
   }
 
-  async function uploadFile({ name, buffer, mimeType }) {
+  async function uploadFile({ name, buffer, mimeType, service = "downloadable" }) {
     const size = buffer.length;
     const sha = createHash("sha256").update(buffer).digest("base64");
     const created = await call("/v1/files/", {
       method: "POST",
-      body: withOrg({ name, mime_type: mimeType, size, service: "downloadable", checksum_sha256_base64: sha, upload: { parts: [{ number: 1, chunk_start: 0, chunk_end: size, checksum_sha256_base64: sha }] } }),
+      body: withOrg({ name, mime_type: mimeType, size, service, checksum_sha256_base64: sha, upload: { parts: [{ number: 1, chunk_start: 0, chunk_end: size, checksum_sha256_base64: sha }] } }),
     });
     const part = created.json.upload.parts[0];
     const headers = { ...(part.headers || {}) };
@@ -89,9 +89,15 @@ export function createPolarClient({ token, orgId, fetchImpl = fetch }) {
     return json.url;
   }
 
+  /** Replace the product's media gallery with these file ids (service product_media), in order. */
+  async function setProductMedias(productId, fileIds) {
+    const { json } = await call(`/v1/products/${productId}`, { method: "PATCH", body: { medias: fileIds } });
+    return json;
+  }
+
   async function attachBenefits(productId, benefitIds) {
     await call(`/v1/products/${productId}/benefits`, { method: "POST", body: { benefits: benefitIds } });
   }
 
-  return { listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, upsertDownloadableBenefit, attachBenefits, ensureCheckoutLink };
+  return { setProductMedias, listAllProducts, listOrders, findProductBySlug, upsertProduct, uploadFile, createDownloadableBenefit, upsertDownloadableBenefit, attachBenefits, ensureCheckoutLink };
 }
