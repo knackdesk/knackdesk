@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, mkdirSync, writeFileSync, cpSync, existsSync, rmSync } from "node:fs";
 import { join, basename } from "node:path";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadCatalog } from "./lib/catalog.js";
 import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, escapeHtml } from "../shared/layout.js";
@@ -72,7 +73,7 @@ function blockText(html, cls) {
   return m ? htmlToText(m[1]) : "";
 }
 
-function wrapToolPage(file, path, adsenseId, crossSell, data, parent = null, menu = "") {
+function wrapToolPage(file, path, adsenseId, crossSell, data, parent = null, menu = "", assetVersion = "") {
   if (!existsSync(file)) return null;
   const raw = readFileSync(file, "utf8");
   const title = pageMeta(raw, "title");
@@ -80,7 +81,7 @@ function wrapToolPage(file, path, adsenseId, crossSell, data, parent = null, men
   const description = pageMeta(raw, "description");
   const schema = [webApplicationNode({ name: title, path, description }), faqPageNode(raw)].filter(Boolean);
   const body = `${insertByline(raw, data.reviewed)}\n${crossSell}`;
-  writeFileSync(file, renderPage({ title, description, body, path, adsenseId, headline: data.headline || "", ogType: "article", schema, parent, menu }));
+  writeFileSync(file, renderPage({ title, description, body, path, adsenseId, headline: data.headline || "", ogType: "article", schema, parent, menu, assetVersion }));
   return { definition: blockText(raw, "definition"), formula: blockText(raw, "formula") };
 }
 
@@ -103,6 +104,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   };
   const crossSellFor = (category) => renderCrossSell(kitsFor(category));
   const menu = renderMegaMenu(items);
+  const assetVersion = createHash("sha256").update(readFileSync(join(rootDir, "shared", "styles.css"))).digest("hex").slice(0, 10);
   const categoryOf = (key) => CATEGORY_SECTIONS.find((c) => c.key === key);
   const pagesDir = join(rootDir, "site", "pages");
   for (const file of readdirSync(pagesDir).filter((f) => f.endsWith(".html"))) {
@@ -111,7 +113,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const path = name === "index" ? "/" : `/${name}/`;
     const body = raw.replace("<!--PRODUCTS-->", () => sections);
     const schema = path === "/" ? digital.map(({ data }) => productNode(data)) : [];
-    writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu }));
+    writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion }));
   }
   const details = {};
   for (const { dir, data } of items) {
@@ -120,7 +122,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     cpSync(pub, join(outDir, data.slug), { recursive: true });
     const cat = categoryOf(data.category);
     const parent = cat ? { name: cat.heading, path: `/${cat.key}/` } : null;
-    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data, parent, menu);
+    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data, parent, menu, assetVersion);
     if (d) details[data.slug] = d;
   }
   const tools = items.filter(({ data }) => data.lane !== "digital");
@@ -131,7 +133,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const path = `/${c.key}/`;
     const body = `<h1>${escapeHtml(copy.title)}</h1>\n${copy.intro}\n${renderProductCards(inCat)}\n${renderCrossSell(kitsFor(c.key))}`;
     const schema = [collectionPageNode({ name: copy.title, description: copy.description, path, items: inCat.map(({ data }) => ({ name: data.name, path: `/${data.slug}/` })) })];
-    writePage(outDir, path, renderPage({ title: copy.title, description: copy.description, headline: copy.headline, body, path, adsenseId, schema, menu }));
+    writePage(outDir, path, renderPage({ title: copy.title, description: copy.description, headline: copy.headline, body, path, adsenseId, schema, menu, assetVersion }));
   }
   const categoryLinks = categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` }));
   writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items, categoryLinks));

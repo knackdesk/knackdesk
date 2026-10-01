@@ -55,7 +55,7 @@ export function renderMegaMenu(items) {
   return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega">${cols.join("")}</div></details>`;
 }
 
-export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "" }) {
+export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "" }) {
   const docTitle = headline || title;
   const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
@@ -70,7 +70,7 @@ export function renderPage({ title, description, body, path, adsenseId = "", hea
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 ${socialMeta({ title: docTitle, description, url: `${SITE}${path}`, ogType })}
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css${assetVersion ? `?v=${escapeHtml(assetVersion)}` : ""}">
 ${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>

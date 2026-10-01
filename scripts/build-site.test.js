@@ -179,6 +179,13 @@ description: d
       expect(header).toContain('href="/conv/"');
     }
   });
+  it("links the stylesheet with a content hash on every page", async () => {
+    writeFileSync(join(root, "products", "conv", "public", "index.html"), "<!-- title: Conv -->\n<!-- description: c -->\n<h1>Conv</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const html = readFileSync(join(out, "index.html"), "utf8");
+    expect(html).toMatch(/href="\/styles\.css\?v=[0-9a-f]{8,}"/);
+    expect(readFileSync(join(out, "conv", "index.html"), "utf8")).toMatch(/styles\.css\?v=[0-9a-f]{8,}/);
+  });
   it("matches kits that list several categories", async () => {
     mkdirSync(join(root, "products", "kitm"), { recursive: true });
     writeFileSync(join(root, "products", "kitm", "PLAN.md"), `---

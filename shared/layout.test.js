@@ -42,6 +42,10 @@ describe("renderPage", () => {
     expect(footer).toContain('href="/about/"');
     expect(footer).toContain('href="/contact/"');
   });
+  it("versions the stylesheet URL when an asset version is given", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/", assetVersion: "abc123" });
+    expect(html).toContain('<link rel="stylesheet" href="/styles.css?v=abc123">');
+  });
   it("never mentions the parent company", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).not.toMatch(/smitheo/i);
