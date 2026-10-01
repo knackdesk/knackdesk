@@ -5,7 +5,7 @@ lane: tool
 status: live
 category: ecommerce
 reviewed: 2026-10-01
-headline: Profit per Order Calculator: Fees, Payment Costs and Shipping
+headline: Profit per Order Calculator: Fees, Payment and Shipping
 tagline: Profit and margin on one order after product cost, marketplace fees, payment fees and shipping
 description: Work out the profit on a single online order after the product cost, marketplace or platform fee, payment processing fee, packaging and the shipping you pay versus what you charge.
 ---

@@ -5,7 +5,7 @@ lane: tool
 status: live
 category: ecommerce
 reviewed: 2026-10-01
-headline: Inventory Turnover Calculator: Turns per Year and Days of Stock
+headline: Inventory Turnover Calculator: Turns and Days of Stock
 tagline: Inventory turnover and days of inventory from cost of goods sold and average stock value
 description: Calculate inventory turnover (how many times you sell through your stock in a period) and days of inventory on hand from cost of goods sold and average inventory value.
 ---

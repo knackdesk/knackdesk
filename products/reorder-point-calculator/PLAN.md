@@ -5,7 +5,7 @@ lane: tool
 status: live
 category: ecommerce
 reviewed: 2026-10-01
-headline: Reorder Point Calculator: When to Reorder Stock with Safety Stock
+headline: Reorder Point Calculator: When to Reorder, with Safety Stock
 tagline: The stock level at which to reorder, from daily sales, supplier lead time and safety stock
 description: Find the reorder point for a product from average daily sales, supplier lead time and a safety stock buffer, plus the order quantity for a target cover period.
 ---
