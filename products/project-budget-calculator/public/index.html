@@ -1,0 +1,56 @@
+<!-- title: Project Budget Calculator -->
+<!-- description: Build a project budget or quote from estimated hours and hourly rate, pass-through expenses, a contingency allowance and an optional discount, with the working days the hours imply. -->
+<h1>Project Budget Calculator</h1>
+<p>Enter the estimated hours and rate, any expenses passed through to the client, a contingency percentage for the unknowns and an optional discount. You get the labour cost, subtotal, contingency, total and the working days the hours represent. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A project budget is labour plus expenses, with an allowance for what the estimate missed, less any discount you choose to give.</p>
+<p class="formula"><strong>Formula:</strong> labour = hours × rate; subtotal = labour + expenses; contingency = subtotal × contingency %; total = (subtotal + contingency) × (1 − discount %); working days = hours ÷ hours per day.</p>
+
+<form class="tool" id="f">
+  <label>Estimated hours<br><input type="number" id="hours" min="0" step="any" value="80" required></label>
+  <label>Hourly rate (or blended rate)<br><input type="number" id="rate" min="0" step="any" value="90" required></label>
+  <label>Expenses passed through (stock images, travel, licences)<br><input type="number" id="exp" min="0" step="any" value="500"></label>
+  <label>Contingency (% of subtotal)<br><input type="number" id="cont" min="0" step="any" value="15"></label>
+  <label>Discount (%)<br><input type="number" id="disc" min="0" max="99.99" step="any" value="0"></label>
+  <label>Productive hours per working day<br><input type="number" id="hpd" min="0.1" step="any" value="8"></label>
+  <p><button class="primary" type="submit">Calculate budget</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { projectBudget } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = projectBudget({ hours: Number($("hours").value), hourlyRate: Number($("rate").value), expenses: Number($("exp").value) || 0, contingencyPercent: Number($("cont").value) || 0, discountPercent: Number($("disc").value) || 0, hoursPerDay: Number($("hpd").value) || 8 });
+    $("out").innerHTML = `<table><tr><td>Labour</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Subtotal with expenses</td><td>${fmt(r.subtotal)}</td></tr><tr><td>Contingency</td><td>${fmt(r.contingency)}</td></tr><tr><td>Before discount</td><td>${fmt(r.beforeDiscount)}</td></tr><tr><td>Discount</td><td>${fmt(r.discount)}</td></tr><tr><td>Total budget</td><td><strong>${fmt(r.total)}</strong></td></tr><tr><td>Working days of effort</td><td>${fmt(r.workingDays)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Estimating the hours</h2>
+<p>The budget is only as good as the hours. Break the work into tasks small enough to picture, estimate each one, and add the time that never appears in task lists: kick-off and status meetings, revisions, waiting for client feedback, testing and handover. Experienced estimators compare the bottom-up total with past projects of similar size; if the new estimate is well under what a comparable job actually took, the estimate is wrong, not the history. Use a <a href="/blended-rate-calculator/">blended rate</a> when several people with different rates will work on it.</p>
+
+<h2>Contingency is not padding</h2>
+<p>Contingency covers the things you know will happen but cannot name yet: a third round of changes, a dependency that slips, a browser that misbehaves. Ten to twenty percent is common for well-defined work, more for discovery or anything with a new technology. Show it as a line in the budget rather than hiding it in the hours; clients accept a contingency they can see and resent one they discover later. If the project finishes without using it, you have a choice between a goodwill credit and a healthier margin.</p>
+
+<h2>Discounts and the days behind the number</h2>
+<p>A discount is a decision, not a rounding error. Giving ten percent on a budget with a fifteen percent contingency means a modest overrun wipes out the margin. The working-days line shows the elapsed effort behind the budget; it is useful for a sanity check against the deadline and for explaining to a client why the price is what it is. To test whether the final price actually pays, run it through the <a href="/project-profitability-calculator/">project profitability calculator</a> with your internal cost per hour.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should expenses carry a markup?</h3>
+<p>Many agencies add a handling percentage to pass-through costs. Enter the marked-up figure in the expenses field if so.</p>
+<h3>Does contingency apply to expenses?</h3>
+<p>Here it applies to the subtotal including expenses. Set expenses to zero and add them afterwards if you prefer labour-only contingency.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/blended-rate-calculator/">Blended rate calculator</a></li>
+  <li><a href="/project-profitability-calculator/">Project profitability calculator</a></li>
+  <li><a href="/deposit-split-calculator/">Deposit split calculator</a></li>
+</ul>

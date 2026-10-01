@@ -1,0 +1,61 @@
+<!-- title: Blended Rate Calculator -->
+<!-- description: Combine the hours and hourly rates of several roles into a single blended hourly rate for a quote or retainer, with total hours and total cost. -->
+<h1>Blended Rate Calculator</h1>
+<p>Enter the roles on a piece of work with their estimated hours and hourly rates. You get the total hours, the total at individual rates, and the blended hourly rate that produces the same total. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A blended rate is the hours-weighted average of the rates of everyone working on the job.</p>
+<p class="formula"><strong>Formula:</strong> blended rate = Σ(hours × rate) ÷ Σ hours.</p>
+
+<form class="tool" id="f">
+  <table class="rows">
+    <tr><th>Role</th><th>Hours</th><th>Hourly rate</th></tr>
+    <tr><td><input type="text" id="n0" value="Lead / strategist" aria-label="Role 1"></td><td><input type="number" id="h0" min="0" step="any" value="10" aria-label="Hours 1"></td><td><input type="number" id="r0" min="0" step="any" value="150" aria-label="Rate 1"></td></tr>
+    <tr><td><input type="text" id="n1" value="Designer" aria-label="Role 2"></td><td><input type="number" id="h1" min="0" step="any" value="30" aria-label="Hours 2"></td><td><input type="number" id="r1" min="0" step="any" value="80" aria-label="Rate 2"></td></tr>
+    <tr><td><input type="text" id="n2" value="Developer" aria-label="Role 3"></td><td><input type="number" id="h2" min="0" step="any" value="40" aria-label="Hours 3"></td><td><input type="number" id="r2" min="0" step="any" value="95" aria-label="Rate 3"></td></tr>
+    <tr><td><input type="text" id="n3" value="Project manager" aria-label="Role 4"></td><td><input type="number" id="h3" min="0" step="any" value="12" aria-label="Hours 4"></td><td><input type="number" id="r3" min="0" step="any" value="85" aria-label="Rate 4"></td></tr>
+    <tr><td><input type="text" id="n4" value="" aria-label="Role 5"></td><td><input type="number" id="h4" min="0" step="any" value="" aria-label="Hours 5"></td><td><input type="number" id="r4" min="0" step="any" value="" aria-label="Rate 5"></td></tr>
+    <tr><td><input type="text" id="n5" value="" aria-label="Role 6"></td><td><input type="number" id="h5" min="0" step="any" value="" aria-label="Hours 6"></td><td><input type="number" id="r5" min="0" step="any" value="" aria-label="Rate 6"></td></tr>
+  </table>
+  <p><button class="primary" type="submit">Calculate blended rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { blendedRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const rows = [];
+    for (let i = 0; i < 6; i++) { const h = $(`h${i}`).value, r = $(`r${i}`).value; if (h !== "" || r !== "") rows.push({ hours: Number(h) || 0, rate: Number(r) || 0 }); }
+    const r = blendedRate(rows);
+    $("out").innerHTML = `<table><tr><td>Total hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Total at individual rates</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Blended hourly rate</td><td><strong>${fmt(r.blended)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>When a blended rate helps</h2>
+<p>Clients on retainers and time-and-materials contracts often want one hourly figure rather than a rate card with six lines. A blended rate gives them that while keeping your total the same, provided the mix of hours matches the estimate. It also simplifies invoicing and makes proposals easier to compare. The calculation is a weighted average: the senior person's rate counts for the hours they actually spend, which is usually far fewer than the designer or developer doing the bulk of the work.</p>
+
+<h2>The mix is the risk</h2>
+<p>A blended rate is only as good as the hours split behind it. If the work turns out to need more senior time than estimated, you are billing those hours at a discount; if it needs more junior time, the client is overpaying and will notice at renewal. Revisit the mix each quarter on long retainers, and put the assumed split in the proposal so a change in scope can trigger a change in rate. For fixed-price work, check the result with the <a href="/project-profitability-calculator/">project profitability calculator</a> using internal costs rather than bill rates.</p>
+
+<h2>Setting the individual rates</h2>
+<p>Each role's rate should cover its cost to the business plus margin, at a realistic utilization. The <a href="/employee-cost-calculator/">employee cost calculator</a> gives cost per productive hour; the <a href="/utilization-rate-calculator/">utilization rate calculator</a> shows how many hours each role actually bills. A blended rate built on under-priced roles blends the loss in with everything else and hides it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I include non-billable support hours?</h3>
+<p>Yes, with a rate of zero; they lower the blended rate and show the client the real time involved. Or leave them out and keep them as overhead in each rate.</p>
+<h3>Why is the blended rate not the simple average of the rates?</h3>
+<p>Because hours differ. Ten hours at 150 and thirty at 80 is 97.50 an hour, not 115.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/project-budget-calculator/">Project budget calculator</a></li>
+  <li><a href="/retainer-calculator/">Retainer calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+</ul>

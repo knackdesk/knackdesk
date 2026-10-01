@@ -1,0 +1,54 @@
+<!-- title: Project Profitability Calculator -->
+<!-- description: Profit and margin on a fixed-price project from the hours it takes, your internal cost per hour and expenses, plus the effective hourly rate and the hours at which the project breaks even. -->
+<h1>Project Profitability Calculator</h1>
+<p>Enter the agreed price, the hours the project takes or is expected to take, your internal cost per hour and any expenses. You get the labour cost, total cost, profit, margin, the effective hourly rate the price works out to, and the hours at which profit reaches zero. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A fixed-price project is profitable when the price exceeds the hours it really takes at what those hours cost you, plus expenses.</p>
+<p class="formula"><strong>Formula:</strong> labour cost = hours × cost per hour; total cost = labour + expenses; profit = price − total cost; margin = profit ÷ price × 100; effective rate = price ÷ hours; break-even hours = (price − expenses) ÷ cost per hour.</p>
+
+<form class="tool" id="f">
+  <label>Project price (fixed fee)<br><input type="number" id="price" min="0.01" step="any" value="10000" required></label>
+  <label>Hours spent or estimated<br><input type="number" id="hours" min="0.01" step="any" value="80" required></label>
+  <label>Internal cost per hour (salary, contributions, overhead ÷ productive hours)<br><input type="number" id="cph" min="0" step="any" value="55" required></label>
+  <label>Expenses not billed separately<br><input type="number" id="exp" min="0" step="any" value="500"></label>
+  <p><button class="primary" type="submit">Calculate profitability</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { projectProfit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = projectProfit({ price: Number($("price").value), hours: Number($("hours").value), costPerHour: Number($("cph").value), expenses: Number($("exp").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Profit</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Margin</td><td><strong>${fmt(r.marginPercent)}%</strong></td></tr><tr><td>Effective hourly rate</td><td>${fmt(r.effectiveRate)}</td></tr><tr><td>Break-even hours</td><td>${r.breakEvenHours === null ? "n/a" : fmt(r.breakEvenHours)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Cost per hour, not bill rate</h2>
+<p>The input that makes this calculator honest is the internal cost per hour: what an hour of your or your team's time costs the business, not what you charge for it. For an employee it is salary plus employer contributions plus a share of overhead, divided by the hours that are actually productive; the <a href="/employee-cost-calculator/">employee cost calculator</a> produces exactly that figure. For a solo freelancer it is the income you need plus business costs, spread over billable hours. Using the bill rate instead shows every project at zero profit and tells you nothing.</p>
+
+<h2>Margin and overrun</h2>
+<p>Fixed prices shift the risk of overrun from the client to you. The break-even hours line is the number to watch during delivery: it is how many hours the project can absorb before profit reaches zero. On the example, a 10,000 project at 55 an hour with 500 of expenses breaks even at about 173 hours; the estimate of 80 leaves a wide margin, but a project that drifts past 120 hours has already given back most of it. Compare with the effective hourly rate, which is what the price is worth per hour actually worked: if it falls below your target rate, scope control, not effort, is the fix.</p>
+
+<h2>Pricing the next one</h2>
+<p>Run the calculator after each fixed-price project with the real hours and keep the margins. Projects that consistently land below 30% to 40% margin are under-quoted or over-delivered. Build the next quote with the <a href="/project-budget-calculator/">project budget calculator</a>, including contingency, and check what it earns per hour against the <a href="/effective-hourly-rate/">effective hourly rate calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include sales time in the hours?</h3>
+<p>Include hours spent after the project was won. Unpaid proposal time belongs in your overhead and therefore in the cost per hour.</p>
+<h3>What margin should I aim for?</h3>
+<p>It depends on your overhead model. If cost per hour already includes overhead, the margin is close to true profit and 20% to 40% is a common range for services work.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/project-budget-calculator/">Project budget calculator</a></li>
+  <li><a href="/effective-hourly-rate/">Effective hourly rate calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

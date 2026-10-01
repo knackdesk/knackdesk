@@ -1,0 +1,55 @@
+<!-- title: Billable Hours Calculator -->
+<!-- description: The billable hours a revenue goal needs at your hourly rate, per year, week and day, and the utilization rate they require from your available hours, with a feasibility check. -->
+<h1>Billable Hours Calculator</h1>
+<p>Enter a revenue goal, your hourly rate, the weeks you work in a year and the hours you have available each week. You get the billable hours needed per year, week and day, the utilization that implies, and whether it fits. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A revenue goal divided by your rate is the number of hours you must bill, and the calendar decides whether that is possible.</p>
+<p class="formula"><strong>Formula:</strong> hours needed = goal ÷ rate; per week = hours ÷ weeks worked; per day = per week ÷ days per week; utilization = per week ÷ available hours × 100; feasible when utilization is 100% or less.</p>
+
+<form class="tool" id="f">
+  <label>Revenue goal for the year<br><input type="number" id="goal" min="0" step="any" value="120000" required></label>
+  <label>Hourly bill rate<br><input type="number" id="rate" min="0.01" step="any" value="100" required></label>
+  <label>Weeks worked per year<br><input type="number" id="weeks" min="1" max="52" step="any" value="46" required></label>
+  <label>Available hours per week<br><input type="number" id="hpw" min="0.1" step="any" value="40" required></label>
+  <label>Working days per week<br><input type="number" id="dpw" min="1" max="7" step="any" value="5" required></label>
+  <p><button class="primary" type="submit">Calculate hours</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { billableTarget } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = billableTarget({ revenueGoal: Number($("goal").value), hourlyRate: Number($("rate").value), weeksWorked: Number($("weeks").value), hoursPerWeek: Number($("hpw").value), daysPerWeek: Number($("dpw").value) });
+    $("out").innerHTML = `<table><tr><td>Billable hours per year</td><td><strong>${fmt(r.hoursNeeded)}</strong></td></tr><tr><td>Per week</td><td>${fmt(r.perWeek)}</td></tr><tr><td>Per working day</td><td>${fmt(r.perDay)}</td></tr><tr><td>Utilization required</td><td><strong>${fmt(r.utilizationPercent)}%</strong></td></tr><tr><td>Hours left each week for non-billable work</td><td>${fmt(r.spareHoursPerWeek)}</td></tr><tr><td>Feasible</td><td>${r.feasible ? "Yes" : "No: the goal needs more hours than you have"}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Reading the result</h2>
+<p>The hours per year figure is arithmetic; the utilization line is the judgement. Billing 26 hours of a 40-hour week is 65% utilization, which leaves fourteen hours for finding the next client, invoicing, learning and admin. That is sustainable for most freelancers. A goal that needs 85% or more leaves almost no room for the unpaid work that keeps the business alive, and anything over 100% is impossible at the current rate however hard you work. When the number is uncomfortable the honest options are a higher rate, more weeks, or a smaller goal.</p>
+
+<h2>Weeks and hours that are really available</h2>
+<p>Fifty-two weeks is the calendar, not your capacity. Subtract holidays, public holidays, likely sick days and the weeks you want off; 44 to 48 is typical. Available hours per week should be hours you can actually work, not the hours you wish you could. Being honest here is what makes the feasibility line useful. If you track your time, the <a href="/utilization-rate-calculator/">utilization rate calculator</a> shows what your real utilization has been, which is a better guide than a target.</p>
+
+<h2>From hours back to the rate</h2>
+<p>This tool fixes the rate and asks for hours. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> does the opposite: it takes the income you need, the hours you can bill and your costs, and gives the rate. Run both: if the hours here are infeasible at your current rate, the other calculator tells you what the rate has to become. The <a href="/revenue-goal-calculator/">revenue goal calculator</a> breaks the same target into clients and projects.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is the revenue goal before or after tax?</h3>
+<p>Before tax and before expenses. It is what clients pay you in the year.</p>
+<h3>What if I bill by the day or by project?</h3>
+<p>Convert to an hourly equivalent: day rate ÷ hours per day, or project fee ÷ hours it takes.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+  <li><a href="/revenue-goal-calculator/">Revenue goal calculator</a></li>
+</ul>

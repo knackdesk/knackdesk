@@ -1,0 +1,54 @@
+<!-- title: Utilization Rate Calculator -->
+<!-- description: Billable hours as a share of available hours for a person or team, the non-billable hours, the revenue the billable hours produce, and the extra hours needed to reach a target utilization. -->
+<h1>Utilization Rate Calculator</h1>
+<p>Enter billable and available hours for a person or a team over any period, plus an optional hourly rate and a target. You get the utilization rate, non-billable hours, billable revenue and the hours needed to reach the target. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Utilization is the share of available working hours that are billed to clients.</p>
+<p class="formula"><strong>Formula:</strong> utilization = billable ÷ available × 100; non-billable = available − billable; revenue = billable × rate; hours to target = max(0, target % × available − billable).</p>
+
+<form class="tool" id="f">
+  <label>Billable hours in the period<br><input type="number" id="bill" min="0" step="any" value="120" required></label>
+  <label>Available hours in the period (contracted, after leave)<br><input type="number" id="avail" min="0" step="any" value="160" required></label>
+  <label>Hourly bill rate (optional)<br><input type="number" id="rate" min="0" step="any" value="100"></label>
+  <label>Target utilization (%)<br><input type="number" id="target" min="0" max="100" step="any" value="80"></label>
+  <p><button class="primary" type="submit">Calculate utilization</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { utilization } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = utilization({ billableHours: Number($("bill").value), availableHours: Number($("avail").value), hourlyRate: Number($("rate").value) || 0, targetPercent: Number($("target").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Utilization rate</td><td><strong>${fmt(r.ratePercent)}%</strong></td></tr><tr><td>Non-billable hours</td><td>${fmt(r.nonBillableHours)}</td></tr><tr><td>Billable revenue</td><td>${fmt(r.billableRevenue)}</td></tr><tr><td>Extra billable hours to reach the target</td><td>${fmt(r.hoursToTarget)}</td></tr><tr><td>Revenue at target utilization</td><td>${fmt(r.revenueAtTarget)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What counts as available</h2>
+<p>The rate depends entirely on the denominator, which is why two agencies quoting 75% can mean different things. The strictest version uses total contracted hours, including holidays and sick days, and gives the lowest number. The more common version uses hours actually available for work, after leave and public holidays, which is what this calculator expects. Either is fine as long as it is consistent across people and months. Over a month, 160 available hours for a full-time person is a typical figure; over a year with leave removed, 1,800 to 1,900.</p>
+
+<h2>What a good number looks like</h2>
+<p>Nobody bills every hour. Meetings, proposals, admin, training and the gaps between projects all take time, and a person with 100% utilization has no room for any of it. Targets in the range of 70% to 85% are common for delivery staff in services businesses, with lower figures for people who also sell or manage. Set the target field to your own expectation and the calculator shows how many more billable hours it takes to get there, and what that is worth at your rate. A team persistently below target has a sales or scoping problem; one persistently above it has a burnout and quality problem.</p>
+
+<h2>From utilization to rates</h2>
+<p>Utilization is one of the two inputs to a sustainable hourly rate: the revenue a person must produce divided by the hours they can actually bill. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> starts from income needs and the <a href="/billable-hours-calculator/">billable hours calculator</a> works the other way, from a revenue goal to the hours and utilization it requires. For the cost side of the same person, the <a href="/employee-cost-calculator/">employee cost calculator</a> gives the cost per productive hour that the bill rate has to beat.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should internal projects count as billable?</h3>
+<p>No, unless they are charged to a budget. Keep them non-billable so the rate reflects client revenue.</p>
+<h3>Can I use this for a whole team?</h3>
+<p>Yes. Add up everyone's billable and available hours and enter the totals; the rate is then hours-weighted.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/billable-hours-calculator/">Billable hours calculator</a></li>
+  <li><a href="/effective-hourly-rate/">Effective hourly rate calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+</ul>
