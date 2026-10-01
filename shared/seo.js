@@ -103,6 +103,22 @@ export function extractFaq(html) {
     .filter(({ question, answer }) => question && answer);
 }
 
+export function articleNode({ headline, description, path, datePublished, dateModified = datePublished, image = null }) {
+  return {
+    "@type": "Article",
+    headline,
+    description,
+    url: `${SITE}${path}`,
+    mainEntityOfPage: `${SITE}${path}`,
+    datePublished,
+    dateModified,
+    ...(image ? { image } : {}),
+    author: { "@id": ORG_ID },
+    publisher: { "@id": ORG_ID },
+    inLanguage: "en",
+  };
+}
+
 export function faqPageNode(html) {
   const faq = extractFaq(html);
   if (faq.length === 0) return null;

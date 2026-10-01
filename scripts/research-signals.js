@@ -5,7 +5,7 @@
  *  3. Polar: units and gross per kit from pipeline/LEDGER.md
  * Every section degrades to a clear "no data yet" line instead of failing.
  */
-import { readFile } from "node:fs/promises";
+import { readFile, appendFile } from "node:fs/promises";
 import { loadDotEnv } from "./lib/env.js";
 import { getAccessToken } from "./lib/google-auth.js";
 import { searchAnalytics, analyticsWindow } from "./lib/gsc.js";
@@ -26,10 +26,19 @@ async function gscSection() {
   }
 }
 
+async function resolveSiteTag(token, account) {
+  const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/rum/site_info/list`, { headers: { Authorization: `Bearer ${token}` } });
+  const json = await res.json();
+  if (!json.success) return null;
+  const site = (json.result || []).find((s) => String(s.host || "").includes("knackdesk")) || (json.result || [])[0];
+  return site?.site_tag || null;
+}
+
 async function cloudflareSection() {
-  const token = process.env.CLOUDFLARE_API_TOKEN, account = process.env.CLOUDFLARE_ACCOUNT_ID, site = process.env.CLOUDFLARE_WEB_ANALYTICS_SITE_TAG;
+  const token = process.env.CLOUDFLARE_API_TOKEN, account = process.env.CLOUDFLARE_ACCOUNT_ID;
   if (!token || !account) return console.log("\ncloudflare analytics: skipped (CLOUDFLARE_API_TOKEN/ACCOUNT_ID not set)");
-  if (!site) return console.log("\ncloudflare analytics: skipped (CLOUDFLARE_WEB_ANALYTICS_SITE_TAG not set; find it under Analytics & Logs > Web Analytics > site > Manage site)");
+  const site = process.env.CLOUDFLARE_WEB_ANALYTICS_SITE_TAG || (await resolveSiteTag(token, account));
+  if (!site) return console.log("\ncloudflare analytics: skipped (no site tag: set CLOUDFLARE_WEB_ANALYTICS_SITE_TAG, or give the API token the Account Analytics: Read permission so it can be looked up)");
   const since = new Date(Date.now() - 28 * 86400000).toISOString();
   const query = `{ viewer { accounts(filter:{accountTag:"${account}"}) { rumPageloadEventsAdaptiveGroups(limit:25, filter:{siteTag:"${site}", datetime_geq:"${since}"}, orderBy:[count_DESC]) { count dimensions { requestPath } } } } }`;
   const res = await fetch("https://api.cloudflare.com/client/v4/graphql", { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
@@ -48,11 +57,22 @@ async function polarSection() {
   for (const r of rows) console.log(`  ${pad(r[1], 36)} ${pad(r[5], 6)} ${pad(r[6], 6)} ${r[7]}`);
 }
 
+const wantLog = process.argv.includes("--log");
+const lines = [];
+if (wantLog) {
+  const orig = console.log;
+  console.log = (...a) => { lines.push(a.join(" ")); orig(...a); };
+}
 try {
   await loadDotEnv();
   await gscSection();
   await cloudflareSection();
   await polarSection();
+  if (wantLog) {
+    const stamp = new Date().toISOString().slice(0, 10);
+    await appendFile(new URL("../pipeline/RESEARCH-LOG.md", import.meta.url), `\n## ${stamp}\n\n\`\`\`\n${lines.join("\n").trim()}\n\`\`\`\n`);
+    console.log(`\nresearch: appended to pipeline/RESEARCH-LOG.md (${stamp})`);
+  }
 } catch (err) {
   console.error(`research: error: ${err.message}`);
   process.exit(1);

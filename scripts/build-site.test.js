@@ -190,6 +190,32 @@ description: d
     const footer = readFileSync(join(out, "ptool", "index.html"), "utf8").split("<h4>Kits</h4>")[1].split("</ul>")[0];
     expect((footer.match(/href="\/kits\/#/g) || []).length).toBeLessThanOrEqual(6);
   });
+  it("renders guides from site/guides into /guides/<slug>/ with Article schema, byline, breadcrumb and a /guides/ index", async () => {
+    addFeeTool(root);
+    mkdirSync(join(root, "site", "guides"), { recursive: true });
+    writeFileSync(join(root, "site", "guides", "price-a-project.html"), `<!-- title: How to Price a Project -->
+<!-- description: A guide to pricing. -->
+<!-- reviewed: 2026-10-02 -->
+<!-- summary: From hourly rate to quote in five steps. -->
+<h1>How to price a project</h1>
+<p>Start with the <a href="/fee/">late fee calculator</a>.</p>
+<h2>Step one</h2><p>Text.</p>`);
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const guide = readFileSync(join(out, "guides", "price-a-project", "index.html"), "utf8");
+    expect(guide).toContain("<title>How to Price a Project");
+    expect(guide).toContain('class="byline"');
+    expect(guide).toMatch(/"@type":\s*"Article"/);
+    expect(guide).toMatch(/"datePublished":\s*"2026-10-02"/);
+    expect(guide).toMatch(/"BreadcrumbList"[\s\S]*Guides/);
+    expect(guide).toContain('href="/guides/"');
+    const index = readFileSync(join(out, "guides", "index.html"), "utf8");
+    expect(index).toContain('href="/guides/price-a-project/"');
+    expect(index).toContain("From hourly rate to quote in five steps.");
+    expect(readFileSync(join(out, "sitemap.xml"), "utf8")).toContain("<loc>https://knackdesk.com/guides/price-a-project/</loc>");
+    expect(readFileSync(join(out, "sitemap.xml"), "utf8")).toContain("<loc>https://knackdesk.com/guides/</loc>");
+    expect(readFileSync(join(out, "llms.txt"), "utf8")).toContain("https://knackdesk.com/guides/price-a-project/");
+    expect(readFileSync(join(out, "index.html"), "utf8")).toContain('href="/guides/"');
+  });
   it("writes a category hub page per category with the tools, breadcrumb schema and sitemap entry", async () => {
     addFeeTool(root);
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });

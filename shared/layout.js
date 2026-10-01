@@ -105,7 +105,7 @@ ${crumbs({ title, path, parent })}${body}
 <div class="foot-brand"><a class="brand" href="/">Knackdesk</a><p>Small, useful calculators and spreadsheet kits for freelancers, small businesses, landlords and online sellers. Free to use; nothing you enter leaves your browser.</p><p><a href="mailto:hello@knackdesk.com">hello@knackdesk.com</a></p></div>
 <div class="foot-col"><h4>Tools</h4><ul>${CATEGORY_SECTIONS.map((c) => `<li><a href="/${c.key}/">${escapeHtml(c.heading)}</a></li>`).join("")}</ul></div>
 <div class="foot-col"><h4>Kits</h4><ul>${footerKits.slice(0, FOOTER_KITS).map((k) => `<li><a href="/kits/#${escapeHtml(k.slug)}">${escapeHtml(k.name)}</a></li>`).join("")}<li><a href="/kits/">All${footerKits.length > FOOTER_KITS ? ` ${footerKits.length}` : ""} kits</a></li></ul></div>
-<div class="foot-col"><h4>Knackdesk</h4><ul><li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li><li><a href="/kits/">Kits</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li></ul></div>
+<div class="foot-col"><h4>Knackdesk</h4><ul><li><a href="/about/">About</a></li><li><a href="/guides/">Guides</a></li><li><a href="/contact/">Contact</a></li><li><a href="/kits/">Kits</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li></ul></div>
 </div>
 <div class="foot-bottom"><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><p class="copy">© ${new Date().getUTCFullYear()} Knackdesk</p></div>
 </footer>

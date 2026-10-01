@@ -6,7 +6,7 @@ import { loadCatalog } from "./lib/catalog.js";
 import { CATEGORY_SECTIONS, renderPage, renderCatalogSections, renderProductCards, renderMegaMenu, renderFinder, escapeHtml } from "../shared/layout.js";
 import { CATEGORY_COPY } from "../shared/category-copy.js";
 import { renderKitsPage } from "../shared/kits-page.js";
-import { webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
+import { articleNode, webApplicationNode, faqPageNode, productNode, htmlToText } from "../shared/seo.js";
 import { collectionPageNode } from "../shared/seo.js";
 import { renderLlmsTxt, renderLlmsFullTxt } from "./lib/llms.js";
 
@@ -121,6 +121,25 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const schema = path === "/" ? digital.map((item) => productNode(item.data, existsSync(join(item.dir, "assets", "images", "cover.png")) ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null)) : [];
     writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion, footerKits }));
   }
+  // Guides: long-form pages in site/guides/*.html -> /guides/<slug>/ plus a /guides/ index.
+  const guidesDir = join(rootDir, "site", "guides");
+  const guideFiles = existsSync(guidesDir) ? readdirSync(guidesDir).filter((f) => f.endsWith(".html")).sort() : [];
+  const guides = guideFiles.map((file) => {
+    const raw = readFileSync(join(guidesDir, file), "utf8");
+    const slug = basename(file, ".html");
+    return { slug, path: `/guides/${slug}/`, raw, title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), reviewed: pageMeta(raw, "reviewed"), summary: pageMeta(raw, "summary") };
+  });
+  const guidesParent = { name: "Guides", path: "/guides/" };
+  for (const g of guides) {
+    const body = `${insertByline(g.raw, g.reviewed)}\n<p class="more"><a href="/guides/">All guides →</a></p>`;
+    const schema = [articleNode({ headline: g.title, description: g.description, path: g.path, datePublished: g.reviewed }), faqPageNode(body)].filter(Boolean);
+    writePage(outDir, g.path, renderPage({ title: g.title, description: g.description, body, path: g.path, adsenseId, schema, parent: guidesParent, menu, assetVersion, footerKits, ogType: "article" }));
+  }
+  if (guides.length) {
+    const list = guides.map((g) => `<li><a href="${g.path}"><strong>${escapeHtml(g.title)}</strong><span>${escapeHtml(g.summary || g.description)}</span></a></li>`).join("\n");
+    const body = `<h1>Guides</h1>\n<p class="lede">Longer reads that connect the calculators: how the numbers fit together, in the order you actually use them, with the tool for each step.</p>\n<ul class="cards guides">\n${list}\n</ul>`;
+    writePage(outDir, "/guides/", renderPage({ title: "Guides", headline: "Guides: How the Numbers Fit Together for Freelancers and Small Businesses", description: "Step-by-step guides that connect the free calculators: pricing a project, buying a rental, budgeting a hire.", body, path: "/guides/", adsenseId, schema: [collectionPageNode({ name: "Guides", description: "Step-by-step guides that connect the free calculators.", path: "/guides/", items: guides.map((g) => ({ name: g.title, path: g.path })) })], menu, assetVersion, footerKits }));
+  }
   const details = {};
   for (const { dir, data } of items) {
     const pub = join(dir, "public");
@@ -153,10 +172,10 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const schema = [...withImages.map((item) => productNode(item.data, coverUrl(item))), faqPageNode(body)].filter(Boolean);
     writePage(outDir, "/kits/", renderPage({ title: "Spreadsheet Kits", headline: "Spreadsheet Kits for Freelancers and Landlords: Buy Once, Keep Forever", description: "Workbooks for invoicing and cash flow, pricing and quotes, and rent tracking. Formulas only, no macros; work in Excel, Google Sheets and Numbers. One-time purchase.", body, path: "/kits/", adsenseId, schema, menu, assetVersion, footerKits }));
   }
-  const categoryLinks = categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` }));
+  const categoryLinks = [...categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` })), ...guides.map((g) => ({ key: `guide-${g.slug}`, heading: `Guide: ${g.title}`, path: g.path }))];
   writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items, categoryLinks));
   writeFileSync(join(outDir, "llms-full.txt"), renderLlmsFullTxt(items, details, categoryLinks));
-  const urls = ["/", ...(digital.length > 0 ? ["/kits/"] : []), ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
+  const urls = ["/", ...(digital.length > 0 ? ["/kits/"] : []), ...(guides.length ? ["/guides/", ...guides.map((g) => g.path)] : []), ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
   if (adsenseId) writeFileSync(join(outDir, "ads.txt"), `google.com, ${adsenseId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
   writeFileSync(join(outDir, "robots.txt"), ROBOTS);
