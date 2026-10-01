@@ -107,6 +107,7 @@ export const CATEGORY_SECTIONS = [
   { key: "planning", nav: "Planning", heading: "Planning & cash", intro: "See how long your cash lasts, what you need to sell to break even or hit a goal, and what your software really costs." },
   { key: "time", nav: "Time & pay", heading: "Time & pay", intro: "Turn hours into invoice-ready decimals, count working days and work out overtime pay." },
   { key: "property", nav: "Property", heading: "Rent & property", intro: "Calculators for tenants, flatmates, landlords and small investors." },
+  { key: "ecommerce", nav: "Selling", heading: "Selling online", intro: "Profit per order after fees and shipping, free-shipping thresholds, stock turnover, reorder points and the ad return you need." },
 ];
 
 function section({ id, heading, intro, list, href }) {

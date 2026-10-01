@@ -1,0 +1,62 @@
+<!-- title: Reorder Point Calculator -->
+<!-- description: Find the stock level at which to reorder a product from average daily sales, supplier lead time and safety stock, plus the order quantity for a target number of days of cover. -->
+<h1>Reorder Point Calculator</h1>
+<p>Enter how many units you sell per day on average and how long your supplier takes to deliver. Add a safety stock, or let the calculator derive one from your busiest days and slowest deliveries. You get the reorder point and a suggested order quantity. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The reorder point is the stock level at which you must place an order so that stock arrives before you run out, including a safety buffer.</p>
+<p class="formula"><strong>Formula:</strong> reorder point = average daily sales × average lead time + safety stock; derived safety stock = (max daily sales × max lead time) − (average daily sales × average lead time).</p>
+
+<form class="tool" id="f">
+  <label>Average units sold per day<br><input type="number" id="avgs" min="0" step="any" value="10" required></label>
+  <label>Average supplier lead time (days)<br><input type="number" id="avgl" min="0" step="any" value="7" required></label>
+  <label>Safety stock<br><select id="mode"><option value="enter" selected>Enter a number of units</option><option value="derive">Derive from maximum sales and lead time</option></select></label>
+  <div id="enterWrap"><label>Safety stock (units)<br><input type="number" id="safety" min="0" step="any" value="20"></label></div>
+  <div id="deriveWrap" hidden>
+    <label>Maximum units sold per day<br><input type="number" id="maxs" min="0" step="any" value="15" required></label>
+    <label>Maximum lead time (days)<br><input type="number" id="maxl" min="0" step="any" value="10" required></label>
+  </div>
+  <label>Days of stock to cover with each order<br><input type="number" id="cover" min="0" step="any" value="30" required></label>
+  <p><button class="primary" type="submit">Calculate reorder point</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { reorderPoint } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll('[id$="Wrap"]')) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const d = $("mode").value === "derive"; $("deriveWrap").hidden = !d; $("enterWrap").hidden = d; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const base = { avgDailySales: Number($("avgs").value), avgLeadTimeDays: Number($("avgl").value), coverDays: Number($("cover").value) };
+    const r = $("mode").value === "derive" ? reorderPoint({ ...base, maxDailySales: Number($("maxs").value), maxLeadTimeDays: Number($("maxl").value) }) : reorderPoint({ ...base, safetyStock: Number($("safety").value) || 0 });
+    $("out").innerHTML = `<p>Expected sales during the lead time: ${fmt(r.demandDuringLeadTime)} units. Safety stock: ${fmt(r.safetyStock)} units.</p><p><strong>Reorder when stock falls to ${r.reorderPoint.toLocaleString()} units.</strong> Order about ${r.orderQuantity.toLocaleString()} units to cover ${$("cover").value} days.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why a reorder point and not a calendar</h2>
+<p>Ordering on a fixed day each month ignores the two things that cause stockouts: sales spikes and late deliveries. A reorder point ties the order to actual stock. When units on hand fall to the point, you order, and the stock remaining is what you expect to sell while the supplier's delivery is on its way, plus a buffer. The buffer, safety stock, is what absorbs a busy week or a shipment that arrives late.</p>
+
+<h2>Choosing safety stock</h2>
+<p>The simplest method is to pick a number of units you are comfortable holding as insurance. The derived method is more defensible: it covers the worst realistic case, your busiest daily sales for the longest lead time you have seen, minus the average case you already cover. It can produce a large buffer for products with volatile sales or unreliable suppliers; that is the point, and it is also a prompt to find a steadier supplier. Products that are cheap to hold and painful to run out of deserve more safety stock than expensive, slow sellers.</p>
+
+<h2>Order quantity</h2>
+<p>The suggested quantity simply covers a target number of days at average sales. Match it to your supplier's minimum order, carton sizes and the <a href="/inventory-turnover-calculator/">turnover</a> you want to keep: longer cover means fewer orders but more cash in stock. Review the daily sales figure monthly, since the reorder point drifts as demand changes.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What counts as lead time?</h3>
+<p>Days from placing the order to the stock being available to sell, including production, shipping, customs and receiving.</p>
+<h3>Should I include stock already on order?</h3>
+<p>Yes. Compare the reorder point with units on hand plus units already ordered and not yet received.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/inventory-turnover-calculator/">Inventory turnover calculator</a></li>
+  <li><a href="/working-days-calculator/">Working days calculator</a></li>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+</ul>

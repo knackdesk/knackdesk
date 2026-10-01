@@ -1,0 +1,57 @@
+<!-- title: Profit per Order Calculator -->
+<!-- description: Profit and margin on a single online order after product cost, marketplace or platform fee, payment fee, packaging, and the shipping you pay versus what you charge. -->
+<h1>Profit per Order Calculator</h1>
+<p>Enter one typical order: the sale price, what the product and packaging cost you, what you charge for shipping and what you actually pay, and the fees your platform and payment provider take. You get the fees, the profit and the margin on that order. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Profit per order is what is left from the price plus shipping charged after product cost, packaging, shipping paid, platform fees and payment fees.</p>
+<p class="formula"><strong>Formula:</strong> revenue = price + shipping charged; fees = revenue × (platform % + payment %) + fixed payment fee; profit = revenue − cost − packaging − shipping paid − fees.</p>
+
+<form class="tool" id="f">
+  <label>Sale price<br><input type="number" id="price" min="0" step="any" value="40" required></label>
+  <label>Product cost<br><input type="number" id="cost" min="0" step="any" value="15" required></label>
+  <label>Packaging and inserts<br><input type="number" id="pack" min="0" step="any" value="1"></label>
+  <label>Shipping charged to the customer<br><input type="number" id="shipc" min="0" step="any" value="5"></label>
+  <label>Shipping you pay the carrier<br><input type="number" id="shipp" min="0" step="any" value="6"></label>
+  <label>Platform or marketplace fee (% of price + shipping)<br><input type="number" id="pf" min="0" max="100" step="any" value="10"></label>
+  <label>Payment processing fee (%)<br><input type="number" id="ppct" min="0" max="100" step="any" value="3"></label>
+  <label>Payment processing fixed fee per order<br><input type="number" id="pfix" min="0" step="any" value="0.30"></label>
+  <p><button class="primary" type="submit">Calculate profit</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { orderProfit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = orderProfit({ price: Number($("price").value), cost: Number($("cost").value), packaging: Number($("pack").value) || 0, shippingCharged: Number($("shipc").value) || 0, shippingPaid: Number($("shipp").value) || 0, platformFeePercent: Number($("pf").value) || 0, paymentFeePercent: Number($("ppct").value) || 0, paymentFeeFixed: Number($("pfix").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Revenue (price + shipping charged)</td><td>${fmt(r.revenue)}</td></tr><tr><td>Platform and payment fees</td><td>${fmt(r.fees)}</td></tr><tr><td>Profit on this order</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Margin on revenue</td><td><strong>${fmt(r.marginPercent)}%</strong></td></tr></table>${r.profit < 0 ? "<p><strong>This order loses money.</strong> Raise the price or shipping charge, or cut a cost.</p>" : ""}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>The five deductions</h2>
+<p>Most sellers know their product cost. The other four deductions are where profit quietly disappears. <strong>Platform fees</strong> are usually a percentage of the whole order including shipping, not just the item price, which is why charging more for shipping does not fully reach you. <strong>Payment processing</strong> is typically a percentage plus a fixed amount per transaction; the fixed part hurts cheap orders most. <strong>Packaging</strong> includes the box, filler, tape, labels and any insert, and adds up to more than people guess. <strong>Shipping paid</strong> is the carrier's real charge, which often differs from the flat rate you show customers. Enter your own rates from your marketplace or platform statement, since they vary by platform, category and country.</p>
+
+<h2>Margin on revenue, not on price</h2>
+<p>The margin shown is profit divided by the full amount the customer paid, including shipping. That is the honest figure for comparing orders and for the <a href="/break-even-roas-calculator/">return on ad spend</a> you need, because ad platforms report revenue including shipping too. If you want margin on the item price alone, divide the profit by the price.</p>
+
+<h2>Using the result</h2>
+<p>Run a typical order, a cheap order and your most expensive order. Cheap orders are frequently loss-making once the fixed payment fee and packaging are counted, which is the case for a minimum order value or a <a href="/free-shipping-threshold-calculator/">free-shipping threshold</a>. The per-order profit also tells you how much you can spend to acquire a customer and whether a <a href="/discount-calculator/">discount</a> is affordable. When the result is negative, the <a href="/price-increase-calculator/">price increase calculator</a> shows the rise that restores the margin you want.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include VAT or sales tax?</h3>
+<p>Enter prices and costs on the same basis, usually excluding tax that you pass on. If your platform fee is charged on the tax-inclusive total, enter the inclusive price.</p>
+<h3>What about returns?</h3>
+<p>Returns are a separate average cost. Estimate the return rate and the cost per return, and treat it as an extra per-order cost in the packaging field if you want it included.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/free-shipping-threshold-calculator/">Free shipping threshold calculator</a></li>
+  <li><a href="/break-even-roas-calculator/">Break-even ROAS calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

@@ -28,6 +28,13 @@ export const CATEGORY_COPY = {
     intro: `<p>Timesheets, deadlines and overtime all hide small conversions that cause real arguments: 1:30 is 1.5 hours and not 1.3, ten working days is two weeks plus any holidays, and overtime depends entirely on the threshold and multiplier that apply to you. These calculators do the conversions exactly and show their working, so the figure on the invoice or the deadline in the proposal matches what everyone expects.</p>
 <p>Rules about working time and overtime vary by country and contract. The calculators apply the numbers you enter; the explainers tell you which numbers to check.</p>`,
   },
+  ecommerce: {
+    title: "Selling Online Calculators",
+    headline: "Ecommerce Calculators: Profit per Order, Shipping, Stock and ROAS",
+    description: "Free calculators for online sellers: profit per order after marketplace and payment fees, free-shipping thresholds, inventory turnover, reorder points and break-even return on ad spend.",
+    intro: `<p>Selling online is a business of small percentages: a platform fee here, a payment fee there, shipping you charge versus shipping you pay, stock that sits for months, and ads that only work above a certain return. None of these is hard to calculate, but each is easy to leave out, and together they decide whether an order makes money. These calculators take the figures from your own shop or marketplace account and show the result with the working.</p>
+<p>Start with profit per order, because every other decision depends on the margin it reveals: the free-shipping threshold you can afford, the return on ad spend you need, and how much stock you can carry without tying up cash.</p>`,
+  },
   property: {
     title: "Rent & Property Calculators",
     headline: "Rent Calculators: Prorated Rent, Rent Increases, Yield, Affordability",

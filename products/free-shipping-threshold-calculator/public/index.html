@@ -1,0 +1,56 @@
+<!-- title: Free Shipping Threshold Calculator -->
+<!-- description: Find the minimum order value for free shipping that protects your margin, from average order value, gross margin and average shipping cost, and see what a chosen threshold earns or loses per order. -->
+<h1>Free Shipping Threshold Calculator</h1>
+<p>Enter your average order value, gross margin and what shipping costs you on average. You get the break-even threshold, how much customers must add to reach it, and what a threshold of your choice earns or loses per qualifying order. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The break-even free-shipping threshold is the order value at which your gross margin exactly covers the shipping you give away.</p>
+<p class="formula"><strong>Formula:</strong> break-even threshold = shipping cost ÷ gross margin; profit at a threshold = threshold × margin − shipping cost.</p>
+
+<form class="tool" id="f">
+  <label>Average order value<br><input type="number" id="aov" min="0" step="any" value="45" required></label>
+  <label>Gross margin after platform and payment fees (%)<br><input type="number" id="margin" min="0.01" max="100" step="any" value="40" required></label>
+  <label>Average shipping cost you pay per order<br><input type="number" id="ship" min="0" step="any" value="8" required></label>
+  <label>Threshold you are considering (optional)<br><input type="number" id="chosen" min="0" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate threshold</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { threshold } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const chosen = $("chosen").value === "" ? undefined : Number($("chosen").value);
+    const r = threshold({ aov: Number($("aov").value), marginPercent: Number($("margin").value), shippingCost: Number($("ship").value), chosenThreshold: chosen });
+    let html = `<p><strong>Break-even threshold: ${fmt(r.breakEvenThreshold)}</strong>. Above this order value, free shipping still leaves a profit.</p><p>Customers at your average order would need to add ${fmt(r.upliftNeeded)} to qualify.</p>`;
+    if (r.profitAtChosen !== null) html += `<p>At a threshold of ${fmt(chosen)}: <strong>${fmt(r.profitAtChosen)}</strong> gross profit per qualifying order after shipping${r.profitAtChosen < 0 ? " (a loss)" : ""}; that is ${fmt(r.chosenUplift)} ${r.chosenUplift >= 0 ? "above" : "below"} your average order.</p>`;
+    $("out").innerHTML = html;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why the threshold is a margin question</h2>
+<p>Free shipping is a cost you absorb in exchange for a bigger order. It only works if the extra margin on the bigger order covers the shipping. The break-even point is simply the shipping cost divided by your margin: at 40% margin and 8 of shipping, any order above 20 pays for its own delivery. Setting the threshold well above the break-even point, and above your current average order, is what turns it into a profit lever rather than a giveaway.</p>
+
+<h2>Picking the number</h2>
+<p>A common approach is to set the threshold somewhat above the average order value so that a meaningful share of customers add one more item to qualify. Too close to the average and most orders get free shipping with no change in behaviour; too far above and nobody bothers. Test with the optional field: enter a candidate threshold and the calculator shows the gross profit on a qualifying order after shipping and how far it sits above your average. Use the margin after platform and payment fees, which the <a href="/profit-per-order-calculator/">profit per order calculator</a> gives you.</p>
+
+<h2>Variations</h2>
+<p>If shipping costs differ widely by product weight or destination, run the calculation per zone with that zone's shipping cost. Some sellers add a small handling amount to prices when they introduce free shipping; the <a href="/price-increase-calculator/">price increase calculator</a> shows what rise keeps the margin intact.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should margin include the cost of goods only?</h3>
+<p>Use the contribution margin: after product cost, packaging, platform and payment fees. Fixed overheads do not change per order and belong elsewhere.</p>
+<h3>What if my average order is already above break-even?</h3>
+<p>Then free shipping on every order costs you less than it looks, and the threshold decision is about nudging order size rather than avoiding losses.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/break-even-roas-calculator/">Break-even ROAS calculator</a></li>
+  <li><a href="/discount-calculator/">Discount calculator</a></li>
+</ul>

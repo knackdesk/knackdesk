@@ -1,0 +1,62 @@
+<!-- title: Break-Even ROAS Calculator -->
+<!-- description: Work out the break-even return on ad spend from your contribution margin after fees, and the ROAS you need for a target profit margin, so you can set bids and judge campaigns. -->
+<h1>Break-Even ROAS Calculator</h1>
+<p>Enter your contribution margin, or let the calculator work it out from price, product cost, fees and other per-order costs. You get the return on ad spend at which ads break even and the return you need for a target profit. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Break-even ROAS is the revenue each unit of ad spend must return so that the margin on that revenue exactly pays for the ads.</p>
+<p class="formula"><strong>Formula:</strong> break-even ROAS = 1 ÷ contribution margin; target ROAS = 1 ÷ (contribution margin − target profit margin); contribution margin = (price − cost − fees − other costs) ÷ price.</p>
+
+<form class="tool" id="f">
+  <label>Contribution margin<br><select id="mode"><option value="enter" selected>Enter the margin directly (%)</option><option value="derive">Derive it from price and costs</option></select></label>
+  <div id="enterWrap"><label>Contribution margin after product cost and fees (%)<br><input type="number" id="margin" min="0.01" max="100" step="any" value="40" required></label></div>
+  <div id="deriveWrap" hidden>
+    <label>Sale price<br><input type="number" id="price" min="0" step="any" value="50" required></label>
+    <label>Product cost<br><input type="number" id="cost" min="0" step="any" value="20" required></label>
+    <label>Platform and payment fees (% of price)<br><input type="number" id="fees" min="0" max="100" step="any" value="10"></label>
+    <label>Other costs per order (packaging, shipping you absorb)<br><input type="number" id="other" min="0" step="any" value="5"></label>
+  </div>
+  <label>Target profit after ads (% of revenue)<br><input type="number" id="target" min="0" max="100" step="any" value="10"></label>
+  <p><button class="primary" type="submit">Calculate ROAS</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { roas, contributionMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll('[id$="Wrap"]')) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const d = $("mode").value === "derive"; $("deriveWrap").hidden = !d; $("enterWrap").hidden = d; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const margin = $("mode").value === "derive" ? contributionMargin({ price: Number($("price").value), cost: Number($("cost").value), feesPercent: Number($("fees").value) || 0, otherCosts: Number($("other").value) || 0 }) : Number($("margin").value);
+    const r = roas({ marginPercent: margin, targetProfitPercent: Number($("target").value) || 0 });
+    $("out").innerHTML = `<p>Contribution margin: <strong>${fmt(margin)}%</strong>, so you can spend up to ${fmt(r.maxCpaPercent)}% of revenue on ads before losing money.</p><p><strong>Break-even ROAS: ${fmt(r.breakEvenRoas)}x</strong>. For a ${$("target").value || 0}% profit after ads you need <strong>${fmt(r.targetRoas)}x</strong>.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why 2x ROAS can still lose money</h2>
+<p>Ad platforms report return on ad spend as revenue divided by spend, and a 2x or 3x figure sounds healthy. But revenue is not profit. If 60% of each sale goes to product cost, fees and shipping, only 40% is left to pay for the ad, so you need 2.5x just to break even, and more to make anything. The break-even return is the reciprocal of your contribution margin; the lower the margin, the higher the return you need.</p>
+
+<h2>Getting the margin right</h2>
+<p>Use the contribution margin per order after everything that scales with the sale: product cost, platform and payment fees, packaging, and any shipping you absorb. The derive option computes it from those figures; the <a href="/profit-per-order-calculator/">profit per order calculator</a> gives the same number with more detail. Leave fixed overheads out, because they do not change when you sell one more unit, but remember the target profit has to cover them in aggregate.</p>
+
+<h2>Setting a target</h2>
+<p>The target profit field turns the break-even figure into a working target: a 10% profit after ads on a 40% margin needs 3.33x. Use that as the minimum acceptable return in campaign reports and when setting target-ROAS bidding. Campaigns above it can take more budget; campaigns below it are buying revenue at a loss, however impressive the sales graph. Repeat customers change the maths in your favour if you can measure them; the <a href="/ltv-calculator/">lifetime value calculator</a> is the place to do that.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should ROAS use revenue with or without shipping charged?</h3>
+<p>Match the platform's reporting. If it counts shipping in conversion value, use margin on revenue including shipping.</p>
+<h3>Is this the same as break-even CPA?</h3>
+<p>Related. Break-even cost per acquisition is the contribution margin in money terms per order; the calculator shows it as a share of revenue.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/ltv-calculator/">Customer lifetime value calculator</a></li>
+  <li><a href="/cac-payback-calculator/">CAC payback calculator</a></li>
+</ul>

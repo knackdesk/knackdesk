@@ -1,0 +1,61 @@
+<!-- title: Inventory Turnover Calculator -->
+<!-- description: Calculate inventory turnover and days of inventory on hand from cost of goods sold and average stock value, with the average worked out from opening and closing inventory if you prefer. -->
+<h1>Inventory Turnover Calculator</h1>
+<p>Enter the cost of goods sold for a period and your average inventory value, or the opening and closing values and the calculator averages them. You get turnover (how many times you sold through your stock) and days of inventory on hand. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Inventory turnover is how many times a period's cost of goods sold would use up your average stock; days on hand is how long that stock lasts.</p>
+<p class="formula"><strong>Formula:</strong> turnover = COGS ÷ average inventory; days on hand = days in period ÷ turnover; average inventory = (opening + closing) ÷ 2.</p>
+
+<form class="tool" id="f">
+  <label>Cost of goods sold in the period<br><input type="number" id="cogs" min="0" step="any" value="120000" required></label>
+  <label>How to enter inventory<br><select id="mode"><option value="avg" selected>Average inventory value</option><option value="oc">Opening and closing values</option></select></label>
+  <div id="avgWrap"><label>Average inventory value (at cost)<br><input type="number" id="avg" min="0" step="any" value="30000" required></label></div>
+  <div id="ocWrap" hidden>
+    <label>Opening inventory (at cost)<br><input type="number" id="open" min="0" step="any" value="20000" required></label>
+    <label>Closing inventory (at cost)<br><input type="number" id="close" min="0" step="any" value="10000" required></label>
+  </div>
+  <label>Days in the period<br><input type="number" id="days" min="1" step="1" value="365" required></label>
+  <p><button class="primary" type="submit">Calculate turnover</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { turnover } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll('[id$="Wrap"]')) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const oc = $("mode").value === "oc"; $("ocWrap").hidden = !oc; $("avgWrap").hidden = oc; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const base = { cogs: Number($("cogs").value), periodDays: Number($("days").value) };
+    const r = $("mode").value === "oc" ? turnover({ ...base, openingInventory: Number($("open").value), closingInventory: Number($("close").value) }) : turnover({ ...base, averageInventory: Number($("avg").value) });
+    $("out").innerHTML = `<p>Average inventory: ${fmt(r.averageInventory)}.</p><p><strong>Inventory turnover: ${fmt(r.turnover)} times</strong> in the period, which is <strong>${fmt(r.daysOnHand)} days</strong> of stock on hand.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What turnover tells you</h2>
+<p>Turnover measures how hard your stock is working. Four turns a year means the average item sits for about three months before it sells; twelve turns means about a month. Stock that sits is cash you cannot use and, for many products, value that fades through damage, obsolescence or seasonality. A rising turnover with stable sales usually means better buying; a falling one means stock is building up faster than it sells.</p>
+
+<h2>Measuring it properly</h2>
+<p>Use cost of goods sold, not revenue, because inventory is valued at cost; mixing the two inflates the ratio by your markup. Use the average inventory across the period rather than a single snapshot, which can be distorted by a delivery that arrived the day before you counted. The opening-and-closing option is the simplest average; if your stock swings a lot within the period, average monthly figures instead and enter the result directly.</p>
+
+<h2>Reading the number</h2>
+<p>There is no universal good value. Perishables and fast fashion turn many times a year; furniture and jewellery turn slowly by nature. Compare against your own history and against the lead time of your suppliers: days on hand far longer than the <a href="/reorder-point-calculator/">reorder lead time</a> suggests you are ordering too much or too early, and ties up cash that the <a href="/cash-runway-calculator/">runway calculator</a> would rather see in the bank.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I use it for one product?</h3>
+<p>Yes. Use that product's cost of goods sold and its average stock value, and you get its own turnover and days on hand.</p>
+<h3>Does the period have to be a year?</h3>
+<p>No. Enter the number of days in whatever period your figures cover; days on hand adjusts accordingly.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/reorder-point-calculator/">Reorder point calculator</a></li>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>

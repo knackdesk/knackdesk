@@ -1,6 +1,6 @@
 const LANES = ["digital", "tool", "extension"];
 const STATUSES = ["draft", "live"];
-export const CATEGORIES = ["invoicing", "pricing", "planning", "time", "property"];
+export const CATEGORIES = ["invoicing", "pricing", "planning", "time", "property", "ecommerce"];
 const HEADLINE_MAX = 60;
 
 function isIsoDate(v) {
