@@ -1,0 +1,61 @@
+<!-- title: Etsy Fee Calculator -->
+<!-- description: Estimate Etsy listing, transaction, payment processing and offsite ads fees on a sale, the total fee percentage, and the profit and margin after your item and shipping costs. Fee rates are editable. -->
+<h1>Etsy Fee Calculator</h1>
+<p>Enter the sale price, the shipping you charge and your costs. The fee rates are filled in with common defaults and can be changed to match your country and the current fee schedule. You get each fee, the total fee percentage, and the profit and margin on the sale. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Etsy's percentage fees apply to the price plus shipping, so the share taken is larger than the headline transaction rate.</p>
+<p class="formula"><strong>Formula:</strong> revenue = price + shipping charged; transaction = revenue × transaction %; payment = revenue × payment % + fixed; offsite ads = revenue × ads %; profit = revenue − listing − transaction − payment − ads − item cost − shipping cost.</p>
+
+<form class="tool" id="f">
+  <label>Sale price<br><input type="number" id="price" min="0.01" step="any" value="25" required></label>
+  <label>Shipping charged to the buyer<br><input type="number" id="ship" min="0" step="any" value="5"></label>
+  <label>Item cost (materials, labour)<br><input type="number" id="cost" min="0" step="any" value="8"></label>
+  <label>Shipping and packaging you pay<br><input type="number" id="shipcost" min="0" step="any" value="4"></label>
+  <details><summary>Fee rates (editable defaults)</summary>
+  <label>Listing fee per sale<br><input type="number" id="listing" min="0" step="any" value="0.20"></label>
+  <label>Transaction fee (% of price + shipping)<br><input type="number" id="trans" min="0" step="any" value="6.5"></label>
+  <label>Payment processing (%)<br><input type="number" id="payp" min="0" step="any" value="3"></label>
+  <label>Payment processing fixed fee<br><input type="number" id="payf" min="0" step="any" value="0.25"></label>
+  <label>Offsite ads fee (% if the sale came from an ad; 0 if not)<br><input type="number" id="ads" min="0" step="any" value="0"></label>
+  </details>
+  <p><button class="primary" type="submit">Calculate fees</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { etsyFees } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = etsyFees({ salePrice: Number($("price").value), shippingCharged: Number($("ship").value) || 0, listingFee: Number($("listing").value) || 0, transactionPercent: Number($("trans").value) || 0, paymentPercent: Number($("payp").value) || 0, paymentFixed: Number($("payf").value) || 0, offsiteAdsPercent: Number($("ads").value) || 0, itemCost: Number($("cost").value) || 0, shippingCost: Number($("shipcost").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Revenue (price + shipping)</td><td>${fmt(r.revenue)}</td></tr><tr><td>Listing fee</td><td>${fmt(r.listingFee)}</td></tr><tr><td>Transaction fee</td><td>${fmt(r.transactionFee)}</td></tr><tr><td>Payment processing</td><td>${fmt(r.paymentFee)}</td></tr><tr><td>Offsite ads fee</td><td>${fmt(r.offsiteFee)}</td></tr><tr><td>Total fees</td><td><strong>${fmt(r.totalFees)}</strong> (${fmt(r.feePercent)}% of revenue)</td></tr><tr><td>Profit after costs</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Margin</td><td>${fmt(r.margin)}%</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How the fees stack</h2>
+<p>A sale on Etsy carries several separate charges. The listing fee is a small fixed amount per listing, charged when you list and again when the item sells and the listing renews. The transaction fee is a percentage of the price plus the shipping you charge. Payment processing is another percentage of the same total plus a fixed amount, and both the rate and the fixed amount depend on the country of your shop. If the buyer arrived through one of Etsy's offsite ads, an additional percentage applies, with the rate depending on your shop's yearly sales. Added together, the fees on a modest order are commonly between ten and fifteen percent of revenue before any advertising. The defaults here reflect common published rates for shops in the United States at the time of review; check Etsy's current fee schedule for your country and adjust the fields.</p>
+
+<h2>Shipping is not free money</h2>
+<p>Because percentage fees apply to shipping as well as the price, charging the buyer for shipping does not fully cover what you pay the carrier. Enter what the postage and packaging really cost you and the calculator shows the gap. Sellers who offer free shipping should enter zero for shipping charged and fold the postage into the item cost field instead, which is what free shipping actually means.</p>
+
+<h2>Pricing for a margin</h2>
+<p>Use the profit figure to check whether the price works, not just whether it beats competitors. If the margin is thin, raise the price, cut packaging cost, or review the item cost with the <a href="/cost-per-unit-calculator/">cost per unit calculator</a>. The <a href="/craft-pricing-calculator/">craft pricing calculator</a> builds a price from your costs and markup so that fees come out of profit rather than out of your wages. This tool is independent and not affiliated with Etsy.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does the transaction fee apply to gift wrap or personalisation charges?</h3>
+<p>Generally yes. Add them to the sale price field.</p>
+<h3>What about sales tax or VAT collected by Etsy?</h3>
+<p>Tax Etsy collects and remits on your behalf is not your revenue and is not included here. Enter prices without tax.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/craft-pricing-calculator/">Craft pricing calculator</a></li>
+  <li><a href="/free-shipping-threshold-calculator/">Free shipping threshold calculator</a></li>
+</ul>

@@ -1,0 +1,57 @@
+<!-- title: Cost per Unit Calculator -->
+<!-- description: Turn the cost of a batch of ingredients or materials, packaging, labour and other costs into a cost per unit, with an allowance for waste or failed units. -->
+<h1>Cost per Unit Calculator</h1>
+<p>Enter what one batch costs in ingredients or materials, packaging, labour hours at your rate and other costs, how many units the batch makes and the share lost to waste. You get the batch cost, usable units and the cost per unit. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cost per unit is everything a batch costs divided by the units you can actually sell from it.</p>
+<p class="formula"><strong>Formula:</strong> batch cost = ingredients + packaging + labour hours × rate + other; usable units = units made × (1 − waste %); cost per unit = batch cost ÷ usable units.</p>
+
+<form class="tool" id="f">
+  <label>Ingredients or materials per batch<br><input type="number" id="ing" min="0" step="any" value="40" required></label>
+  <label>Packaging per batch (jars, labels, boxes)<br><input type="number" id="pack" min="0" step="any" value="12"></label>
+  <label>Labour hours per batch<br><input type="number" id="hours" min="0" step="any" value="2"></label>
+  <label>Hourly rate<br><input type="number" id="rate" min="0" step="any" value="15"></label>
+  <label>Other batch costs (energy, consumables, testing)<br><input type="number" id="other" min="0" step="any" value="5"></label>
+  <label>Units made per batch<br><input type="number" id="units" min="0" step="any" value="24" required></label>
+  <label>Waste or failed units (%)<br><input type="number" id="waste" min="0" max="99" step="any" value="4"></label>
+  <p><button class="primary" type="submit">Calculate cost per unit</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { costPerUnit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = costPerUnit({ ingredients: Number($("ing").value), packaging: Number($("pack").value) || 0, laborHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, other: Number($("other").value) || 0, unitsMade: Number($("units").value), wastePercent: Number($("waste").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour cost per batch</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Total batch cost</td><td>${fmt(r.batchCost)}</td></tr><tr><td>Usable units</td><td>${fmt(r.usableUnits)}</td></tr><tr><td>Cost per unit before waste</td><td>${fmt(r.perUnitBeforeWaste)}</td></tr><tr><td>Cost per unit</td><td><strong>${fmt(r.perUnit)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What goes into a batch</h2>
+<p>Makers who work in batches, such as candles, soap, cosmetics, baked goods, sauces or small-run prints, usually know what a batch costs and guess what a unit costs. Ingredients are the obvious part. Packaging is often forgotten yet can rival the contents: a jar, lid, label and box for a candle can cost more than the wax. Labour is the time to make, cure, pour, cut, label and pack the batch. Other costs cover electricity for ovens or melters, gloves, cleaning, test strips and anything consumed by the batch rather than by one unit.</p>
+
+<h2>Waste changes the number</h2>
+<p>Not every unit survives. Candles with sinkholes, soap bars trimmed too thin, cakes that break, prints with a flaw: each one still cost its share of the batch. Entering the waste percentage spreads the batch cost over the units you can actually sell, which is the figure that should drive the price. If you reclaim waste, for example by remelting wax, use a lower percentage that reflects the materials you really lose.</p>
+
+<h2>From cost to price</h2>
+<p>The cost per unit is the starting point, not the price. Add overhead and your markup with the <a href="/craft-pricing-calculator/">craft pricing calculator</a>, or set wholesale and retail prices with the <a href="/wholesale-price-calculator/">wholesale price calculator</a>. If the cost per unit is uncomfortably high, the levers are bigger batches (fixed labour spread over more units), cheaper packaging bought in bulk, or lower waste.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include my own labour if I do not pay myself yet?</h3>
+<p>Yes. A cost that leaves out labour produces a price that only works while you work for free.</p>
+<h3>How do I handle ingredients bought in bulk?</h3>
+<p>Work out the cost of the amount used in one batch: price of the bulk pack divided by pack size, times the quantity the batch uses.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/craft-pricing-calculator/">Craft pricing calculator</a></li>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

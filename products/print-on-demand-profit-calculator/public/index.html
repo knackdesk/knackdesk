@@ -1,0 +1,58 @@
+<!-- title: Print on Demand Profit Calculator -->
+<!-- description: Profit and margin on a print-on-demand product after the supplier's base cost and shipping, the shipping you charge, platform fees and payment processing, plus the sales needed to reach a profit target. -->
+<h1>Print on Demand Profit Calculator</h1>
+<p>Enter your sale price, the supplier's base cost for the printed product and their shipping charge, what you charge the buyer for shipping, and the platform and payment fees. You get the profit and margin per item and how many sales a profit target needs. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Print-on-demand profit is what remains of the price and shipping you charge after the supplier's cost, their shipping, and the fees on the sale.</p>
+<p class="formula"><strong>Formula:</strong> revenue = price + shipping charged; fees = revenue × platform % + revenue × payment % + fixed; profit = revenue − base cost − supplier shipping − fees; margin = profit ÷ revenue × 100; sales for target = target ÷ profit, rounded up.</p>
+
+<form class="tool" id="f">
+  <label>Sale price<br><input type="number" id="price" min="0.01" step="any" value="30" required></label>
+  <label>Supplier base cost (product + printing)<br><input type="number" id="base" min="0" step="any" value="14" required></label>
+  <label>Supplier shipping charged to you<br><input type="number" id="shipcost" min="0" step="any" value="5"></label>
+  <label>Shipping you charge the buyer<br><input type="number" id="ship" min="0" step="any" value="4"></label>
+  <label>Platform or marketplace fee (% of revenue)<br><input type="number" id="plat" min="0" step="any" value="5"></label>
+  <label>Payment processing (%)<br><input type="number" id="payp" min="0" step="any" value="2.9"></label>
+  <label>Payment processing fixed fee<br><input type="number" id="payf" min="0" step="any" value="0.30"></label>
+  <label>Monthly profit target (optional)<br><input type="number" id="target" min="0" step="any" value="500"></label>
+  <p><button class="primary" type="submit">Calculate profit</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { podProfit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = podProfit({ salePrice: Number($("price").value), baseCost: Number($("base").value), shippingCharged: Number($("ship").value) || 0, shippingCost: Number($("shipcost").value) || 0, platformFeePercent: Number($("plat").value) || 0, paymentPercent: Number($("payp").value) || 0, paymentFixed: Number($("payf").value) || 0, targetProfit: Number($("target").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Revenue (price + shipping)</td><td>${fmt(r.revenue)}</td></tr><tr><td>Platform fee</td><td>${fmt(r.platformFee)}</td></tr><tr><td>Payment processing</td><td>${fmt(r.paymentFee)}</td></tr><tr><td>Total costs and fees</td><td>${fmt(r.totalCosts)}</td></tr><tr><td>Profit per item</td><td><strong>${fmt(r.profit)}</strong></td></tr><tr><td>Margin</td><td>${fmt(r.margin)}%</td></tr><tr><td>Sales needed for the target</td><td>${r.salesForTarget === null ? "not reachable at this profit" : r.salesForTarget}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Where the money goes</h2>
+<p>Print on demand removes inventory but not cost. The supplier charges a base price for the blank item and the print, plus shipping to the buyer, and both are deducted from every sale before you see anything. The storefront or marketplace takes a percentage, and the payment processor takes another percentage plus a fixed amount. On a thirty-dollar shirt with a fourteen-dollar base cost the profit is often around a third of the price, and on cheaper items such as stickers or mugs the fixed payment fee alone can take a large share. This calculator lays the deductions out so the price is set with the full picture.</p>
+
+<h2>Shipping strategy</h2>
+<p>Charging the buyer the supplier's shipping rate is the simplest option, but percentage fees apply to that charge too, so the pass-through is never exact. Free shipping with a higher item price usually converts better and keeps the arithmetic honest: set shipping charged to zero and raise the price by the supplier's shipping cost. Compare both versions here; the profit line tells you which works.</p>
+
+<h2>From one sale to a target</h2>
+<p>The sales-for-target figure converts a monthly profit goal into the number of items you need to sell at this profit. It is a quick reality check on a new design or shop: if a 500 target needs 42 sales a month and your store sees 300 visits, the conversion rate required is unrealistic and the price or the traffic has to change. For a wider view across products, the <a href="/profit-per-order-calculator/">profit per order calculator</a> and the <a href="/break-even-roas-calculator/">break-even ROAS calculator</a> cover orders and advertising.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Which fee goes in the platform field?</h3>
+<p>Whatever the storefront or marketplace keeps as a percentage of the sale. For a self-hosted shop with no marketplace fee enter zero and keep the payment processing fields.</p>
+<h3>Does base cost include design work?</h3>
+<p>No. Design time is a one-off; spread it across expected sales separately if you want a full picture.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/profit-per-order-calculator/">Profit per order calculator</a></li>
+  <li><a href="/etsy-fee-calculator/">Etsy fee calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

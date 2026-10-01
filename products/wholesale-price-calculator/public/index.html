@@ -1,0 +1,58 @@
+<!-- title: Wholesale Price Calculator -->
+<!-- description: Set a wholesale price from your product cost and target margin, then the retail price from the retailer's multiplier such as keystone, or work back from a target retail price to the wholesale price and your margin. -->
+<h1>Wholesale Price Calculator</h1>
+<p>Work forward from your cost and the margin you want to a wholesale price and, using the retailer's usual multiplier, the retail price. Or work back from the retail price the market expects to the wholesale price and the margin that leaves you. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Wholesale is the price a shop pays you; retail is what the shop charges, usually a fixed multiple of wholesale.</p>
+<p class="formula"><strong>Formula:</strong> wholesale = cost ÷ (1 − wholesale margin %); retail = wholesale × retail multiplier; working back: wholesale = retail ÷ multiplier; margin = (wholesale − cost) ÷ wholesale × 100.</p>
+
+<form class="tool" id="f">
+  <label>Start from<br><select id="mode"><option value="cost" selected>Cost and margin (work forward)</option><option value="retail">Retail price (work back)</option></select></label>
+  <label>Product cost (materials, labour, overhead)<br><input type="number" id="cost" min="0" step="any" value="10" required></label>
+  <div id="costWrap"><label>Wholesale margin you want (% of wholesale price)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="50" required></label></div>
+  <div id="retailWrap" hidden><label>Target retail price<br><input type="number" id="retail" min="0.01" step="any" value="40" required></label></div>
+  <label>Retailer's multiplier (2 = keystone, 2.2 to 2.5 common in gift shops)<br><input type="number" id="mult" min="1" step="any" value="2" required></label>
+  <p><button class="primary" type="submit">Calculate prices</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { wholesaleFromCost, wholesaleFromRetail } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const back = $("mode").value === "retail"; $("retailWrap").hidden = !back; $("costWrap").hidden = back; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const cost = Number($("cost").value), retailMultiplier = Number($("mult").value);
+    const r = $("mode").value === "retail" ? wholesaleFromRetail({ retail: Number($("retail").value), retailMultiplier, cost }) : wholesaleFromCost({ cost, wholesaleMarginPercent: Number($("margin").value), retailMultiplier });
+    $("out").innerHTML = `<table><tr><td>Wholesale price</td><td><strong>${fmt(r.wholesale)}</strong></td></tr><tr><td>Your profit per unit at wholesale</td><td>${fmt(r.wholesaleProfit)} (${fmt(r.wholesaleMarginPercent)}% margin)</td></tr><tr><td>Retail price</td><td><strong>${fmt(r.retail)}</strong></td></tr><tr><td>Retailer's profit per unit</td><td>${fmt(r.retailerProfit)} (${fmt(r.retailMarginPercent)}% margin)</td></tr><tr><td>Retail price as a multiple of your cost</td><td>${r.retailMarkupOnCost === null ? "n/a" : fmt(r.retailMarkupOnCost) + "×"}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Two prices, two margins</h2>
+<p>Selling to shops means setting two prices. The wholesale price is what the shop pays you; it has to cover your full cost and leave a margin, and a 50% margin, meaning the price is twice the cost, is the usual starting point for handmade and small-brand goods. The shop then applies its own multiplier to reach the retail price. Keystone, a multiplier of two, is the classic retail rule; gift and boutique retailers often use 2.2 to 2.5 to cover their costs. The retail price therefore ends up at four to five times your cost, which surprises makers who have only sold direct.</p>
+
+<h2>Working back from the shelf price</h2>
+<p>Often the market sets the retail price before you set anything. If similar items sell for 40 and shops double, the most a shop will pay is 20; the second mode shows the margin that leaves you against your cost. If that margin is too thin, the options are to cut cost, accept a lower margin on wholesale volume, or decide the product is direct-sale only. Running both modes on the same product shows the gap you need to close.</p>
+
+<h2>Keep direct and wholesale prices consistent</h2>
+<p>Retailers expect you to sell direct at the same retail price they charge, not at your wholesale price. Undercutting your own stockists ends the relationship. Set your direct price at the retail figure here and treat the extra margin as payment for the selling you do yourself. The <a href="/craft-pricing-calculator/">craft pricing calculator</a> builds the cost figure this tool starts from, and the <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two ways of expressing the gap.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is margin the same as markup?</h3>
+<p>No. A 50% margin means profit is half the selling price, which is a 100% markup on cost. This tool asks for margin on the wholesale price and shows the resulting multiple.</p>
+<h3>What about minimum order quantities and shipping to the shop?</h3>
+<p>They are terms rather than prices. Cover shipping in your terms or build it into the wholesale price for small orders.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/craft-pricing-calculator/">Craft pricing calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/price-increase-calculator/">Price increase calculator</a></li>
+</ul>

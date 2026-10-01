@@ -1,0 +1,56 @@
+<!-- title: Craft Pricing Calculator -->
+<!-- description: Price handmade products from materials, labour hours at your rate, an overhead allowance and wholesale and retail markups. Get the true cost, wholesale price and retail price. -->
+<h1>Craft Pricing Calculator</h1>
+<p>Enter what one item takes in materials and labour, an overhead percentage for the costs that are not tied to one item, and the markups you want. You get the true cost, the wholesale price and the retail price. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A handmade item's price starts from its full cost, including your time and overhead, and is multiplied up so that both wholesale and retail sales pay you.</p>
+<p class="formula"><strong>Formula:</strong> labour = hours × rate; cost = (materials + labour) × (1 + overhead %); wholesale = cost × wholesale markup; retail = wholesale × retail markup.</p>
+
+<form class="tool" id="f">
+  <label>Materials per item<br><input type="number" id="materials" min="0" step="any" value="8" required></label>
+  <label>Labour time per item (hours, decimal)<br><input type="number" id="hours" min="0" step="any" value="1.5" required></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="20" required></label>
+  <label>Overhead allowance (% of materials + labour)<br><input type="number" id="overhead" min="0" step="any" value="10"></label>
+  <label>Wholesale markup (× cost; 2 is common)<br><input type="number" id="wmk" min="1" step="any" value="2" required></label>
+  <label>Retail markup (× wholesale; 2 is keystone)<br><input type="number" id="rmk" min="1" step="any" value="2" required></label>
+  <p><button class="primary" type="submit">Calculate prices</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { craftPrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = craftPrice({ materials: Number($("materials").value), laborHours: Number($("hours").value), hourlyRate: Number($("rate").value), overheadPercent: Number($("overhead").value) || 0, wholesaleMarkup: Number($("wmk").value), retailMarkup: Number($("rmk").value) });
+    $("out").innerHTML = `<table><tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Materials + labour</td><td>${fmt(r.baseCost)}</td></tr><tr><td>Overhead allowance</td><td>${fmt(r.overhead)}</td></tr><tr><td>True cost per item</td><td><strong>${fmt(r.totalCost)}</strong></td></tr><tr><td>Wholesale price</td><td><strong>${fmt(r.wholesale)}</strong> (profit ${fmt(r.wholesaleProfit)})</td></tr><tr><td>Retail price</td><td><strong>${fmt(r.retail)}</strong> (profit when you sell direct ${fmt(r.retailProfit)})</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why the markup looks high</h2>
+<p>Doubling twice feels greedy to many makers, until the costs are listed. The wholesale price must leave you a profit after materials, your time and overhead, because a shop buying twenty pieces is still buying your labour. The retailer then doubles again to cover their rent, staff, card fees and the pieces that do not sell. If you sell direct at the retail price you keep both margins, which is what funds the market stall fee, the photos and the listing fees. A price that only works when you skip wholesale is a price that locks you out of shops.</p>
+
+<h2>Paying yourself</h2>
+<p>The most common pricing mistake is a labour rate of zero. Use the rate you would need to earn to make this a job, not a hobby: what a local employer would pay for similar skilled work is a reasonable floor. Time the item honestly, including finishing, packing and the share of setup that belongs to it. If the resulting price is more than buyers will pay, the fix is a faster process, cheaper materials or a different product, not a lower rate. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> helps set the rate from the income you need.</p>
+
+<h2>Overhead</h2>
+<p>Overhead covers costs that are not tied to one item: tools, rent for a workspace, software, insurance, packaging stock and marketing. Ten to twenty percent of materials plus labour is a common allowance; a more precise figure is your yearly overhead divided by the items you make in a year. For batch-made goods such as candles or soap, work out the cost of one unit first with the <a href="/cost-per-unit-calculator/">cost per unit calculator</a>, then enter it here as the materials figure.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I use a lower wholesale markup?</h3>
+<p>Yes, but check that the wholesale profit still covers the time spent dealing with the shop. A markup of 1.6 to 2 is typical for handmade goods.</p>
+<h3>Should marketplace fees be included?</h3>
+<p>Not here. Treat them as a deduction from the retail price; the <a href="/etsy-fee-calculator/">Etsy fee calculator</a> shows what is left.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cost-per-unit-calculator/">Cost per unit calculator</a></li>
+  <li><a href="/wholesale-price-calculator/">Wholesale price calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>
