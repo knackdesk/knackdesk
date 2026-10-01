@@ -1,0 +1,59 @@
+<!-- title: Salary to Hourly Calculator -->
+<!-- description: Convert an annual salary to monthly, weekly, daily and hourly pay, or an hourly rate to annual pay, using the hours per week and weeks per year you actually work. -->
+<h1>Salary to Hourly Calculator</h1>
+<p>Enter an annual salary or an hourly rate together with your real hours per week and weeks per year. You get the equivalent monthly, weekly, daily and hourly figures. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> An annual salary divided by the hours you actually work in a year is your real hourly rate.</p>
+<p class="formula"><strong>Formula:</strong> hourly = annual ÷ (hours per week × weeks per year); annual = hourly × hours per week × weeks per year; monthly = annual ÷ 12; daily = weekly ÷ days per week.</p>
+
+<form class="tool" id="f">
+  <label>Convert from<br><select id="mode"><option value="annual" selected>Annual salary</option><option value="hourly">Hourly rate</option></select></label>
+  <div id="annualWrap"><label>Annual salary<br><input type="number" id="annual" min="0" step="any" value="52000" required></label></div>
+  <div id="hourlyWrap" hidden><label>Hourly rate<br><input type="number" id="hourly" min="0" step="any" value="25" required></label></div>
+  <label>Hours per week<br><input type="number" id="hours" min="1" max="168" step="any" value="40" required></label>
+  <label>Weeks worked per year (52 for paid-leave contracts)<br><input type="number" id="weeks" min="1" max="52" step="any" value="52" required></label>
+  <label>Days per week<br><input type="number" id="days" min="1" max="7" step="any" value="5" required></label>
+  <p><button class="primary" type="submit">Convert</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { fromAnnual, fromHourly } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { const h = $("mode").value === "hourly"; $("hourlyWrap").hidden = !h; $("annualWrap").hidden = h; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const common = { hoursPerWeek: Number($("hours").value), weeksPerYear: Number($("weeks").value), daysPerWeek: Number($("days").value) };
+    const r = $("mode").value === "hourly" ? fromHourly({ hourly: Number($("hourly").value), ...common }) : fromAnnual({ annual: Number($("annual").value), ...common });
+    $("out").innerHTML = `<table><tr><td>Per year</td><td><strong>${fmt(r.annual)}</strong></td></tr><tr><td>Per month</td><td>${fmt(r.monthly)}</td></tr><tr><td>Per week</td><td>${fmt(r.weekly)}</td></tr><tr><td>Per day</td><td>${fmt(r.daily)}</td></tr><tr><td>Per hour</td><td><strong>${fmt(r.hourly)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Why the 2,080-hour shortcut misleads</h2>
+<p>The common conversion divides a salary by 2,080, which is 40 hours times 52 weeks. It is right only for a 40-hour week with paid leave counted as worked time. Someone on a 37.5-hour contract earns more per hour than the shortcut says; someone who regularly works 50 hours earns less. For hourly workers paid only for hours worked, the weeks-per-year figure matters just as much: 48 paid weeks, not 52, is the honest basis for an annual figure. This calculator lets you set both so the conversion matches your situation.</p>
+
+<h2>Salaried versus hourly</h2>
+<p>Salaried employees are usually paid for holidays and public holidays, so their weeks per year is 52 even though they work fewer. Hourly and contract workers are paid per hour worked, so their annual pay depends on how many weeks they actually bill; use the weeks you expect to work. Comparing a salaried offer with an hourly one means converting both to the same basis, which is what the two modes here do. For contractors the comparison goes further, because the day rate has to cover benefits and gaps; the <a href="/day-rate-to-salary/">day rate to salary calculator</a> handles that.</p>
+
+<h2>Gross figures</h2>
+<p>All figures are gross, before income tax and contributions. Take-home pay depends on your country, tax code and deductions, so use these numbers for comparing offers and rates, not for budgeting what lands in your account.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>How many weeks should a part-time or seasonal worker use?</h3>
+<p>The number of weeks actually paid. If you are paid for 40 weeks a year, use 40.</p>
+<h3>Why does the daily figure use days per week rather than hours?</h3>
+<p>So that a four-day week of long days gives a correct daily rate. The hourly figure uses hours directly.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/pay-raise-calculator/">Pay raise calculator</a></li>
+  <li><a href="/day-rate-to-salary/">Day rate to salary calculator</a></li>
+  <li><a href="/overtime-calculator/">Overtime pay calculator</a></li>
+</ul>

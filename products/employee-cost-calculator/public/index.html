@@ -1,0 +1,57 @@
+<!-- title: Employee Cost Calculator -->
+<!-- description: The full yearly, monthly and per-productive-hour cost of an employee from salary, employer payroll taxes or contributions, benefits, equipment and other overheads. -->
+<h1>Employee Cost Calculator</h1>
+<p>Enter the salary and what you pay on top of it: employer payroll taxes or social contributions as a percentage, benefits, and overheads such as equipment and software. You get the total cost per year and month, and the cost per productive hour. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The true cost of an employee is salary plus everything the employer pays because that person is on the payroll, divided by the hours they actually produce.</p>
+<p class="formula"><strong>Formula:</strong> total = salary + salary × employer rate + benefits + overheads; productive hours = weeks worked × hours per week × productive share; cost per hour = total ÷ productive hours.</p>
+
+<form class="tool" id="f">
+  <label>Gross annual salary<br><input type="number" id="salary" min="0" step="any" value="50000" required></label>
+  <label>Employer payroll taxes and contributions (% of salary)<br><input type="number" id="tax" min="0" step="any" value="12" required></label>
+  <label>Benefits per year (health, pension top-ups, allowances)<br><input type="number" id="benefits" min="0" step="any" value="4000"></label>
+  <label>Overheads per year (equipment, software, desk, training)<br><input type="number" id="overheads" min="0" step="any" value="3000"></label>
+  <label>Weeks worked per year (after holiday and sick leave)<br><input type="number" id="weeks" min="0" max="52" step="any" value="46" required></label>
+  <label>Hours per week<br><input type="number" id="hours" min="0" max="168" step="any" value="40" required></label>
+  <label>Productive share of hours (%)<br><input type="number" id="prod" min="0" max="100" step="any" value="80" required></label>
+  <p><button class="primary" type="submit">Calculate cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { employeeCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = employeeCost({ salary: Number($("salary").value), employerTaxPercent: Number($("tax").value), benefits: Number($("benefits").value) || 0, overheads: Number($("overheads").value) || 0, weeksWorked: Number($("weeks").value), hoursPerWeek: Number($("hours").value), productivePercent: Number($("prod").value) });
+    $("out").innerHTML = `<table><tr><td>Employer taxes and contributions</td><td>${fmt(r.employerTaxes)}</td></tr><tr><td>Total cost per year</td><td><strong>${fmt(r.totalAnnual)}</strong></td></tr><tr><td>Total cost per month</td><td>${fmt(r.totalMonthly)}</td></tr><tr><td>Productive hours per year</td><td>${fmt(r.productiveHours)}</td></tr><tr><td>Cost per productive hour</td><td><strong>${fmt(r.costPerProductiveHour)}</strong></td></tr><tr><td>Cost as a multiple of salary</td><td>${fmt(r.multiplier)}×</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What sits on top of salary</h2>
+<p>Salary is the visible part. On top of it most employers pay statutory contributions: social security, pension, health or unemployment insurance, depending on the country, usually expressed as a percentage of gross pay. Then come benefits the employer chooses or must provide, such as health cover, pension matching, meal or travel allowances and bonuses. Finally there are overheads that exist because the person exists: a laptop and phone, software seats, a desk or a co-working allowance, training, and a share of the tools the team uses. Rates and rules vary widely by country and contract; enter the figures from your own payroll and accounts.</p>
+
+<h2>Cost per productive hour</h2>
+<p>Dividing the total by nominal hours understates the cost, because nobody is productive for every contracted hour. Holidays, sick days and public holidays reduce the weeks worked; meetings, admin and breaks reduce the productive share of each week. The default of 46 weeks and 80% productive time is a reasonable starting point for office roles; adjust it to your own experience. The resulting figure is the number to use when pricing work by the hour, comparing an employee with a <a href="/day-rate-to-salary/">contractor day rate</a>, or deciding whether a task is worth doing in-house.</p>
+
+<h2>Using the multiplier</h2>
+<p>The cost as a multiple of salary gives a quick rule for future hires: if the multiplier is 1.26, a 60,000 hire costs about 75,600 a year. It is also the number the <a href="/employee-turnover-cost-calculator/">turnover cost calculator</a> expects as the annual cost. If the multiplier looks low, check whether you have left out contributions that payroll pays automatically.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include the employee's own tax?</h3>
+<p>No. Income tax and the employee's own contributions come out of the gross salary, which is already counted.</p>
+<h3>What about recruitment cost?</h3>
+<p>It is a one-off, not a yearly cost. The <a href="/employee-turnover-cost-calculator/">turnover cost calculator</a> handles it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/day-rate-to-salary/">Day rate to salary calculator</a></li>
+  <li><a href="/employee-turnover-cost-calculator/">Employee turnover cost calculator</a></li>
+  <li><a href="/salary-to-hourly-calculator/">Salary to hourly calculator</a></li>
+</ul>

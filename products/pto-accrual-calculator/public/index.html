@@ -1,0 +1,55 @@
+<!-- title: PTO Accrual Calculator -->
+<!-- description: Work out how much paid time off accrues per pay period from the annual entitlement and pay frequency, how much has accrued so far this year, and the balance after days taken. -->
+<h1>PTO Accrual Calculator</h1>
+<p>Enter the yearly paid-time-off entitlement, how often you are paid, and how many pay periods have passed this year. Add days carried over and days already taken to get the current balance. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Accrued PTO is the share of the yearly entitlement earned so far, one slice per pay period.</p>
+<p class="formula"><strong>Formula:</strong> per period = annual days ÷ pay periods per year; accrued = per period × periods elapsed; balance = carried over + accrued − taken.</p>
+
+<form class="tool" id="f">
+  <label>Paid time off per year (days)<br><input type="number" id="days" min="0" step="any" value="20" required></label>
+  <label>Pay frequency<br><select id="freq"><option value="weekly">Weekly (52)</option><option value="biweekly" selected>Every two weeks (26)</option><option value="semimonthly">Twice a month (24)</option><option value="monthly">Monthly (12)</option></select></label>
+  <label>Pay periods completed so far this year<br><input type="number" id="elapsed" min="0" step="1" value="13" required></label>
+  <label>Days carried over from last year<br><input type="number" id="carry" min="0" step="any" value="3"></label>
+  <label>Days already taken this year<br><input type="number" id="taken" min="0" step="any" value="5"></label>
+  <p><button class="primary" type="submit">Calculate balance</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { accrual } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = accrual({ annualDays: Number($("days").value), frequency: $("freq").value, periodsElapsed: Number($("elapsed").value), carriedOver: Number($("carry").value) || 0, taken: Number($("taken").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Accrual per pay period</td><td>${fmt(r.perPeriod)} days</td></tr><tr><td>Accrued so far this year</td><td>${fmt(r.accruedToDate)} days</td></tr><tr><td>Still to accrue this year</td><td>${fmt(r.remainingThisYear)} days</td></tr><tr><td>Current balance</td><td><strong>${fmt(r.balance)} days</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How accrual works</h2>
+<p>Many employers grant paid time off gradually rather than all at once on 1 January. The yearly entitlement is split into equal slices, one per pay period, so an employee paid every two weeks with 20 days a year earns about 0.77 days each payday. Thirteen pay periods into the year, half the entitlement, ten days, has accrued. The balance adds anything carried over from last year and subtracts days already taken. Some employers accrue by hours instead of days; the arithmetic is the same if you enter hours in the entitlement field.</p>
+
+<h2>What this calculator does not decide</h2>
+<p>Whether unused days carry over, whether there is a cap, whether new starters wait before accruing, and whether leave is granted up front or earned over the year are all policy and law questions that vary by country, state and employer. The calculator applies the entitlement and frequency you enter; check your contract or handbook for the rules, and enter the carry-over figure your employer confirms.</p>
+
+<h2>Planning leave</h2>
+<p>The "still to accrue" figure tells you how many more days you will earn by year end if nothing changes. Combined with the current balance, it shows whether a planned holiday fits without borrowing against future accrual. For counting the working days a holiday actually spans, use the <a href="/working-days-calculator/">working days calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>My entitlement is in hours. Can I use this?</h3>
+<p>Yes. Enter hours instead of days everywhere; the results are then in hours.</p>
+<h3>What counts as a completed pay period?</h3>
+<p>A period for which you have been paid. If you are paid monthly and have received six payslips this year, enter 6.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/working-days-calculator/">Working days calculator</a></li>
+  <li><a href="/hours-to-decimal/">Hours to decimal converter</a></li>
+  <li><a href="/salary-to-hourly-calculator/">Salary to hourly calculator</a></li>
+</ul>

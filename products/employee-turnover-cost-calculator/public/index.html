@@ -1,0 +1,59 @@
+<!-- title: Employee Turnover Cost Calculator -->
+<!-- description: Estimate the cost of employee turnover from recruiting, the vacant period, onboarding and reduced productivity while a replacement ramps up, per leaver and per year at your turnover rate. -->
+<h1>Employee Turnover Cost Calculator</h1>
+<p>Enter what a role costs per year, what it costs to recruit and onboard a replacement, how long the seat stays empty and how long the new hire takes to reach full productivity. You get the cost per leaver and the yearly cost at your turnover rate. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Turnover cost is everything you spend and lose between one person leaving and their replacement working at full speed.</p>
+<p class="formula"><strong>Formula:</strong> daily cost = annual cost ÷ working days; vacancy cost = daily cost × vacant days; ramp cost = daily cost × ramp days × (1 − ramp productivity); per leaver = recruiting + vacancy + onboarding + ramp; per year = per leaver × headcount × turnover rate.</p>
+
+<form class="tool" id="f">
+  <label>Annual cost of the role (salary plus on-costs)<br><input type="number" id="cost" min="0" step="any" value="60000" required></label>
+  <label>Working days per year<br><input type="number" id="wdays" min="1" step="any" value="240" required></label>
+  <label>Recruiting and hiring cost (ads, agency, interview time)<br><input type="number" id="recruit" min="0" step="any" value="5000"></label>
+  <label>Days the role stays vacant<br><input type="number" id="vacant" min="0" step="any" value="30"></label>
+  <label>Onboarding cost (training, equipment, admin)<br><input type="number" id="onboard" min="0" step="any" value="2000"></label>
+  <label>Ramp-up period (days until fully productive)<br><input type="number" id="ramp" min="0" step="any" value="60"></label>
+  <label>Average productivity during ramp-up (%)<br><input type="number" id="rampp" min="0" max="100" step="any" value="50"></label>
+  <label>Headcount<br><input type="number" id="head" min="0" step="any" value="20"></label>
+  <label>Annual turnover rate (%)<br><input type="number" id="rate" min="0" max="100" step="any" value="15"></label>
+  <p><button class="primary" type="submit">Calculate turnover cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { turnoverCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = turnoverCost({ annualCost: Number($("cost").value), workingDays: Number($("wdays").value), recruitingCost: Number($("recruit").value) || 0, vacantDays: Number($("vacant").value) || 0, onboardingCost: Number($("onboard").value) || 0, rampDays: Number($("ramp").value) || 0, rampProductivityPercent: Number($("rampp").value) || 0, headcount: Number($("head").value) || 1, turnoverRatePercent: Number($("rate").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Vacancy cost (empty seat)</td><td>${fmt(r.vacancyCost)}</td></tr><tr><td>Ramp-up cost (lost productivity)</td><td>${fmt(r.rampCost)}</td></tr><tr><td>Cost per leaver</td><td><strong>${fmt(r.perLeaver)}</strong> (${fmt(r.percentOfSalary)}% of the role's annual cost)</td></tr><tr><td>Expected leavers per year</td><td>${fmt(r.leaversPerYear)}</td></tr><tr><td>Turnover cost per year</td><td><strong>${fmt(r.perYear)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Where the cost hides</h2>
+<p>Few of the costs of losing someone appear on a single invoice, which is why turnover feels free. The direct costs are recruiting (job ads, agency fees, the hours colleagues spend interviewing) and onboarding (training time, equipment, admin). The larger costs are usually indirect: the work that does not get done while the seat is empty, and the months during which a new hire is paid in full but produces a fraction of the output. This calculator values both using the role's daily cost, which the <a href="/employee-cost-calculator/">employee cost calculator</a> gives you.</p>
+
+<h2>Choosing the inputs</h2>
+<p>Use the full annual cost of the role, not just salary. Vacant days run from the leaver's last day to the replacement's first; if colleagues cover the work, the cost is real even when no money changes hands. Ramp-up varies by role: weeks for routine work, many months for senior or specialised positions. The ramp productivity figure is the average over that period; 50% is a common assumption. Turnover rate is leavers in a year divided by average headcount.</p>
+
+<h2>What to do with the number</h2>
+<p>The yearly figure is the budget you are already spending on turnover. Compare it with what retention would cost: a <a href="/pay-raise-calculator/">pay raise</a> for the people most likely to leave, better onboarding to shorten ramp-up, or a faster hiring process to cut vacant days. Each of those is a line in this calculator, so you can see directly which change pays back most.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include severance or notice pay?</h3>
+<p>If leavers are paid for a notice period in which they do little work, add that to the recruiting cost field.</p>
+<h3>Does this work for one role?</h3>
+<p>Yes. Set headcount to 1 and the turnover rate to 100% to see the cost of one replacement.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/pay-raise-calculator/">Pay raise calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+</ul>

@@ -1,0 +1,60 @@
+<!-- title: Pay Raise Calculator -->
+<!-- description: Calculate a new salary from a percentage or fixed raise, find the raise percentage between an old and new salary, and see the difference per month and per hour. -->
+<h1>Pay Raise Calculator</h1>
+<p>Enter the current salary and the raise as a percentage or an amount, or enter two salaries to find the percentage between them. You get the new salary and the difference per year, month and hour. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A pay raise is the difference between the new and old salary, usually expressed as a percentage of the old one.</p>
+<p class="formula"><strong>Formula:</strong> new salary = old × (1 + raise %); raise % = (new − old) ÷ old × 100; per month = difference ÷ 12; per hour = difference ÷ (hours per week × 52).</p>
+
+<form class="tool" id="f">
+  <label>Current annual salary<br><input type="number" id="salary" min="0.01" step="any" value="48000" required></label>
+  <label>Raise given as<br><select id="mode"><option value="percent" selected>A percentage</option><option value="amount">A yearly amount</option><option value="between">A new salary (find the percentage)</option></select></label>
+  <div id="percentWrap"><label>Raise (%)<br><input type="number" id="percent" step="any" value="5" required></label></div>
+  <div id="amountWrap" hidden><label>Raise amount per year<br><input type="number" id="amount" step="any" value="3000" required></label></div>
+  <div id="betweenWrap" hidden><label>New annual salary<br><input type="number" id="newSalary" min="0" step="any" value="50400" required></label></div>
+  <label>Hours per week (for the hourly difference)<br><input type="number" id="hours" min="0" max="168" step="any" value="40"></label>
+  <p><button class="primary" type="submit">Calculate raise</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { raiseByPercent, raiseByAmount, raiseBetween } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+$("mode").addEventListener("change", () => { for (const m of ["percent", "amount", "between"]) $(`${m}Wrap`).hidden = $("mode").value !== m; syncWraps(); });
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const salary = Number($("salary").value), hoursPerWeek = Number($("hours").value) || 40;
+    const mode = $("mode").value;
+    const r = mode === "percent" ? raiseByPercent({ salary, percent: Number($("percent").value), hoursPerWeek }) : mode === "amount" ? raiseByAmount({ salary, amount: Number($("amount").value), hoursPerWeek }) : raiseBetween({ oldSalary: salary, newSalary: Number($("newSalary").value), hoursPerWeek });
+    $("out").innerHTML = `<p><strong>New salary: ${fmt(r.newSalary)}</strong>, a ${fmt(r.percent)}% ${r.difference >= 0 ? "raise" : "cut"}.</p><p>Difference: ${fmt(r.difference)} per year, ${fmt(r.monthlyDifference)} per month${r.hourlyDifference !== null ? `, ${fmt(r.hourlyDifference)} per hour` : ""}.</p>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Percentages and what they mean in money</h2>
+<p>A raise is usually negotiated as a percentage and lived as a monthly amount. Five percent on 48,000 is 2,400 a year, 200 a month before tax, and about 1.15 an hour on a 40-hour week. Converting both ways keeps the conversation honest: a round number like 3,000 is a 6.25% raise, and a 10% raise on a modest salary can be less money than a 4% raise on a large one. Whether you are asking or offering, know both figures.</p>
+
+<h2>Comparing offers and inflation</h2>
+<p>The "new salary" mode is useful for comparing an offer with your current pay or for working out what a raise really was after the fact. Compare the percentage with the inflation rate in your country for the same period: a raise below inflation is a cut in real terms, even though the number went up. Remember the figures here are gross; the amount reaching your account is smaller after tax and contributions, and that share can change as you cross tax thresholds.</p>
+
+<h2>For managers</h2>
+<p>When budgeting raises across a team, the employer's cost rises by more than the raise itself, because payroll contributions scale with salary. The <a href="/employee-cost-calculator/">employee cost calculator</a> shows the full effect of a new salary on the yearly cost of the role.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does the hourly figure assume 2,080 hours?</h3>
+<p>It uses the hours per week you enter times 52. Change the hours to match your contract.</p>
+<h3>How do I handle a raise plus a bonus?</h3>
+<p>Treat the bonus separately. The calculator is for recurring salary; a one-off payment does not change the base.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/salary-to-hourly-calculator/">Salary to hourly calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/price-increase-calculator/">Price increase calculator</a></li>
+</ul>
