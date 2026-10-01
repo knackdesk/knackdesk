@@ -32,14 +32,13 @@ function kitArticle({ data, body, images }) {
   const copy = parseListingCopy(body);
   const price = `$${(data.price_cents / 100).toFixed(0)}`;
   const bullets = copy.bullets.map((b) => `<li>${inline(b)}</li>`).join("");
+  const inside = bullets || copy.intro ? `<details class="kit-inside"><summary>What is inside</summary>${copy.intro ? `<p>${inline(copy.intro)}</p>` : ""}${bullets ? `<ul class="kit-features">${bullets}</ul>` : ""}${copy.outro ? `<p class="small">${inline(copy.outro)}</p>` : ""}</details>` : "";
   return `<article class="kit" id="${escapeHtml(data.slug)}">
+${kitImages({ data, images })}
 <h2>${escapeHtml(data.name)} <span class="kit-price">${price}</span></h2>
 <p class="kit-tagline">${escapeHtml(data.tagline)}</p>
-${kitImages({ data, images })}
-${copy.intro ? `<p>${inline(copy.intro)}</p>` : ""}
-${bullets ? `<ul class="kit-features">${bullets}</ul>` : ""}
-${copy.outro ? `<p class="small">${inline(copy.outro)}</p>` : ""}
-<p><a class="buy big" href="${escapeHtml(data.polar_url)}">Get ${escapeHtml(data.name)} for ${price}</a></p>
+${inside}
+<p class="kit-buy"><a class="buy big" href="${escapeHtml(data.polar_url)}">Get it for ${price}</a></p>
 </article>`;
 }
 
@@ -48,7 +47,7 @@ export const LIGHTBOX = `<dialog class="lightbox" aria-label="Image viewer"><but
 <script>(()=>{const dlg=document.querySelector("dialog.lightbox");if(!dlg||!dlg.showModal)return;const img=dlg.querySelector("img"),cap=dlg.querySelector("figcaption");let items=[],i=0;const show=(n)=>{i=(n+items.length)%items.length;const a=items[i];img.src=a.getAttribute("href");img.alt=a.dataset.alt||"";cap.textContent=(a.dataset.alt||"")+" ("+(i+1)+"/"+items.length+")";dlg.querySelector(".lb-prev").hidden=dlg.querySelector(".lb-next").hidden=items.length<2};document.addEventListener("click",(e)=>{const a=e.target.closest("a[data-gallery]");if(!a)return;e.preventDefault();items=[...document.querySelectorAll('a[data-gallery="'+a.dataset.gallery+'"]')];show(Number(a.dataset.index)||0);dlg.showModal()});dlg.querySelector(".lb-close").addEventListener("click",()=>dlg.close());dlg.querySelector(".lb-prev").addEventListener("click",()=>show(i-1));dlg.querySelector(".lb-next").addEventListener("click",()=>show(i+1));dlg.addEventListener("click",(e)=>{if(e.target===dlg)dlg.close()});dlg.addEventListener("keydown",(e)=>{if(e.key==="ArrowLeft")show(i-1);if(e.key==="ArrowRight")show(i+1)});let sx=null;dlg.addEventListener("touchstart",(e)=>{sx=e.touches[0].clientX},{passive:true});dlg.addEventListener("touchend",(e)=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)show(dx<0?i+1:i-1)})})();</script>`;
 
 export function renderKitsPage(kits) {
-  const articles = kits.map(kitArticle).join("\n");
+  const articles = `<div class="kits-grid">\n${kits.map(kitArticle).join("\n")}\n</div>`;
   return `<h1>Spreadsheet kits</h1>
 <p>Each kit is a single workbook you buy once and keep. Formulas only, no macros, no sign-up. They open in Excel (2010 or later), Google Sheets and Apple Numbers, and every formula is checked by recalculating the whole workbook before release. The free calculators on this site answer one question at a time; the kits keep the answers together and update them as you add rows.</p>
 ${articles}

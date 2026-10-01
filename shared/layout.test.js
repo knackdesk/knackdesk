@@ -284,3 +284,17 @@ describe("footer kits", () => {
     expect(footer).toContain('href="/kits/">All 10 kits');
   });
 });
+
+describe("renderKitsPage layout", () => {
+  it("lays kits out as cards in a grid with a collapsed what-is-inside list and the buy link on each card", async () => {
+    const { renderKitsPage } = await import("./kits-page.js");
+    const kit = (slug) => ({ data: { slug, name: `Kit ${slug}`, lane: "digital", tagline: "t", price_cents: 1200, polar_url: `https://buy.polar.sh/${slug}` }, body: "## Listing copy (Polar)\nIntro line.\n- **Sheet A:** does a.\n- **Sheet B:** does b.\nWorks everywhere.", images: ["cover.png", "sheet-1-a.png"] });
+    const html = renderKitsPage([kit("one"), kit("two"), kit("three")]);
+    expect((html.match(/<div class="kits-grid">/g) || []).length).toBe(1);
+    expect((html.match(/<article class="kit"/g) || []).length).toBe(3);
+    expect(html).toContain('<details class="kit-inside"><summary>What is inside</summary>');
+    expect(html.indexOf('<div class="kits-grid">')).toBeLessThan(html.indexOf('<article class="kit"'));
+    expect(html.slice(html.lastIndexOf("</article>"))).toMatch(/^<\/article>\s*<\/div>/);
+    expect((html.match(/class="buy big"/g) || []).length).toBe(3);
+  });
+});

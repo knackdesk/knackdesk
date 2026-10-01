@@ -72,3 +72,10 @@ dialog.lightbox button{position:absolute;top:50%;transform:translateY(-50%);font
 dialog.lightbox .lb-prev{left:max(8px,calc((100vw - 1240px)/2))}dialog.lightbox .lb-next{right:max(8px,calc((100vw - 1240px)/2))}
 dialog.lightbox .lb-close{top:14px;right:14px;transform:none;font-size:1.8rem;width:2.6rem;height:2.6rem}
 @media(max-width:640px){dialog.lightbox button{width:2.4rem;height:2.4rem;font-size:1.8rem}dialog.lightbox .lb-prev{left:6px}dialog.lightbox .lb-next{right:6px}}
+
+.kits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem;margin:1.5rem 0 2.5rem}
+.kits-grid .kit{margin:0;padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column}.kits-grid .kit h2{font-size:1.15rem;margin:.6rem 0 .25rem;align-items:flex-start;gap:.5rem}.kits-grid .kit-price{white-space:nowrap}
+.kits-grid .kit-tagline{color:var(--muted);font-size:.95rem;margin:0 0 .6rem}
+.kits-grid .kit-cover{margin:0 0 .5rem}.kits-grid .kit-shots{gap:.4rem;margin:0 0 .4rem}
+.kit-inside{margin:.25rem 0 .75rem;font-size:.95rem}.kit-inside summary{cursor:pointer;color:var(--accent);font-weight:600}.kit-inside ul{padding-left:1.1rem;margin:.5rem 0}.kit-inside li{margin:.25rem 0}
+.kits-grid .kit-buy{margin:auto 0 0}.kits-grid .kit-buy .buy{margin-left:0;display:block;text-align:center;padding:.6rem .8rem}
