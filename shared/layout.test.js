@@ -22,12 +22,15 @@ describe("renderPage", () => {
   });
   it("puts the megamenu in the header when given, with About/Contact in the footer", () => {
     const menu = renderMegaMenu([
-      { data: { slug: "a", name: "A tool", lane: "tool", category: "invoicing", tagline: "t" } },
+      { data: { slug: "a", name: "A tool Calculator", lane: "tool", category: "invoicing", tagline: "t" } },
       { data: { slug: "b", name: "B tool", lane: "tool", category: "property", tagline: "t" } },
       { data: { slug: "k", name: "Kit", lane: "digital", tagline: "t", price_cents: 900, polar_url: "https://polar.sh/k" } },
     ]);
     expect(menu).toContain("<details");
     expect(menu).toContain('<summary>Tools');
+    expect(menu).toContain('class="mega-cat"');
+    expect(menu).toContain('class="mega-close"');
+    expect(menu).toContain('>A tool</a>');
     expect(menu).toContain('href="/invoicing/"');
     expect(menu).toContain('href="/a/"');
     expect(menu).toContain('href="/property/"');
@@ -41,6 +44,11 @@ describe("renderPage", () => {
     const footer = html.split("<footer>")[1];
     expect(footer).toContain('href="/about/"');
     expect(footer).toContain('href="/contact/"');
+  });
+  it("includes a back-to-top button", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+    expect(html).toContain('class="totop"');
+    expect(html).toContain('aria-label="Back to top"');
   });
   it("versions the stylesheet URL when an asset version is given", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/", assetVersion: "abc123" });

@@ -39,20 +39,22 @@ function socialMeta({ title, description, url, ogType }) {
 <meta name="twitter:image" content="${OG_IMAGE}">`;
 }
 
+const shortName = (name) => name.replace(/\s+(Calculator|Converter)$/i, "");
+
 export function renderMegaMenu(items) {
   const tools = items.filter(({ data }) => data.lane !== "digital");
   const kits = items.filter(({ data }) => data.lane === "digital");
   const cols = CATEGORY_SECTIONS.map((c) => {
     const inCat = tools.filter(({ data }) => data.category === c.key);
     if (inCat.length === 0) return "";
-    const lis = inCat.map(({ data }) => `<li><a href="/${escapeHtml(data.slug)}/">${escapeHtml(data.name)}</a></li>`).join("");
-    return `<div class="mega-col"><h3><a href="/${c.key}/">${escapeHtml(c.heading)}</a></h3><ul>${lis}</ul></div>`;
+    const lis = inCat.map(({ data }) => `<li><a href="/${escapeHtml(data.slug)}/" title="${escapeHtml(data.name)}">${escapeHtml(shortName(data.name))}</a></li>`).join("");
+    return `<details class="mega-cat" open><summary><h3><a href="/${c.key}/">${escapeHtml(c.heading)}</a></h3></summary><ul>${lis}</ul></details>`;
   }).filter(Boolean);
   if (kits.length) {
     const lis = kits.map(({ data }) => `<li><a href="${escapeHtml(data.polar_url || "/#kits")}">${escapeHtml(data.name)} <span class="price">$${(data.price_cents / 100).toFixed(0)}</span></a></li>`).join("");
-    cols.push(`<div class="mega-col mega-kits"><h3><a href="/#kits">Kits</a></h3><ul>${lis}</ul></div>`);
+    cols.push(`<details class="mega-cat mega-kits" open><summary><h3><a href="/#kits">Kits</a></h3></summary><ul>${lis}</ul></details>`);
   }
-  return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega">${cols.join("")}</div></details>`;
+  return `<details class="menu"><summary>Tools<span class="caret" aria-hidden="true">▾</span></summary><div class="mega"><div class="mega-top"><span>All tools</span><button type="button" class="mega-close" aria-label="Close menu">×</button></div><div class="mega-grid">${cols.join("")}</div></div></details>`;
 }
 
 export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "" }) {
@@ -80,7 +82,9 @@ ${adsense(adsenseId)}
 ${crumbs({ title, path, parent })}${body}
 </main>
 <footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
-<script>document.addEventListener("click",(e)=>{for(const d of document.querySelectorAll("details.menu[open]"))if(!d.contains(e.target))d.removeAttribute("open")});document.addEventListener("keydown",(e)=>{if(e.key==="Escape")for(const d of document.querySelectorAll("details.menu[open]"))d.removeAttribute("open")});</script>
+<button type="button" class="totop" aria-label="Back to top" hidden>↑</button>
+<script>(()=>{const b=document.querySelector(".totop");if(b){const t=()=>{b.hidden=window.scrollY<600};window.addEventListener("scroll",t,{passive:true});t();b.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}})();</script>
+<script>(()=>{const m=document.querySelector("details.menu");if(!m)return;const narrow=()=>window.matchMedia("(max-width: 640px)").matches;const closeAll=()=>m.removeAttribute("open");m.addEventListener("toggle",()=>{if(m.open&&narrow())for(const c of m.querySelectorAll("details.mega-cat"))c.removeAttribute("open");if(m.open&&!narrow())for(const c of m.querySelectorAll("details.mega-cat"))c.setAttribute("open","");document.body.classList.toggle("menu-open",m.open&&narrow())});document.addEventListener("click",(e)=>{if(e.target.closest(".mega-close")){closeAll();return}if(m.open&&!m.contains(e.target))closeAll()});document.addEventListener("keydown",(e)=>{if(e.key==="Escape")closeAll()})})();</script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script>
 </body>
 </html>`;
