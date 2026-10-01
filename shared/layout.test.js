@@ -20,6 +20,15 @@ describe("renderPage", () => {
     expect(html).toContain('href="/privacy/"');
     expect(html).not.toContain("adsbygoogle");
   });
+  it("has the five category links in the header and About/Contact in the footer", () => {
+    const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
+    const header = html.split("</header>")[0];
+    for (const p of ["/invoicing/", "/pricing/", "/planning/", "/time/", "/property/"]) expect(header).toContain(`href="${p}"`);
+    expect(header).not.toContain('href="/about/"');
+    const footer = html.split("<footer>")[1];
+    expect(footer).toContain('href="/about/"');
+    expect(footer).toContain('href="/contact/"');
+  });
   it("never mentions the parent company", () => {
     const html = renderPage({ title: "T", description: "d", body: "", path: "/" });
     expect(html).not.toMatch(/smitheo/i);

@@ -59,11 +59,11 @@ ${renderJsonLd(pageGraph({ title, path, schema, parent }))}
 ${adsense(adsenseId)}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Knackdesk</a><nav><a href="/about/">About</a><a href="/contact/">Contact</a></nav></header>
+<header class="top"><a class="brand" href="/">Knackdesk</a><nav aria-label="Categories">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.nav)}</a>`).join("")}</nav></header>
 <main>
 ${crumbs({ title, path, parent })}${body}
 </main>
-<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
+<footer><p class="disclaimer">Tools on this site provide general information and arithmetic only, not legal, tax or financial advice. Check important figures with a qualified adviser.</p><div class="footcats">${CATEGORY_SECTIONS.map((c) => `<a href="/${c.key}/">${escapeHtml(c.heading)}</a>`).join("")}</div><div class="footlinks"><span>© Knackdesk</span><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div></footer>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script>
 </body>
 </html>`;
@@ -81,11 +81,11 @@ export function renderProductCards(items) {
 }
 
 export const CATEGORY_SECTIONS = [
-  { key: "invoicing", heading: "Invoicing & payment", intro: "Due dates, late fees, deposits, early payment discounts and VAT for the invoices you send and receive." },
-  { key: "pricing", heading: "Rates & pricing", intro: "Set and check what you charge: hourly and day rates, markup and margin, discounts, price rises, retainers and commission." },
-  { key: "planning", heading: "Planning & cash", intro: "See how long your cash lasts, what you need to sell to break even or hit a goal, and what your software really costs." },
-  { key: "time", heading: "Time & pay", intro: "Turn hours into invoice-ready decimals, count working days and work out overtime pay." },
-  { key: "property", heading: "Rent & property", intro: "Calculators for tenants, flatmates, landlords and small investors." },
+  { key: "invoicing", nav: "Invoicing", heading: "Invoicing & payment", intro: "Due dates, late fees, deposits, early payment discounts and VAT for the invoices you send and receive." },
+  { key: "pricing", nav: "Pricing", heading: "Rates & pricing", intro: "Set and check what you charge: hourly and day rates, markup and margin, discounts, price rises, retainers and commission." },
+  { key: "planning", nav: "Planning", heading: "Planning & cash", intro: "See how long your cash lasts, what you need to sell to break even or hit a goal, and what your software really costs." },
+  { key: "time", nav: "Time & pay", heading: "Time & pay", intro: "Turn hours into invoice-ready decimals, count working days and work out overtime pay." },
+  { key: "property", nav: "Property", heading: "Rent & property", intro: "Calculators for tenants, flatmates, landlords and small investors." },
 ];
 
 function section({ id, heading, intro, list, href }) {
