@@ -77,7 +77,7 @@ describe("renderPage SEO head", () => {
   });
   it("lets a headline override <title> and og:title but not the body", () => {
     const html = page({ headline: "Late Fee Calculator: Flat or Monthly", body: "<h1>Late Fee</h1>" });
-    expect(html).toContain("<title>Late Fee Calculator: Flat or Monthly · Knackdesk</title>");
+    expect(html).toContain("<title>Late Fee Calculator: Flat or Monthly</title>");
     expect(html).toContain('<meta property="og:title" content="Late Fee Calculator: Flat or Monthly">');
     expect(html).toContain('<meta name="twitter:title" content="Late Fee Calculator: Flat or Monthly">');
     expect(html).toContain("<h1>Late Fee</h1>");

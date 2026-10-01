@@ -204,7 +204,7 @@ description: d
     addFeeTool(root);
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
     const page = readFileSync(join(out, "fee", "index.html"), "utf8");
-    expect(page).toContain("<title>Late Payment Fee Calculator: Flat Fee or Interest · Knackdesk</title>");
+    expect(page).toContain("<title>Late Payment Fee Calculator: Flat Fee or Interest</title>");
     expect(page).toContain('<meta property="og:title" content="Late Payment Fee Calculator: Flat Fee or Interest">');
     expect(page).toContain("<h1>Late Fee Calculator</h1>");
   });

@@ -33,12 +33,13 @@ function socialMeta({ title, description, url, ogType }) {
 
 export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [] }) {
   const docTitle = headline || title;
+  const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(docTitle)} · Knackdesk</title>
+<title>${escapeHtml(titleTag)}</title>
 <meta name="description" content="${escapeHtml(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="${SITE}${path}">
