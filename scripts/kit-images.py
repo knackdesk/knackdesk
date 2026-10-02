@@ -89,8 +89,14 @@ def cover_square(slug, data, sheets, out):
         if x + bw > W - pad: x = pad; y += 84
         d.rounded_rectangle([x, y, x + bw, y + 66], radius=33, fill=CARD, outline=LINE, width=3)
         d.text((x + 26, y + 13), sname, font=pf, fill=FG); x += bw + 20
-    d.text((pad, H - pad - 110), "Excel · Google Sheets · Numbers", font=font(BOLD, 44), fill=ACCENT)
-    d.text((pad, H - pad - 50), "Formulas only, no macros · instant download", font=font(REG, 38), fill=MUTED)
+    y += 150
+    d.text((pad, y), "Excel · Google Sheets · Numbers", font=font(BOLD, 44), fill=ACCENT)
+    d.text((pad, y + 62), "Formulas only, no macros · instant download", font=font(REG, 38), fill=MUTED)
+    # centre the whole block vertically so 1:1 and 4:3 crops both keep it
+    used = y + 120 - pad
+    shift = (H - used) // 2 - pad
+    if shift > 0:
+        im2 = Image.new("RGB", (W, H), BG); im2.paste(im.crop((0, pad, W, pad + used)), (0, pad + shift)); im = im2
     im.save(out, optimize=True)
 
 
