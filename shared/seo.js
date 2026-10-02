@@ -71,19 +71,38 @@ export function webApplicationNode({ name, path, description }) {
   };
 }
 
-export function productNode({ name, description, price_cents, polar_url }, image = null) {
+/** Digital download: no physical shipping (free, instant) and no returns of the file; refunds are handled by the merchant of record. No ratings are ever included. */
+export function productNode({ name, description, price_cents, polar_url, slug }, image = null) {
   return {
     "@type": "Product",
     ...(image ? { image } : {}),
     name,
     description,
+    brand: { "@type": "Brand", name: "Knackdesk" },
+    ...(slug ? { sku: slug } : {}),
     offers: {
       "@type": "Offer",
       price: (price_cents / 100).toFixed(2),
       priceCurrency: "USD",
       url: polar_url,
       availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
       seller: { "@id": ORG_ID },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: ["US", "GB", "DE", "FR", "NL", "HR", "AT", "IE", "ES", "IT"],
+        returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "USD" },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: ["US", "GB", "DE", "FR", "NL", "HR", "AT", "IE", "ES", "IT"] },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+        },
+      },
     },
   };
 }
