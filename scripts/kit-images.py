@@ -70,6 +70,30 @@ def cover(slug, data, sheets, out):
     im.resize((COVER_W, COVER_H), Image.LANCZOS).save(out, optimize=True)
 
 
+def cover_square(slug, data, sheets, out):
+    """2000x2000 cover for marketplaces that crop to 1:1 or 4:3 (Etsy): all content inside the central safe area."""
+    W = H = 2000; pad = 260  # content stays inside the middle ~74% so a 4:3 or 1:1 crop keeps it
+    im = Image.new("RGB", (W, H), BG); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([pad, pad, pad + 96, pad + 96], radius=20, fill=ACCENT)
+    d.text((pad + 24, pad + 10), "K", font=font(BOLD, 68), fill=(255, 255, 255))
+    d.text((pad + 120, pad + 20), "Knackdesk", font=font(BOLD, 52), fill=FG)
+    y = pad + 190; tf = font(BOLD, 92)
+    for line in wrap(d, data["name"], tf, W - 2 * pad)[:3]:
+        d.text((pad, y), line, font=tf, fill=FG); y += 108
+    y += 20; gf = font(REG, 44)
+    for line in wrap(d, data.get("tagline", ""), gf, W - 2 * pad)[:4]:
+        d.text((pad, y), line, font=gf, fill=MUTED); y += 58
+    y += 40; x = pad; pf = font(REG, 36)
+    for sname in sheets:
+        tw = d.textlength(sname, font=pf); bw = tw + 52
+        if x + bw > W - pad: x = pad; y += 84
+        d.rounded_rectangle([x, y, x + bw, y + 66], radius=33, fill=CARD, outline=LINE, width=3)
+        d.text((x + 26, y + 13), sname, font=pf, fill=FG); x += bw + 20
+    d.text((pad, H - pad - 110), "Excel · Google Sheets · Numbers", font=font(BOLD, 44), fill=ACCENT)
+    d.text((pad, H - pad - 50), "Formulas only, no macros · instant download", font=font(REG, 38), fill=MUTED)
+    im.save(out, optimize=True)
+
+
 def fmt_value(cell):
     v = cell.value
     if v is None or v == "": return ""
@@ -146,6 +170,7 @@ def main():
     wb = openpyxl.load_workbook(xlsx, data_only=True)
     sheets = [s for s in wb.sheetnames if s != "Start Here"]
     cover(args.slug, data, sheets, os.path.join(outdir, "cover.png"))
+    cover_square(args.slug, data, sheets, os.path.join(outdir, "cover-etsy.png"))
     picked = [s for s in sheets if s != "Settings"][: args.sheets]
     for i, name in enumerate(picked, start=1):
         safe = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")

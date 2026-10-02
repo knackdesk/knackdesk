@@ -10,7 +10,7 @@ await loadDotEnv();
 const client = createPolarClient({ token: process.env.POLAR_ACCESS_TOKEN, orgId: process.env.POLAR_ORG_ID });
 const dir = join(process.cwd(), "products", slug, "assets", "images");
 if (!existsSync(dir)) { console.error(`no images at ${dir}; run scripts/kit-images.py ${slug}`); process.exit(1); }
-const files = readdirSync(dir).filter((f) => f.endsWith(".png")).sort((a, b) => (a === "cover.png" ? -1 : b === "cover.png" ? 1 : a.localeCompare(b)));
+const files = readdirSync(dir).filter((f) => f.endsWith(".png") && !f.startsWith("cover-")).sort((a, b) => (a === "cover.png" ? -1 : b === "cover.png" ? 1 : a.localeCompare(b)));
 const product = await client.findProductBySlug(slug);
 if (!product) { console.error(`no Polar product with metadata.slug=${slug}`); process.exit(1); }
 const ids = [];

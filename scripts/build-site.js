@@ -164,8 +164,10 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   if (digital.length > 0) {
     const withImages = digital.map((item) => {
       const imgDir = join(item.dir, "assets", "images");
-      const images = existsSync(imgDir) ? readdirSync(imgDir).filter((f) => f.endsWith(".png")).sort((a, b) => (a === "cover.png" ? -1 : b === "cover.png" ? 1 : a.localeCompare(b))) : [];
-      if (images.length) cpSync(imgDir, join(outDir, "kits", "img", item.data.slug), { recursive: true });
+      // Marketplace-only images (cover-etsy.png) stay out of the site gallery and are not copied.
+      const siteImage = (f) => f.endsWith(".png") && !f.startsWith("cover-");
+      const images = existsSync(imgDir) ? readdirSync(imgDir).filter(siteImage).sort((a, b) => (a === "cover.png" ? -1 : b === "cover.png" ? 1 : a.localeCompare(b))) : [];
+      if (images.length) cpSync(imgDir, join(outDir, "kits", "img", item.data.slug), { recursive: true, filter: (src) => !basename(src).startsWith("cover-") });
       return { ...item, images };
     });
     const coverUrl = (item) => (item.images?.includes("cover.png") ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null);
