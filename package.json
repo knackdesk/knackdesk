@@ -19,7 +19,8 @@
     "dns": "node scripts/cloudflare-dns.js",
     "submit:gsc": "node scripts/gsc-submit.js",
     "submit:indexnow": "node scripts/indexnow.js",
-    "research": "node scripts/research-signals.js"
+    "research": "node scripts/research-signals.js",
+    "index:google": "node scripts/google-index.js"
   },
   "devDependencies": {
     "vitest": "^2.1.0"
