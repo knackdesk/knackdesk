@@ -69,6 +69,14 @@ describe("real site audit", () => {
     }
     expect(over).toEqual([]);
   });
+  it("lists only built pages in the sitemap, and never the thanks page", () => {
+    const built = new Set(pages.map((p) => p.path));
+    const sitemap = readFileSync(join(out, "sitemap.xml"), "utf8");
+    const locs = [...sitemap.matchAll(/<loc>https:\/\/knackdesk\.com([^<]*)<\/loc>/g)].map((m) => m[1]);
+    const missing = locs.filter((p) => !built.has(p));
+    expect(missing).toEqual([]);
+    expect(locs).not.toContain("/thanks/");
+  });
   it("keeps headlines within 60 characters and titles unique", () => {
     const titles = new Map();
     for (const { path, html } of pages) {

@@ -228,6 +228,20 @@ description: d
     const order = [...kits.matchAll(/<article class="kit" id="(kit-[abc])"/g)].map((m) => m[1]);
     expect(order).toEqual(["kit-c", "kit-b", "kit-a"]);
   });
+  it("keeps kits and the thanks page out of the sitemap and marks the thanks page noindex", async () => {
+    addFeeTool(root);
+    mkdirSync(join(root, "products", "kit"), { recursive: true });
+    writeFileSync(join(root, "products", "kit", "PLAN.md"), KIT_PLAN);
+    mkdirSync(join(root, "site", "pages"), { recursive: true });
+    writeFileSync(join(root, "site", "pages", "thanks.html"), "<!-- title: Thanks -->\n<!-- description: t -->\n<h1>Thanks</h1>");
+    await buildSite({ rootDir: root, outDir: out, adsenseId: "" });
+    const sitemap = readFileSync(join(out, "sitemap.xml"), "utf8");
+    expect(sitemap).toContain("<loc>https://knackdesk.com/fee/</loc>");
+    expect(sitemap).not.toContain("<loc>https://knackdesk.com/kit/</loc>");
+    expect(sitemap).not.toContain("<loc>https://knackdesk.com/thanks/</loc>");
+    expect(readFileSync(join(out, "thanks", "index.html"), "utf8")).toContain('<meta name="robots" content="noindex');
+    expect(readFileSync(join(out, "llms.txt"), "utf8")).not.toContain("https://knackdesk.com/kit/");
+  });
   it("writes a category hub page per category with the tools, breadcrumb schema and sitemap entry", async () => {
     addFeeTool(root);
     await buildSite({ rootDir: root, outDir: out, adsenseId: "" });

@@ -76,7 +76,7 @@ export function renderFinder(items) {
   return `<div class="finder"><label for="finder" class="visually-hidden">Find a calculator</label><input type="search" id="finder" placeholder="Find a calculator, e.g. late fee, margin, PTO…" autocomplete="off" spellcheck="false"><p class="finder-hint">${tools.length} free calculators${kits.length ? ` and ${kits.length} kits` : ""}. Type to filter, or pick a category.</p><nav class="chips" aria-label="Categories">${chips.join("")}</nav><p id="finder-empty" hidden>No calculator matches that. Try another word, or <a href="/contact/">tell us what you were looking for</a>.</p></div>${FINDER_SCRIPT}`;
 }
 
-export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "", footerKits = [] }) {
+export function renderPage({ title, description, body, path, adsenseId = "", headline = "", ogType = "website", schema = [], parent = null, menu = "", assetVersion = "", footerKits = [], noindex = false }) {
   const docTitle = headline || title;
   const titleTag = headline || `${title} · Knackdesk`;
   return `<!doctype html>
@@ -86,7 +86,7 @@ export function renderPage({ title, description, body, path, adsenseId = "", hea
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(titleTag)}</title>
 <meta name="description" content="${escapeHtml(description)}">
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="${noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large"}">
 <link rel="canonical" href="${SITE}${path}">
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

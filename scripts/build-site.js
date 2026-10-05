@@ -120,7 +120,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     const path = name === "index" ? "/" : `/${name}/`;
     const body = raw.replace("<!--FINDER-->", () => renderFinder(items)).replace("<!--PRODUCTS-->", () => sections);
     const schema = path === "/" ? digital.map((item) => productNode(item.data, existsSync(join(item.dir, "assets", "images", "cover.png")) ? `https://knackdesk.com/kits/img/${item.data.slug}/cover.png` : null)) : [];
-    writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion, footerKits }));
+    writePage(outDir, path, renderPage({ title: pageMeta(raw, "title"), description: pageMeta(raw, "description"), body, path, adsenseId, schema, menu, assetVersion, footerKits, noindex: path === "/thanks/" }));
   }
   // Guides: long-form pages in site/guides/*.html -> /guides/<slug>/ plus a /guides/ index.
   const guidesDir = join(rootDir, "site", "guides");
@@ -182,7 +182,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   const categoryLinks = [...categoryPages.map((c) => ({ key: c.key, heading: c.heading, path: `/${c.key}/` })), ...guides.map((g) => ({ key: `guide-${g.slug}`, heading: `Guide: ${g.title}`, path: g.path }))];
   writeFileSync(join(outDir, "llms.txt"), renderLlmsTxt(items, categoryLinks));
   writeFileSync(join(outDir, "llms-full.txt"), renderLlmsFullTxt(items, details, categoryLinks));
-  const urls = ["/", ...(digital.length > 0 ? ["/kits/"] : []), ...(guides.length ? ["/guides/", ...guides.map((g) => g.path)] : []), ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `/${basename(f, ".html")}/`), ...items.map(({ data }) => `/${data.slug}/`)];
+  const urls = ["/", ...(digital.length > 0 ? ["/kits/"] : []), ...(guides.length ? ["/guides/", ...guides.map((g) => g.path)] : []), ...categoryPages.map((c) => `/${c.key}/`), ...readdirSync(pagesDir).filter((f) => f.endsWith(".html") && f !== "index.html" && f !== "thanks.html").map((f) => `/${basename(f, ".html")}/`), ...items.filter(({ data }) => data.lane !== "digital").map(({ data }) => `/${data.slug}/`)];
   writeFileSync(join(outDir, "sitemap.xml"), renderSitemap(urls));
   if (adsenseId) writeFileSync(join(outDir, "ads.txt"), `google.com, ${adsenseId.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n`);
   writeFileSync(join(outDir, "robots.txt"), ROBOTS);
