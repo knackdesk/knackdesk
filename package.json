@@ -20,7 +20,8 @@
     "submit:gsc": "node scripts/gsc-submit.js",
     "submit:indexnow": "node scripts/indexnow.js",
     "research": "node scripts/research-signals.js",
-    "index:google": "node scripts/google-index.js"
+    "index:google": "node scripts/google-index.js",
+    "index:report": "node scripts/index-report.js"
   },
   "devDependencies": {
     "vitest": "^2.1.0"

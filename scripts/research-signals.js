@@ -9,6 +9,7 @@ import { readFile, appendFile } from "node:fs/promises";
 import { loadDotEnv } from "./lib/env.js";
 import { getAccessToken } from "./lib/google-auth.js";
 import { searchAnalytics, analyticsWindow } from "./lib/gsc.js";
+import { runIndexReport } from "./index-report.js";
 
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const pad = (s, n) => String(s).padEnd(n).slice(0, n);
@@ -66,6 +67,7 @@ if (wantLog) {
 try {
   await loadDotEnv();
   await gscSection();
+  try { await runIndexReport({ log: console.log }); } catch (err) { console.log(`index coverage: error: ${err.message}`); }
   await cloudflareSection();
   await polarSection();
   if (wantLog) {
