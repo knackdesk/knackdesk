@@ -19,8 +19,10 @@ export async function runIndexReport({ log = console.log } = {}) {
   const urls = parseSitemapUrls(await (await fetch("https://knackdesk.com/sitemap.xml")).text()).slice(0, limit);
   const accessToken = await getAccessToken({ serviceAccountJson: sa, scope: SCOPE });
   const rows = [];
-  for (const url of urls) {
-    try { rows.push(await inspectUrl({ accessToken, url })); } catch (err) { rows.push({ url, verdict: "ERROR", coverage: String(err.message).slice(0, 80) }); }
+  const started = Date.now();
+  for (const [i, url] of urls.entries()) {
+    try { rows.push(await inspectUrl({ accessToken, url })); } catch (err) { rows.push({ url, verdict: "ERROR", coverage: String(err.name === "AbortError" ? "timeout" : err.message).slice(0, 80) }); }
+    if ((i + 1) % 10 === 0 || i + 1 === urls.length) log(`  inspected ${i + 1}/${urls.length} (${Math.round((Date.now() - started) / 1000)}s)`);
     await sleep(120);
   }
   const s = summarizeInspections(rows);

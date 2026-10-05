@@ -4,8 +4,13 @@ import { DEFAULT_SITE_URL } from "./gsc.js";
 const INSPECT_URL = "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect";
 
 /** One URL Inspection call (quota: 2,000 per property per day, 600 per minute). */
-export async function inspectUrl({ accessToken, url, siteUrl = DEFAULT_SITE_URL, fetchImpl = fetch }) {
-  const { json } = await request(INSPECT_URL, { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body: { inspectionUrl: url, siteUrl }, fetchImpl });
+export async function inspectUrl({ accessToken, url, siteUrl = DEFAULT_SITE_URL, fetchImpl = fetch, timeoutMs = 25000 }) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const timedFetch = (u, init) => fetchImpl(u, { ...init, signal: controller.signal });
+  let json;
+  try { ({ json } = await request(INSPECT_URL, { method: "POST", headers: { Authorization: `Bearer ${accessToken}` }, body: { inspectionUrl: url, siteUrl }, fetchImpl: timedFetch })); }
+  finally { clearTimeout(timer); }
   const idx = json?.inspectionResult?.indexStatusResult ?? {};
   const rich = json?.inspectionResult?.richResultsResult ?? null;
   const richIssues = rich ? (rich.detectedItems ?? []).reduce((n, d) => n + (d.items ?? []).reduce((m, i) => m + (i.issues ?? []).length, 0), 0) : 0;
