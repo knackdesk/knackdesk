@@ -1,0 +1,70 @@
+<!-- title: IT Support Contract Margin Calculator -->
+<!-- description: Check the gross margin on a monthly IT support contract from its fee, tool costs, labour hours and other costs, with per-seat figures and break-even hours. -->
+<h1>IT Support Contract Margin Calculator</h1>
+<p>Enter what a client pays you each month, the seats on the contract, what your tools cost for that client, the technician hours the contract takes, what an hour of technician time costs you and any other monthly costs. You get the labour cost, the total cost, the gross profit and margin, the cost and fee per seat, and the number of labour hours at which the contract stops making money. It is built for managed service providers (MSPs), IT support companies and freelance IT consultants who want to know whether a support contract pays. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Contract margin is the share of a monthly support fee left after the tools, technician time and other costs that the contract uses.</p>
+<p class="formula"><strong>Formula:</strong> labour cost = labour hours × loaded hourly cost; total cost = tool costs + labour cost + other costs; gross profit = monthly fee − total cost; margin % = gross profit ÷ monthly fee × 100; cost per seat = total cost ÷ seats; fee per seat = monthly fee ÷ seats; break-even hours = (monthly fee − tool costs − other costs) ÷ loaded hourly cost.</p>
+
+<form class="tool" id="f">
+  <label>Monthly fee for the contract<br><input type="number" id="fee" min="0" step="any" value="4500"></label>
+  <label>Seats on the contract (optional)<br><input type="number" id="seats" min="0" step="1" value="50"></label>
+  <label>Tool costs for this client per month<br><input type="number" id="tools" min="0" step="any" value="1000"></label>
+  <label>Labour hours per month<br><input type="number" id="hours" min="0" step="any" value="35"></label>
+  <label>Loaded hourly cost of a technician<br><input type="number" id="cost" min="0" step="any" value="60"></label>
+  <label>Other costs per month (optional)<br><input type="number" id="other" min="0" step="any" value="200"></label>
+  <p><button class="primary" type="submit">Calculate margin</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { itContractMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = itContractMargin({ monthlyFee: Number($("fee").value) || 0, seats: Number($("seats").value) || 0, toolCostsMonthly: Number($("tools").value) || 0, labourHoursMonthly: Number($("hours").value) || 0, loadedHourlyCost: Number($("cost").value) || 0, otherCostsMonthly: Number($("other").value) || 0 });
+    const note = r.grossProfit < 0 ? `<p>A negative gross profit means the contract costs more to deliver than the client pays for it.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Labour cost</td><td>${fmt(r.labourCost)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Gross profit</td><td>${fmt(r.grossProfit)}</td></tr><tr><td>Gross margin</td><td><strong>${fmt(r.marginPercent)}%</strong></td></tr><tr><td>Cost per seat</td><td>${orNa(r.costPerSeat, "n/a (no seats entered)")}</td></tr><tr><td>Fee per seat</td><td>${orNa(r.feePerSeat, "n/a (no seats entered)")}</td></tr><tr><td>Break-even labour hours</td><td>${orNa(r.breakEvenHours, "n/a (no hourly cost entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The monthly fee is what the client pays you for the contract each month, before any sales tax. If the contract is billed quarterly or yearly, divide to a monthly figure. Leave out one-off project work billed separately, because its costs are not in the other inputs either.</p>
+<p>Seats is the number of users or devices the contract covers. It is optional. With it, the calculator shows what each seat costs you and what the client pays per seat, which makes it easier to compare this contract with others of a different size.</p>
+<p>Tool costs are the monthly licence and platform costs you carry for this client: monitoring agents, endpoint protection, backup storage, email filtering, and the share of your PSA and RMM bills that this client accounts for. Your vendor licence bills list most of these per seat or per device, so multiply by the client's count. For platforms billed as one fee, use a fair share, such as the client's seats divided by all the seats you manage.</p>
+<p>Labour hours are the technician hours the contract took in a month: tickets, scheduled maintenance, reviews and account meetings. Your ticket system reports give you time logged per client. Use an average over several months so that one busy month does not decide the answer. Loaded hourly cost is what an hour of that time costs you: pay from payroll plus employer taxes, benefits, equipment and training, divided by the hours a technician spends on client work.</p>
+<p>Other costs catch anything else the contract uses each month, such as a dedicated phone line, travel to the client's site, or third-party support you buy in.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a fee of 4,500 for 50 seats, 1,000 in tools, 35 hours of labour at 60 an hour and 200 in other costs, labour costs 2,100 and the contract costs 3,300 in all. That leaves a gross profit of 1,200, a gross margin of 26.67 percent. Each seat costs you 66 and pays you 90. The contract breaks even at 55 labour hours: past that, every extra hour is a loss.</p>
+<p>The margin is gross margin for this contract. It shows what the contract contributes after its own costs. It does not include rent, sales, management time or the other costs of running the business, which have to be paid out of the gross profit of all your contracts together.</p>
+
+<h2>What a negative gross profit means</h2>
+<p>When the total cost is more than the fee, gross profit and margin turn negative. The contract is costing you money every month, and the negative figure is how much. A negative result usually comes from one of three places. The client may be using far more technician time than the fee was priced for. Tool costs may have risen since the contract was signed, through vendor price rises or added seats you did not bill for. Or the fee may simply have been set too low at the start.</p>
+<p>The inputs tell you which. Compare the labour hours with the break-even hours: if hours are well above break-even, the problem is usage, and the conversation with the client is about scope or a price increase. If hours are below break-even and the contract still loses money, tool and other costs are taking too much of the fee. Check that every seat you pay for is a seat the client is billed for.</p>
+
+<h2>Using break-even hours</h2>
+<p>Break-even hours are the labour hours at which gross profit is exactly zero. The figure is the fee left after tools and other costs, divided by your loaded hourly cost. It gives your service desk a number to watch. When the hours logged against a client in a month start to approach it, the contract is close to costing more than it earns, and it is time to look at what is driving the tickets.</p>
+<p>It is also useful when you quote. Before you agree a fee, estimate the hours the client is likely to need and compare them with the break-even hours the fee would give you. If the estimate is close to break-even, there is little room for a bad month. The <a href="/msp-per-user-price-calculator/">per-user price calculator</a> works the other way round, from costs and a target margin to a price.</p>
+<p>The calculator does not say what margin a contract ought to earn. That depends on your costs and your business, so compare the result with your other contracts and with the same contract over time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are the per-seat figures shown as n/a?</h3>
+<p>Per-seat figures divide by the number of seats. When seats is 0 or left empty, there is nothing to divide by, so the calculator leaves those figures out.</p>
+<h3>Should I include my own time?</h3>
+<p>Yes, if you work on the contract. Count your hours in the labour hours and give them a loaded cost, or the margin will look better than it is.</p>
+<h3>Is this the same as net profit?</h3>
+<p>No. It is gross profit for one contract. Net profit comes after the costs of running the whole business.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/msp-per-user-price-calculator/">MSP per-user price calculator</a></li>
+  <li><a href="/cost-per-ticket-calculator/">Cost per ticket calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

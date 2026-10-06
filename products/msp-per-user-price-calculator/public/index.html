@@ -1,0 +1,70 @@
+<!-- title: MSP Per-User Price Calculator -->
+<!-- description: Set a monthly per-user price for managed IT support from your tool costs, support hours, loaded hourly cost and margin, and see revenue and profit. -->
+<h1>MSP Per-User Price Calculator</h1>
+<p>Enter the number of users you support, what your tools cost per user and in total each month, the support hours an average user takes, what an hour of technician time costs you and the margin you want. You get the tool cost and labour cost behind each user, the price per user that delivers your margin, and the monthly revenue and profit across all users. It is built for managed service providers (MSPs), IT support companies and freelance IT consultants who price support contracts per user. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A per-user price is the monthly amount a client pays for each person you support, set so that it covers the tools and technician time that person uses and leaves the margin you chose.</p>
+<p class="formula"><strong>Formula:</strong> tool cost per user = per-user tools + fixed tools ÷ users; labour cost per user = support hours per user × loaded hourly cost; cost per user = tool cost + labour cost; price per user = cost per user ÷ (1 − margin % ÷ 100); monthly revenue = price per user × users; monthly profit = (price per user − cost per user) × users.</p>
+
+<form class="tool" id="f">
+  <label>Users supported<br><input type="number" id="users" min="1" step="1" value="50"></label>
+  <label>Tool cost per user per month<br><input type="number" id="peruser" min="0" step="any" value="12"></label>
+  <label>Fixed tool cost per month (optional)<br><input type="number" id="fixed" min="0" step="any" value="400"></label>
+  <label>Support hours per user per month<br><input type="number" id="hours" min="0" step="any" value="0.75"></label>
+  <label>Loaded hourly cost of a technician<br><input type="number" id="cost" min="0" step="any" value="60"></label>
+  <label>Margin you want, as a share of price (%)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="30"></label>
+  <p><button class="primary" type="submit">Calculate price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { mspPerUserPrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = mspPerUserPrice({ users: Number($("users").value) || 0, toolCostPerUserMonthly: Number($("peruser").value) || 0, fixedToolCostMonthly: Number($("fixed").value) || 0, supportHoursPerUserMonthly: Number($("hours").value) || 0, loadedHourlyCost: Number($("cost").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Tool cost per user</td><td>${fmt(r.toolCostPerUser)}</td></tr><tr><td>Labour cost per user</td><td>${fmt(r.labourCostPerUser)}</td></tr><tr><td>Cost per user</td><td>${fmt(r.costPerUser)}</td></tr><tr><td>Price per user</td><td><strong>${fmt(r.pricePerUser)}</strong></td></tr><tr><td>Monthly revenue</td><td>${fmt(r.monthlyRevenue)}</td></tr><tr><td>Monthly profit</td><td>${fmt(r.monthlyProfit)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Users supported is the number of people the price will cover. For a single client, that is the head count on the contract. For your whole book of per-user clients, it is the total across all of them. Use the number of people you actually support, not the number of devices, unless you price per device, in which case enter devices and read every result as per device.</p>
+<p>Tool cost per user is the monthly amount you pay vendors for each person you support: remote monitoring and management agents, endpoint protection, backup, email security, password managers and any other licence that scales with head count. The source is your vendor licence bills and the invoices from your PSA and RMM platforms. Add up the per-seat lines and divide by the seats billed, so the figure matches what you really pay rather than a list price.</p>
+<p>Fixed tool cost is the part of your tool spend that does not change when a user is added: the base fee for your PSA, a documentation platform, a phone system, a minimum commitment on a licence. The calculator spreads it evenly across the users you entered. If you are pricing one client, enter only the share of fixed costs you want that client to carry.</p>
+<p>Support hours per user is the average technician time one user takes in a month, including tickets, proactive maintenance, patch reviews, onboarding of new staff at the client and the meetings that come with the account. Take it from your ticket system reports: total time logged against the clients on this kind of plan, divided by the number of users on those clients, over several months. A single month can be distorted by a project or an outage.</p>
+<p>Loaded hourly cost is what one hour of technician time costs you, not what you bill for it. Start with salary from payroll, add employer taxes, benefits, training, equipment and the share of the year lost to leave and non-ticket work, then divide by the hours a technician actually spends on client work. The <a href="/employee-cost-calculator/">employee cost calculator</a> helps you build this figure from payroll.</p>
+<p>Margin is the share of the price you want to keep after tool and labour costs. Enter it as a number from 0 up to, but not including, 100.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 50 users, tools at 12 per user plus 400 a month in fixed tools, three quarters of an hour of support per user and a loaded cost of 60 an hour, each user costs 20 in tools and 45 in labour, 65 in all. To keep a 30 percent margin, the price per user is 92.86. Across 50 users, that brings in 4,642.86 a month and leaves 1,392.86 after tool and labour costs.</p>
+<p>The margin here is a share of the price, not a markup on cost. That matters, because the two are easy to mix up. Adding 30 percent to a cost of 65 gives 84.50, and 84.50 leaves a margin of about 23 percent, not 30. Dividing by one minus the margin is what makes the margin come out at the number you entered. The <a href="/markup-margin-calculator/">markup and margin calculator</a> shows the difference in more detail.</p>
+<p>Monthly profit is what is left after the costs this calculator knows about. It is not your net profit. Rent, sales, accounting, insurance and the owner's time are not in it unless you added them to the loaded hourly cost or the fixed tool cost.</p>
+
+<h2>Why fixed costs change the price</h2>
+<p>Because fixed tool costs are divided by the number of users, the per-user cost falls as the user count rises and climbs as it falls. Run the calculator with a smaller user count and the price per user goes up even though nothing else changed. That is worth knowing before you agree a per-user price with a small client, or before you quote a large client a price worked out from a small one.</p>
+<p>It also tells you what a lost client does to the rest of your book. When users leave, the fixed costs they were carrying fall on the users who stay, and the margin on every remaining contract slips a little unless you raise prices or cut the fixed costs.</p>
+
+<h2>Using it to set and review prices</h2>
+<p>Run it once with your own averages to see where your current per-user price sits against your costs. If your current price is below the result, either the margin you are earning is smaller than you think, or one of your inputs is higher than you assumed. Your ticket system and licence bills will tell you which.</p>
+<p>Run it again whenever a vendor raises a licence price or your payroll changes. A small rise in a per-user licence passes straight through to the cost per user, and the price needed to hold your margin rises by more than the licence did, because the margin is applied on top. The <a href="/price-increase-calculator/">price increase calculator</a> shows what a new per-user price does to revenue across your clients.</p>
+<p>The calculator does not suggest a price your market will accept or a margin you should aim for. Those depend on your clients, your service and your costs, so the comparison that matters is between this result and the price you charge today.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Is the margin the same as markup?</h3>
+<p>No. Margin is profit as a share of the price. Markup is profit as a share of the cost. This calculator uses margin, so a 30 percent margin means 30 percent of the price per user is left after tool and labour costs.</p>
+<h3>Why does it reject a margin of 100?</h3>
+<p>A 100 percent margin would mean the costs are zero, and the price formula would divide by zero. Any margin below 100 works.</p>
+<h3>Can I price per device instead of per user?</h3>
+<p>Yes. Enter devices instead of users, and tool costs and support hours per device. Every result then reads per device.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/it-support-contract-margin-calculator/">IT support contract margin calculator</a></li>
+  <li><a href="/cost-per-ticket-calculator/">Cost per ticket calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+</ul>

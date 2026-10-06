@@ -1,0 +1,66 @@
+<!-- title: Block Hours Price Calculator -->
+<!-- description: Price a prepaid block of support hours from the hours, your rate, a discount and expiry, and see the rate you really earn once expected unused hours expire. -->
+<h1>Block Hours Price Calculator</h1>
+<p>Enter the hours in a prepaid block, your normal hourly rate, any discount you give for buying in advance, how many months the block lasts and the share of hours you expect the client not to use. You get the list price, the block price, the effective hourly rate, the hours you expect to deliver, the rate on those hours and the price spread per month. It is built for managed service providers (MSPs), IT support companies and freelance IT consultants who sell prepaid blocks of support time. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A block of hours is a set number of support hours a client pays for in advance, usually at a discount and with an expiry date, and drawn down as work is done.</p>
+<p class="formula"><strong>Formula:</strong> list price = hours × hourly rate; block price = list price × (1 − discount % ÷ 100); effective rate = block price ÷ hours; expected used hours = hours × (1 − unused % ÷ 100); rate on used hours = block price ÷ expected used hours; per month = block price ÷ expiry months.</p>
+
+<form class="tool" id="f">
+  <label>Hours in the block<br><input type="number" id="hours" min="0" step="any" value="20"></label>
+  <label>Normal hourly rate<br><input type="number" id="rate" min="0" step="any" value="120"></label>
+  <label>Discount for buying the block (%)<br><input type="number" id="discount" min="0" max="100" step="any" value="10"></label>
+  <label>Months before unused hours expire (optional)<br><input type="number" id="months" min="0" step="any" value="6"></label>
+  <label>Share of hours you expect to go unused (%)<br><input type="number" id="unused" min="0" max="100" step="any" value="15"></label>
+  <p><button class="primary" type="submit">Calculate block price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { blockHoursPrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = blockHoursPrice({ hoursInBlock: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, discountPercent: Number($("discount").value) || 0, expiryMonths: Number($("months").value) || 0, expectedUnusedPercent: Number($("unused").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>List price</td><td>${fmt(r.listPrice)}</td></tr><tr><td>Block price</td><td><strong>${fmt(r.blockPrice)}</strong></td></tr><tr><td>Effective hourly rate</td><td>${fmt(r.effectiveRate)}</td></tr><tr><td>Hours you expect to deliver</td><td>${fmt(r.expectedUsedHours)}</td></tr><tr><td>Rate on hours delivered</td><td>${orNa(r.effectiveRateOnUsedHours, "n/a (no hours expected to be used)")}</td></tr><tr><td>Block price per month</td><td>${orNa(r.perMonth, "n/a (no expiry entered)")}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours in the block is the number of support hours the client buys in one go. The normal hourly rate is what you charge for an hour of ad hoc work outside any block, taken from your price list or your recent invoices. The discount is the percentage you take off the normal rate as a reward for paying in advance. Enter 0 if you sell blocks at your normal rate.</p>
+<p>Months before expiry is how long the client has to use the hours before any that are left lapse. It is optional. With it, the calculator shows what the block is worth to you per month over its life, which helps when you compare it with a monthly contract.</p>
+<p>The share of hours you expect to go unused is your estimate of how much of the block will expire without being worked. Take it from your own history: in your PSA or ticket system, compare the hours sold in past blocks with the hours logged against them before they expired. If you have never sold blocks with an expiry, enter 0 and run the calculator again with a few different figures to see how much the answer moves.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 20 hours at a normal rate of 120 have a list price of 2,400. A 10 percent discount brings the block price to 2,160, an effective rate of 108 an hour. If 15 percent of the hours go unused, you deliver 17 hours, and the rate on the hours you actually deliver is 127.06. Spread over 6 months, the block is worth 360 a month.</p>
+<p>The effective rate is what the client is promised: the discounted price per hour in the block. The rate on hours delivered is what the client ends up paying for each hour of work they actually received, and what you end up earning for each hour you actually worked.</p>
+
+<h2>How unused hours change the rate</h2>
+<p>Hours that expire unused are often called breakage. The client paid for them, and you did not have to deliver them. That cuts both ways, and the calculator shows both sides.</p>
+<p>For the client, breakage raises the price of every hour they did use. In the example, the client was offered hours at 108, but because three hours lapsed, the 17 hours they used cost them 127.06 each, more than your normal rate of 120. A client who notices this may feel the discount was not real, and may not buy another block.</p>
+<p>For you, it means the rate you deliver at is higher than the discounted rate on the quote, because the same price covers fewer hours of work. It is tempting to count on that, but it is fragile income. A client who starts using every hour removes it, and a client who feels they lost money to expiry may leave. Price the block so that it still works for you at 0 percent unused, and treat breakage as a bonus rather than part of the plan. Run the calculator at 0 percent to see that floor.</p>
+
+<h2>Blocks, retainers and monthly contracts</h2>
+<p>A block of hours sits between ad hoc billing and a fixed monthly contract. It brings cash in early and commits the client to a minimum, but it does not cover a defined scope or guarantee response times the way a monthly support contract usually does. If a client buys blocks every few months and uses most of them, a monthly arrangement may suit both of you better. The <a href="/retainer-calculator/">retainer calculator</a> helps price a monthly arrangement, and the <a href="/hourly-rate-calculator/">hourly rate calculator</a> helps set the normal rate the block is built on.</p>
+<p>The calculator does not say what discount to offer or how long a block should last. Those are choices about your cash flow and your clients, so compare the results against your own normal rate and your own history of unused hours.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does it reject a block of 0 hours?</h3>
+<p>The effective rate divides the block price by the hours in the block, so the block must contain more than 0 hours.</p>
+<h3>What happens if no hours are expected to be used?</h3>
+<p>With an unused share of 100 percent there are no delivered hours to divide by, so the rate on hours delivered is shown as n/a.</p>
+<h3>Can the discount be 100 percent?</h3>
+<p>Yes. The calculator accepts it and shows a block price of 0, which is what giving the hours away looks like. It rejects anything above 100.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/retainer-calculator/">Retainer calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+  <li><a href="/client-onboarding-fee-calculator/">Client onboarding fee calculator</a></li>
+</ul>

@@ -1,0 +1,69 @@
+<!-- title: Cost per Ticket Calculator -->
+<!-- description: Work out what each support ticket costs from your monthly tickets, technician pay, tools and overhead, with tickets per technician and hours spent on tickets. -->
+<h1>Cost per Ticket Calculator</h1>
+<p>Enter the support tickets you close in a month, what your technicians cost, what your service desk tools cost, your monthly overhead, how many technicians work the queue and the average minutes a ticket takes. You get the total cost of the desk, the cost per ticket, the labour cost per ticket, the tickets each technician handles and the hours that go on tickets. It is built for managed service providers (MSPs), IT support companies and freelance IT consultants who run a help desk and price support contracts. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cost per ticket is the monthly cost of running your service desk divided by the number of tickets it handles in that month.</p>
+<p class="formula"><strong>Formula:</strong> total cost = technician cost + tool cost + overhead; cost per ticket = total cost ÷ tickets; labour cost per ticket = technician cost ÷ tickets; tickets per technician = tickets ÷ technicians; hours on tickets = tickets × minutes per ticket ÷ 60.</p>
+
+<form class="tool" id="f">
+  <label>Tickets per month<br><input type="number" id="tickets" min="1" step="1" value="400"></label>
+  <label>Technician cost per month<br><input type="number" id="tech" min="0" step="any" value="9000"></label>
+  <label>Service desk tool cost per month (optional)<br><input type="number" id="tools" min="0" step="any" value="800"></label>
+  <label>Overhead per month (optional)<br><input type="number" id="overhead" min="0" step="any" value="1200"></label>
+  <label>Technicians working tickets (optional)<br><input type="number" id="techs" min="0" step="any" value="3"></label>
+  <label>Average minutes per ticket (optional)<br><input type="number" id="minutes" min="0" step="any" value="25"></label>
+  <p><button class="primary" type="submit">Calculate cost per ticket</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { costPerTicket } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = costPerTicket({ ticketsPerMonth: Number($("tickets").value) || 0, technicianCostMonthly: Number($("tech").value) || 0, toolCostMonthly: Number($("tools").value) || 0, overheadMonthly: Number($("overhead").value) || 0, technicians: Number($("techs").value) || 0, averageMinutesPerTicket: Number($("minutes").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Total monthly cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Cost per ticket</td><td><strong>${fmt(r.costPerTicket)}</strong></td></tr><tr><td>Labour cost per ticket</td><td>${fmt(r.labourCostPerTicket)}</td></tr><tr><td>Tickets per technician</td><td>${orNa(r.ticketsPerTechnician, "n/a (no technicians entered)")}</td></tr><tr><td>Labour hours on tickets</td><td>${fmt(r.labourHoursOnTickets)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Tickets per month is the number of tickets your service desk closed in a month. Take it from your ticket system or PSA reports. Decide whether to count only client tickets or internal ones as well, and stay with the same choice each time you run the calculator, so the results compare. An average over three to six months is steadier than a single month.</p>
+<p>Technician cost is what the people working the queue cost you in a month: gross pay from payroll plus employer taxes, pension contributions, benefits and any bonuses. If some technicians split their time between tickets and project work, include only the share of their cost that goes to tickets. Your time records will show that share.</p>
+<p>Tool cost is the monthly spend on the tools the desk runs on: the PSA or ticketing system, remote access, remote monitoring and management, the phone system and knowledge base. Your PSA and RMM invoices and vendor licence bills give the figures. If a tool is shared with other parts of the business, include the desk's share.</p>
+<p>Overhead is the share of the rest of your running costs that the desk should carry: office space, laptops, insurance, management time and training. There is no single right way to split it. A simple and consistent method, such as the desk's share of head count, is better than a precise one you cannot repeat.</p>
+<p>Technicians and minutes per ticket are optional. With the number of technicians, the calculator shows how many tickets each one handles. With the average minutes per ticket from your ticket system's time logs, it shows how many hours the month's tickets took.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 400 tickets, technicians costing 9,000, tools at 800 and overhead of 1,200, the desk costs 11,000 a month. That is 27.50 per ticket, of which 22.50 is technician cost. Three technicians handle 133.33 tickets each, and at 25 minutes a ticket the month's tickets took 166.67 hours.</p>
+<p>The gap between cost per ticket and labour cost per ticket is what tools and overhead add to each ticket. When that gap grows, the cause is in your fixed costs rather than in how fast tickets are closed.</p>
+<p>Compare labour hours on tickets with the hours your technicians are paid for. If the hours on tickets are far below the paid hours, time is going somewhere else, such as project work, internal tasks or tickets that were never logged. If they are close to or above paid hours, the desk is near its limit. The <a href="/utilization-rate-calculator/">utilization rate calculator</a> looks at that share of time directly.</p>
+
+<h2>How cost per ticket moves</h2>
+<p>Most of the cost of a service desk is fixed for the month: pay, tools and overhead do not fall when there are fewer tickets. So cost per ticket goes up when ticket volume drops and down when it rises, even if nobody works faster or slower. A falling cost per ticket after a busy month is not always good news, and a rising one after a quiet month is not always bad news. Read it next to the ticket count.</p>
+<p>That is also why fewer tickets is often the better goal. Automation, better documentation, user training and fixing the cause of repeat tickets all reduce volume. Cost per ticket may rise as a result, but total hours on tickets fall, and that frees technician time for proactive work or more clients.</p>
+
+<h2>Using it to price support</h2>
+<p>Cost per ticket turns a client's ticket history into a cost. Multiply a client's monthly tickets by your cost per ticket and you have a rough cost of supporting them, which you can compare with what they pay. The <a href="/it-support-contract-margin-calculator/">IT support contract margin calculator</a> does that comparison with labour hours, tools and other costs in full.</p>
+<p>The calculator does not say what a ticket should cost. That depends on the work your desk does and how it is set up, so the useful comparison is with your own results from earlier months.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does it reject zero tickets?</h3>
+<p>Cost per ticket divides by the number of tickets, so that number must be more than 0.</p>
+<h3>Should I include project work?</h3>
+<p>No. Keep project hours and their cost out of the inputs, or the cost per ticket will include work that did not come through the queue.</p>
+<h3>Why is tickets per technician shown as n/a?</h3>
+<p>That figure divides by the number of technicians. When it is 0 or empty, the calculator leaves it out.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/it-support-contract-margin-calculator/">IT support contract margin calculator</a></li>
+  <li><a href="/msp-per-user-price-calculator/">MSP per-user price calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+</ul>

@@ -1,0 +1,66 @@
+<!-- title: Client Onboarding Fee Calculator -->
+<!-- description: Set an onboarding fee for a new IT support client from setup hours, your rate and setup costs, and see it spread per month and as a share of the contract value. -->
+<h1>Client Onboarding Fee Calculator</h1>
+<p>Enter the hours it takes to bring a new client on board, the rate you charge for that time, any setup costs you pay out, the margin you add to those costs, the length of the contract and its monthly fee. You get the labour charge, the costs with margin, the onboarding fee, the fee spread across the contract, the total contract value and the share of that value the fee makes up. It is built for managed service providers (MSPs), IT support companies and freelance IT consultants who take on new support clients. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> An onboarding fee is a one-off charge that covers the work and costs of bringing a new client into your support service before the monthly contract starts paying.</p>
+<p class="formula"><strong>Formula:</strong> labour = onboarding hours × hourly rate; costs with margin = setup costs × (1 + margin % ÷ 100); onboarding fee = labour + costs with margin; per month = onboarding fee ÷ contract months; contract value = onboarding fee + monthly fee × contract months; fee share = onboarding fee ÷ contract value × 100.</p>
+
+<form class="tool" id="f">
+  <label>Onboarding hours<br><input type="number" id="hours" min="0" step="any" value="16"></label>
+  <label>Hourly rate for onboarding work<br><input type="number" id="rate" min="0" step="any" value="95"></label>
+  <label>Setup costs you pay out (optional)<br><input type="number" id="costs" min="0" step="any" value="600"></label>
+  <label>Margin added to setup costs (%)<br><input type="number" id="margin" min="0" step="any" value="20"></label>
+  <label>Contract length in months (optional)<br><input type="number" id="months" min="0" step="1" value="24"></label>
+  <label>Monthly fee for the contract (optional)<br><input type="number" id="fee" min="0" step="any" value="1500"></label>
+  <p><button class="primary" type="submit">Calculate onboarding fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { clientOnboardingFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = clientOnboardingFee({ onboardingHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, setupCosts: Number($("costs").value) || 0, marginOnCostsPercent: Number($("margin").value) || 0, contractMonths: Number($("months").value) || 0, monthlyFee: Number($("fee").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour</td><td>${fmt(r.labour)}</td></tr><tr><td>Setup costs with margin</td><td>${fmt(r.costsWithMargin)}</td></tr><tr><td>Onboarding fee</td><td><strong>${fmt(r.onboardingFee)}</strong></td></tr><tr><td>Fee spread per month</td><td>${orNa(r.amortisedPerMonth, "n/a (no contract length entered)")}</td></tr><tr><td>Contract value</td><td>${fmt(r.contractValue)}</td></tr><tr><td>Fee as a share of contract value</td><td>${fmt(r.feeShareOfContractPercent)}%</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Onboarding hours is the technician and engineer time it takes to bring a new client into your service: the discovery visit, documenting the network and accounts, deploying monitoring agents and security tools, cleaning up old admin access, setting up backup and the first round of patching. The best source is your own ticket system or PSA: look at the time logged against the onboarding projects of recent clients of a similar size. If you have not tracked onboarding before, list the tasks and time the next one.</p>
+<p>The hourly rate is what you charge for that work. Use your normal project rate, or the rate you would quote for the same work as a one-off job. The <a href="/hourly-rate-calculator/">hourly rate calculator</a> helps you set it from your costs.</p>
+<p>Setup costs are the amounts you pay out to get the client started: hardware such as a firewall or backup appliance, one-off licence or migration fees, travel. Take them from supplier quotes or your vendor bills. The margin on costs is the percentage you add on top to cover the time spent buying and handling them. Enter 0 if you pass costs through at cost.</p>
+<p>Contract length and monthly fee are optional. With them, the calculator shows what the fee would add to each monthly invoice if you spread it out, and how large the fee is compared with the whole contract.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 16 hours at 95 come to 1,520 of labour. Setup costs of 600 with 20 percent added come to 720. The onboarding fee is 2,240. Spread across a 24-month contract, that is 93.33 a month. With a monthly fee of 1,500, the contract is worth 38,240 in all, and the onboarding fee is 5.86 percent of that value.</p>
+<p>The fee share puts the fee in context. A fee that is a small share of the contract is easy for a client to accept and easy for you to waive in a negotiation without much loss. A large share is harder to waive and may need explaining. Either way, write down what the onboarding covers, so the client can see what the fee pays for and you can see when a request falls outside it.</p>
+
+<h2>Charging up front or folding it into the monthly fee</h2>
+<p>There are two common ways to recover onboarding. You can charge the fee as a separate invoice when the client signs, or you can leave it off and raise the monthly fee by enough to cover it over the contract. The calculator gives you the figure for both: the onboarding fee for the first and the fee spread per month for the second.</p>
+<p>Charging up front gets the money in when the work is done, so you are not carrying the cost of onboarding for months. It also protects you if the client leaves early, because the work has already been paid for. And it sets an expectation: the client sees that bringing their systems up to your standard is real work.</p>
+<p>Folding it into the monthly fee lowers the barrier to signing, because there is no large first invoice. The risk sits with you. If the client leaves before the contract ends, part of the onboarding cost is never recovered. If you fold it in, a minimum term or an early exit charge equal to the unrecovered part closes that gap. Also remember that a monthly fee raised to cover onboarding stays raised when the contract renews, unless you lower it then, which a client may well ask about.</p>
+<p>Some providers split the difference: part of the fee up front and part spread across the contract. Run the calculator with the up-front part as the fee to see what is left to spread.</p>
+<p>The calculator does not say which approach is right or how large an onboarding fee should be. Those depend on your clients and your cash flow. The <a href="/hourly-to-fixed-fee-calculator/">hourly to fixed fee calculator</a> helps when you want to turn an estimate of hours into a fixed price.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the fee spread per month shown as n/a?</h3>
+<p>That figure divides the fee by the contract length. When the length is 0 or empty, there is nothing to divide by.</p>
+<h3>Should I charge an onboarding fee when I take over from another provider?</h3>
+<p>That is your choice. The work of documenting and securing a new client is similar either way, so the hours you log will tell you what it costs.</p>
+<h3>Why is the fee share 100 percent?</h3>
+<p>If you leave the monthly fee or contract length empty, the contract value is the onboarding fee alone, so the fee is all of it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/msp-per-user-price-calculator/">MSP per-user price calculator</a></li>
+  <li><a href="/block-hours-price-calculator/">Block hours price calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+</ul>
