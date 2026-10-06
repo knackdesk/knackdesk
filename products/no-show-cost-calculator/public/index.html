@@ -1,0 +1,60 @@
+<!-- title: No-Show Cost Calculator -->
+<!-- description: Work out what missed appointments cost you per week and per year, how much a no-show fee would recover and what you still lose after the fee. -->
+<h1>No-Show Cost Calculator</h1>
+<p>Enter how many appointments you book in a week, the percentage of clients who do not turn up, what an average appointment is worth, how many weeks a year you work and any fee you charge for a no-show. You get the no-shows you can expect each week, the revenue they cost you per week and per year, how much a fee would recover and what is still lost after it. It is built for salon owners, stylists, barbers, beauty and massage therapists, personal trainers, tutors and anyone whose income depends on clients turning up at a booked time. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A no-show is a booked appointment the client neither attends nor cancels in time for the slot to be refilled, so the time is paid for by you and earns nothing.</p>
+<p class="formula"><strong>Formula:</strong> no-shows per week = appointments per week × no-show % ÷ 100; lost per week = no-shows per week × average ticket; lost per year = lost per week × weeks worked; fee recovered per year = no-shows per week × fee per no-show × weeks worked; net lost per year = lost per year − fee recovered per year.</p>
+
+<form class="tool" id="f">
+  <label>Appointments booked per week<br><input type="number" id="appts" min="0" step="any" value="40"></label>
+  <label>No-show rate (% of booked appointments)<br><input type="number" id="rate" min="0" max="100" step="any" value="8"></label>
+  <label>Average ticket (what one appointment is worth)<br><input type="number" id="ticket" min="0" step="any" value="65"></label>
+  <label>Weeks worked per year<br><input type="number" id="weeks" min="0" step="any" value="50"></label>
+  <label>Fee charged per no-show (optional)<br><input type="number" id="fee" min="0" step="any" value="25"></label>
+  <p><button class="primary" type="submit">Calculate the cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { noShowCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = noShowCost({ appointmentsPerWeek: Number($("appts").value) || 0, noShowPercent: Number($("rate").value) || 0, averageTicket: Number($("ticket").value) || 0, weeksPerYear: $("weeks").value === "" ? 52 : Number($("weeks").value), feePerNoShow: Number($("fee").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>No-shows per week</td><td>${fmt(r.noShowsPerWeek)}</td></tr><tr><td>Revenue lost per week</td><td>${fmt(r.lostPerWeek)}</td></tr><tr><td>Revenue lost per year</td><td>${fmt(r.lostPerYear)}</td></tr><tr><td>Recovered by the fee per year</td><td>${fmt(r.feeRecoveredPerYear)}</td></tr><tr><td>Still lost per year after the fee</td><td><strong>${fmt(r.netLostPerYear)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Appointments booked per week is every appointment in your diary for a typical week, including the ones that end up as no-shows. Your booking system can show the total for the last few months; divide it by the number of weeks you worked to get a fair weekly figure.</p>
+<p>No-show rate is the share of those bookings where the client did not arrive and the slot could not be refilled. Most booking systems let you mark an appointment as a no-show; if yours does, count the marked ones over the same period and divide by the total booked, then multiply by 100. If you have not been recording them, start now and keep a tally for a month. Late cancellations that you could not fill belong in the count too, because the effect on your takings is the same. Cancellations made early enough for someone else to take the slot do not.</p>
+<p>Average ticket is what an appointment brings in when the client does turn up. Your takings for a period divided by the number of appointments delivered in the same period gives it. If no-shows tend to be for a particular service, use the price of that service instead.</p>
+<p>Weeks worked per year is the number of weeks you are taking bookings. Fee per no-show is the amount you actually collect when someone misses an appointment, such as a forfeited deposit or a charge to a card held on file. Enter only what you really collect. A fee written into your policy that you waive most of the time recovers less than the calculator would assume.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 40 appointments a week at an 8% no-show rate means 3.2 missed appointments a week on average. At 65 each that is 208 a week, and over 50 working weeks it adds up to 10,400 a year. A fee of 25 collected on each one brings back 4,000 a year, leaving 6,400 that is still lost.</p>
+<p>The yearly figure is the one that tends to change minds. A missed appointment here and there feels small, but the calculator shows it as a total you can compare with your rent, your product bill or a new piece of equipment. The fee line shows how much a deposit or cancellation charge would help, and the last line shows the part a fee cannot cover, because a fee smaller than the ticket never replaces the full appointment.</p>
+<p>The calculator does not suggest what no-show rate is normal or what fee you should charge. Those depend on your clients, your service and the area you work in. Compare your own figures over time instead: if the rate drops after you introduce reminders or deposits, rerun the calculator and you can see what the change is worth in a year.</p>
+<p>Lost revenue is not all lost profit. You may save a little product on a missed appointment. Your rent, overhead and time are spent either way, though, which is why the full ticket is used here.</p>
+
+<h2>Using it to plan</h2>
+<p>To set a fee, try a few amounts in the last field and watch the recovered figure. The <a href="/late-fee-calculator/">late fee calculator</a> covers fees on overdue invoices if you also bill clients after the service. The <a href="/appointment-capacity-calculator/">appointment capacity calculator</a> shows how many slots your week holds, and the <a href="/salon-service-price-calculator/">salon service price calculator</a> shows how lost hours push up the price each service needs to cover your costs.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can the no-show rate be a decimal?</h3>
+<p>Yes. A rate such as 7.5% works, and the no-shows per week can be a fraction because they are an average across many weeks.</p>
+<h3>Does a no-show fee mean I lose nothing?</h3>
+<p>Only if the fee is the full price of the appointment and you collect it every time. Otherwise some revenue is still lost, which the last line shows.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/appointment-capacity-calculator/">Appointment capacity calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late fee calculator</a></li>
+  <li><a href="/salon-service-price-calculator/">Salon service price calculator</a></li>
+</ul>

@@ -1,0 +1,63 @@
+<!-- title: Appointment Capacity Calculator -->
+<!-- description: Work out how many appointments fit in your week from your hours, service time and buffer, then the bookings and revenue you can expect at your utilization. -->
+<h1>Appointment Capacity Calculator</h1>
+<p>Enter the hours you are available to see clients each week, how long a service takes, the buffer you leave between clients, how much of your time actually gets booked and the average ticket. You get the length of each slot, the most appointments your week can hold, the number you can expect at your booking rate and the revenue for both. It is made for salon owners, stylists, barbers, beauty and massage therapists, personal trainers, tutors and anyone else who sells time in appointments. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Appointment capacity is the number of whole service slots that fit into the hours you are available, and it sets the ceiling on what an appointment-based business can earn in a week.</p>
+<p class="formula"><strong>Formula:</strong> slot minutes = service minutes + buffer minutes; maximum appointments per week = hours per week × 60 ÷ slot minutes, rounded down; expected appointments = maximum appointments × utilization % ÷ 100; maximum revenue = maximum appointments × average ticket; expected revenue = expected appointments × average ticket.</p>
+
+<form class="tool" id="f">
+  <label>Hours available for clients per week<br><input type="number" id="hours" min="0" step="any" value="40"></label>
+  <label>Service time (minutes)<br><input type="number" id="minutes" min="0" step="any" value="45"></label>
+  <label>Buffer between clients (minutes, optional)<br><input type="number" id="buffer" min="0" step="any" value="15"></label>
+  <label>Utilization (% of slots that get booked and attended)<br><input type="number" id="util" min="0" max="100" step="any" value="80"></label>
+  <label>Average ticket (optional)<br><input type="number" id="ticket" min="0" step="any" value="65"></label>
+  <p><button class="primary" type="submit">Calculate capacity</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { appointmentCapacity } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = appointmentCapacity({ hoursPerWeek: Number($("hours").value) || 0, serviceMinutes: Number($("minutes").value) || 0, bufferMinutes: Number($("buffer").value) || 0, utilizationPercent: $("util").value === "" ? 100 : Number($("util").value), averageTicket: Number($("ticket").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Slot length (minutes)</td><td>${fmt(r.slotMinutes)}</td></tr><tr><td>Maximum appointments per week</td><td>${fmt(r.maxAppointmentsPerWeek)}</td></tr><tr><td>Expected appointments per week</td><td><strong>${fmt(r.expectedAppointmentsPerWeek)}</strong></td></tr><tr><td>Maximum revenue per week</td><td>${fmt(r.maxRevenuePerWeek)}</td></tr><tr><td>Expected revenue per week</td><td>${fmt(r.expectedRevenuePerWeek)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours available are the hours in the week when you are ready to see clients, not the hours you spend at work. Take out lunch, admin, stock ordering, training and the time it takes to open up and close down. Your booking system's working hours setting is a good starting point, as long as it matches the times you really accept bookings.</p>
+<p>Service time is how long one appointment lasts with the client. Buffer is the time you leave after each one to clean down, reset, take payment, write notes and get ready for the next person. Some people build the buffer into the service length; if you do, put the full length in service time and leave the buffer at zero. Either way, the calculator adds the two together to get the slot length, because that is how much of your diary each booking really uses.</p>
+<p>Utilization is the share of those slots that end up booked and attended. It allows for quiet days, gaps that are too short to sell, cancellations and no-shows. The honest way to get it is from your own records: take the appointments you actually delivered in a typical week and divide by the maximum the calculator gives you, then multiply by 100. If you are just starting out, run the calculator at a few different levels to see the range of outcomes.</p>
+<p>Average ticket is what an appointment brings in. Divide your takings for a period by the number of appointments delivered in it.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a 45-minute service with a 15-minute buffer uses a 60-minute slot. Forty hours a week holds 40 such slots. At 80% utilization, 32 of them are booked and attended. At 65 per appointment, a full week would bring in 2,600, and the expected week brings in 2,080.</p>
+<p>Only whole slots count. If your hours leave 30 minutes spare at the end of the week and your slot is 60 minutes, that time cannot be sold for this service and the calculator ignores it. Splitting your hours into days and running each one separately can show where these leftover pieces of time are hiding.</p>
+<p>The maximum revenue is a ceiling, not a target. Reaching it would mean every slot booked and every client arriving. The gap between the two revenue lines shows what a better-filled diary would be worth, and it is often a cheaper improvement than finding more hours.</p>
+<p>This calculator does not say what utilization a salon, studio or practice should reach. Compare your result with your own past weeks and with the income you need.</p>
+
+<h2>Using it to plan</h2>
+<p>The quickest changes to test are a shorter buffer, a slightly shorter service and an extra evening. Each one changes a single input, and you can see the effect on appointments and revenue straight away. The <a href="/no-show-cost-calculator/">no-show cost calculator</a> puts a yearly figure on the slots lost to clients who do not arrive, and the <a href="/salon-service-price-calculator/">salon service price calculator</a> turns your hours into the price each service needs. Restaurants face the same question with seats instead of chairs, which the <a href="/table-turnover-calculator/">table turnover calculator</a> covers.</p>
+
+<p>Capacity also tells you when prices, rather than hours, are the limit. If your expected appointments are already close to the maximum and the expected revenue is still below what you need, adding clients will not close the gap because there is no room for them. At that point the choices are to raise prices, shorten the service without lowering its quality, or add hours or people. Running the calculator with each option side by side makes the trade-off visible before you commit to any of them.</p>
+<p>The same arithmetic works in reverse when you plan time off. Lower the hours for a week with a holiday or a training day and you can see how many appointments and how much revenue that week will hold, which helps when you are deciding whether to move clients to other days.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What if I offer services of different lengths?</h3>
+<p>Run the calculator for each service, or use the average slot length across a typical week of bookings.</p>
+<h3>Can I use it for a team?</h3>
+<p>Yes. Add up the client hours of everyone who delivers the service, as long as they all work to the same service length.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/no-show-cost-calculator/">No-show cost calculator</a></li>
+  <li><a href="/salon-service-price-calculator/">Salon service price calculator</a></li>
+  <li><a href="/table-turnover-calculator/">Table turnover calculator</a></li>
+</ul>

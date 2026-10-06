@@ -1,0 +1,62 @@
+<!-- title: Salon Service Price Calculator -->
+<!-- description: Price a salon, spa or appointment service from your monthly overhead, income goal, billable hours, service time, product cost and the margin you want. -->
+<h1>Salon Service Price Calculator</h1>
+<p>Enter what your business costs to run each month, what you want to pay yourself, the hours you can actually bill, how long the service takes, the product it uses and the margin you want on top. You get the hourly rate your chair has to earn, the floor price below which the service loses money and a suggested price. It is built for salon owners, independent stylists, barbers, beauty and massage therapists, personal trainers, tutors and anyone else who sells their time by the appointment. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A service price built from cost covers the share of your overhead and income goal that the appointment's time uses up, plus the product it consumes, plus a margin.</p>
+<p class="formula"><strong>Formula:</strong> target hourly rate = (monthly overhead + monthly income goal) ÷ billable hours per month; time cost = target hourly rate × service minutes ÷ 60; floor price = time cost + product cost; price = floor price × (1 + margin % ÷ 100).</p>
+
+<form class="tool" id="f">
+  <label>Monthly overhead (rent, utilities, software, insurance and other fixed costs)<br><input type="number" id="overhead" min="0" step="any" value="2400"></label>
+  <label>Monthly income goal (what you want to pay yourself)<br><input type="number" id="goal" min="0" step="any" value="4000"></label>
+  <label>Billable hours per month (hours with a client in the chair)<br><input type="number" id="hours" min="1" step="any" value="120"></label>
+  <label>Service time (minutes, including setup and clean-up)<br><input type="number" id="minutes" min="1" step="any" value="60"></label>
+  <label>Product cost for this service (optional)<br><input type="number" id="product" min="0" step="any" value="8"></label>
+  <label>Margin on top of the floor price (%, optional)<br><input type="number" id="margin" min="0" step="any" value="20"></label>
+  <p><button class="primary" type="submit">Calculate price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { salonServicePrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = salonServicePrice({ monthlyOverhead: Number($("overhead").value) || 0, monthlyIncomeGoal: Number($("goal").value) || 0, billableHoursPerMonth: Number($("hours").value) || 0, serviceMinutes: Number($("minutes").value) || 0, productCost: Number($("product").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Target hourly rate</td><td>${fmt(r.targetHourlyRate)}</td></tr><tr><td>Time cost of the service</td><td>${fmt(r.timeCost)}</td></tr><tr><td>Floor price (time plus product)</td><td>${fmt(r.floorPrice)}</td></tr><tr><td>Suggested price</td><td><strong>${fmt(r.price)}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Monthly overhead is everything the business has to pay whether or not a client walks in. For a salon owner that means rent, utilities, booking software, card terminal fees that are charged monthly, insurance, laundry, cleaning, the accountant and any loan repayments on equipment. For an independent stylist renting a chair, it is the chair rent plus your own tools, education, insurance and phone. The most reliable source is your bank statements: go through the last three months, add up every fixed payment and divide by three. Leave out product that is used up on clients, because the calculator handles that separately.</p>
+<p>Monthly income goal is what you want to take home before personal tax. Treat it as a wage you are paying yourself, not as whatever is left over. If you have a figure from a previous job or a household budget, that is a good place to start. If you employ staff on wages, their pay belongs in overhead; this field is for the person whose time the price is built on.</p>
+<p>Billable hours per month are the hours a client is actually in your chair or on your table, not the hours the door is open. Time spent on admin, cleaning down at the end of the day, ordering stock, answering messages, gaps between bookings and cancellations all reduce it. Your booking system will show the appointments you delivered last month; add up their lengths and you have a realistic figure. Using your opening hours instead is the most common reason a price looks fine on paper and still leaves you short.</p>
+<p>Service time is how long this particular service occupies you, from greeting the client to the station being ready for the next person. Include consultation, processing time if you cannot fill it with another client, and clean-up. Product cost is what you use on the client: colour, developer, treatments, wax, oils, disposables. Your supplier invoices and a rough count of how many services a tub or tube covers will give you a per-service figure.</p>
+<p>Margin is an extra percentage on top of the floor price. It gives the business room for quiet weeks, price rises from suppliers and saving for new equipment. Setting it to zero shows you the bare floor price.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, overhead of 2,400 and an income goal of 4,000 add up to 6,400 a month. Spread across 120 billable hours, every hour you are with a client has to earn 53.33. A 60-minute service therefore carries 53.33 of time cost. Add 8 of product and the floor price is 61.33: charge less than that and the service does not pay its share. A 20% margin on top gives a suggested price of 73.60.</p>
+<p>The floor price matters more than the suggested price. It is the number that tells you whether an existing service is losing money. Run the calculator once for each service on your menu, changing only the minutes and the product cost, and compare each floor price with what you charge today. Services priced below their floor are being paid for by the others.</p>
+<p>The calculator does not say what other salons, barbers or therapists charge. Local prices tell you what clients are used to seeing, but they say nothing about whether your own costs are covered. Start from your own figures, then decide how close to the market you want to be.</p>
+
+<h2>Using it to plan</h2>
+<p>Because the hourly rate depends on billable hours, the quickest test of how fragile a price is comes from lowering the hours. If a few cancellations a week would take you from 120 hours to 100, rerun it with 100 and see how far the floor price moves. The <a href="/no-show-cost-calculator/">no-show cost calculator</a> shows what those empty slots cost in a year, and the <a href="/appointment-capacity-calculator/">appointment capacity calculator</a> shows how many appointments your week can hold.</p>
+<p>When the result says your current prices are too low, the <a href="/price-increase-calculator/">price increase calculator</a> shows how many clients you could lose after a rise and still earn the same. For a general hourly figure that is not tied to a single service, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> works from yearly figures instead.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include product I sell over the counter?</h3>
+<p>No. Retail stock has its own price and margin. Only include product that is used up during the service.</p>
+<h3>What if a service has long processing time?</h3>
+<p>If you can work on another client during processing, leave that time out of the service minutes. If the chair and your attention are tied up, count it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+  <li><a href="/appointment-capacity-calculator/">Appointment capacity calculator</a></li>
+  <li><a href="/price-increase-calculator/">Price increase calculator</a></li>
+</ul>

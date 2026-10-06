@@ -1,0 +1,62 @@
+<!-- title: Booth Rent Calculator -->
+<!-- description: Check what your salon chair or booth rent costs against what it earns: rent as a share of revenue, net income per week and year, and break-even clients. -->
+<h1>Booth Rent Calculator</h1>
+<p>Enter the weekly rent for your chair, booth, room or station, how many clients you see in a week, what the average client pays, the share of that spent on product and how many weeks a year you work. You get your weekly revenue, rent as a percentage of it, what you keep each week and each year, the rent you pay in a year and how many clients a week cover the rent on their own. It is written for independent stylists, barbers, nail and beauty technicians, massage therapists, personal trainers renting gym space and anyone else who rents a place to see clients by appointment. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Booth rent is a fixed weekly payment to a salon or studio for the use of a chair or room, which you keep paying whether your book is full or empty.</p>
+<p class="formula"><strong>Formula:</strong> weekly revenue = clients per week × average ticket; rent % of revenue = weekly rent ÷ weekly revenue × 100; net per week = weekly revenue − weekly rent − weekly revenue × product cost % ÷ 100; net per year = net per week × weeks worked; annual rent = weekly rent × weeks worked; break-even clients = weekly rent ÷ (average ticket × (1 − product cost % ÷ 100)), rounded up.</p>
+
+<form class="tool" id="f">
+  <label>Weekly booth or chair rent<br><input type="number" id="rent" min="0" step="any" value="300"></label>
+  <label>Clients per week<br><input type="number" id="clients" min="0" step="any" value="25"></label>
+  <label>Average ticket (what one client pays, before tips)<br><input type="number" id="ticket" min="0" step="any" value="65"></label>
+  <label>Product cost as a share of revenue (%, optional)<br><input type="number" id="product" min="0" max="100" step="any" value="10"></label>
+  <label>Weeks you pay rent and work each year<br><input type="number" id="weeks" min="0" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate booth rent</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { boothRent } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = boothRent({ weeklyRent: Number($("rent").value) || 0, clientsPerWeek: Number($("clients").value) || 0, averageTicket: Number($("ticket").value) || 0, productCostPercent: Number($("product").value) || 0, weeksPerYear: $("weeks").value === "" ? 52 : Number($("weeks").value) });
+    const be = r.breakEvenClientsPerWeek === null ? "Not possible at this ticket" : r.breakEvenClientsPerWeek.toLocaleString();
+    $("out").innerHTML = `<table><tr><td>Weekly revenue</td><td>${fmt(r.weeklyRevenue)}</td></tr><tr><td>Rent as % of revenue</td><td>${fmt(r.rentPercentOfRevenue)}%</td></tr><tr><td>Net per week</td><td><strong>${fmt(r.netPerWeek)}</strong></td></tr><tr><td>Net per year</td><td>${fmt(r.netPerYear)}</td></tr><tr><td>Rent per year</td><td>${fmt(r.annualRent)}</td></tr><tr><td>Clients per week to cover the rent</td><td>${be}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Weekly rent is the amount in your rental agreement. If you pay monthly, multiply the monthly figure by 12 and divide by 52 to get a weekly one. If the agreement adds charges for towels, laundry, card processing or a share of utilities, add those in too, because they are part of what the space costs you each week.</p>
+<p>Clients per week is the number of people you actually saw, not the number you hoped to book. Your booking app or appointment book will give it to you; take the total for the last few months and divide by the number of weeks you worked. A single busy week makes a poor guide.</p>
+<p>Average ticket is what one client pays for the service, before tips. Your card reader or booking system can usually show total takings for a period; divide by the number of clients in the same period. If you sell retail products, leave that income out, or include it only if you also include the cost of buying the stock.</p>
+<p>Product cost is the share of your service revenue that goes on colour, treatments, disposables and anything else used up on clients. Add up your supplier invoices for a month and divide by service revenue for that month, then multiply by 100. As a renter you normally buy this yourself, which is one of the main differences from working on commission.</p>
+<p>Weeks worked is the number of weeks a year you pay rent and see clients. If your agreement charges rent during your holidays, the cost does not stop when you do; in that case use 52 for rent and think about how much lower your client weeks really are.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 25 clients at 65 each bring in 1,625 a week. Rent of 300 is 18.46% of that. Taking off the rent and 10% for product leaves 1,162.50 a week, which over 50 working weeks is 58,125 a year, while the rent itself comes to 15,000. After product, each client leaves you 58.50, so 6 clients a week are enough to pay the rent; every client after the sixth is income for you.</p>
+<p>Net here means before tax, insurance, education, tools and anything else you pay for outside the agreement. Treat it as what the chair earns, not what lands in your personal account.</p>
+<p>The break-even client count is the figure to watch in a slow month. When you know that six clients cover the rent, a quiet week stops being vague worry and becomes a clear target. If the calculator says break-even is not possible, your ticket is zero or product takes the whole of it.</p>
+<p>This page does not say what booth rent should cost or what share of revenue is reasonable. Rents depend on the location, the salon and what is included, and the only fair comparison is with your own takings. If the rent share rises over time, look at whether the rent went up, your client numbers fell or your prices have not moved.</p>
+
+<h2>Using it to plan</h2>
+<p>Before signing a new agreement, run the calculator with the rent on offer and the clients you are confident of bringing with you, not the ones you hope to win. If you are choosing between renting and staying on commission, the <a href="/commission-vs-booth-rent-calculator/">commission vs booth rent calculator</a> compares the two directly and finds the revenue at which renting starts to pay more. To set the price of each service from your own costs, use the <a href="/salon-service-price-calculator/">salon service price calculator</a>, and for a wider view of fixed costs against sales the <a href="/break-even-calculator/">break-even calculator</a> works for any small business.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should tips go into the average ticket?</h3>
+<p>No. Tips vary and are not something you can price on. Leaving them out gives a more cautious result.</p>
+<h3>Can I use it for a room in a spa or a slot in a gym?</h3>
+<p>Yes. Any fixed weekly payment for space you use to see clients works the same way.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/commission-vs-booth-rent-calculator/">Commission vs booth rent calculator</a></li>
+  <li><a href="/salon-service-price-calculator/">Salon service price calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

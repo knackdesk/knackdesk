@@ -1,0 +1,61 @@
+<!-- title: Commission vs Booth Rent Calculator -->
+<!-- description: Compare take-home pay on commission with renting a booth or chair, and find the monthly revenue at which booth rent starts to pay more than commission. -->
+<h1>Commission vs Booth Rent Calculator</h1>
+<p>Enter the revenue your services bring in each month, the commission percentage a salon would pay you, the weekly rent for a booth or chair and the share of revenue you would spend on product as a renter. You get your take-home under each arrangement, the difference between them and the monthly revenue at which the two are equal. It is meant for stylists, barbers, nail and beauty technicians, massage therapists and personal trainers deciding whether to work on commission or rent their own space. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> On commission the salon keeps a share of what you bring in and pays for the space and product, while on booth rent you keep everything you bring in but pay a fixed rent and buy your own product.</p>
+<p class="formula"><strong>Formula:</strong> booth rent per month = weekly rent × 52 ÷ 12; commission take-home = revenue × commission % ÷ 100; booth take-home = revenue − booth rent per month − revenue × product cost % ÷ 100; difference = booth take-home − commission take-home; break-even revenue = booth rent per month ÷ (1 − commission % ÷ 100 − product cost % ÷ 100).</p>
+
+<form class="tool" id="f">
+  <label>Monthly service revenue (what your clients pay in a month)<br><input type="number" id="revenue" min="0" step="any" value="7000"></label>
+  <label>Your commission share (% of revenue the salon pays you)<br><input type="number" id="commission" min="0" max="100" step="any" value="45"></label>
+  <label>Weekly booth or chair rent<br><input type="number" id="rent" min="0" step="any" value="300"></label>
+  <label>Product cost as a renter (% of revenue, optional)<br><input type="number" id="product" min="0" max="100" step="any" value="10"></label>
+  <p><button class="primary" type="submit">Compare</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { commissionVsBoothRent } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = commissionVsBoothRent({ monthlyRevenue: Number($("revenue").value) || 0, commissionPercent: Number($("commission").value) || 0, weeklyBoothRent: Number($("rent").value) || 0, productCostPercent: Number($("product").value) || 0 });
+    const verdict = r.difference > 0 ? "Booth rent pays more" : r.difference < 0 ? "Commission pays more" : "Both pay the same";
+    const be = r.breakEvenRevenue === null ? "None: commission always pays more" : fmt(r.breakEvenRevenue);
+    $("out").innerHTML = `<table><tr><td>Take-home on commission</td><td>${fmt(r.commissionTakeHome)}</td></tr><tr><td>Booth rent per month</td><td>${fmt(r.boothRentMonthly)}</td></tr><tr><td>Take-home on booth rent</td><td>${fmt(r.boothTakeHome)}</td></tr><tr><td>Difference (booth minus commission)</td><td><strong>${fmt(r.difference)}</strong></td></tr><tr><td>Result</td><td>${verdict}</td></tr><tr><td>Break-even monthly revenue</td><td>${be}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Monthly service revenue is the total your clients pay for services in a month, before tips. If you already work on commission, your pay slips or the salon's reports show the revenue your commission was worked out from. If you are a renter thinking of moving onto commission, your own card and booking records give you the same figure. Use an average over several months rather than your best one.</p>
+<p>Commission share is the percentage of that revenue the salon pays to you. Some salons describe the split the other way round, as the share they keep; if so, subtract it from 100. If the commission scale changes with how much you bring in, use the percentage that applies to your typical month, or run the calculator once for each level.</p>
+<p>Weekly booth rent is the figure in the rental agreement you are considering. The calculator turns it into a monthly cost by multiplying by 52 and dividing by 12, because a month is slightly more than four weeks. Add anything else the agreement charges each week, such as laundry or a card terminal.</p>
+<p>Product cost is the share of revenue you would spend on colour, treatments and disposables as a renter. On commission the salon normally provides these. Your supplier invoices for a month, divided by revenue for the same month and multiplied by 100, give the percentage. If you are not renting yet, ask a supplier for prices on what you use and estimate a month's worth.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 7,000 of monthly revenue at a 45% commission share gives you 3,150 on commission. A weekly rent of 300 comes to 1,300 a month; after paying it and spending 10% on product, booth rent leaves you 5,000. The difference is 1,850 a month in favour of booth rent.</p>
+<p>The break-even revenue is the monthly revenue at which the two arrangements pay exactly the same. In the example it is 2,888.89. Above the break-even revenue, booth rent pays more, because once the rent is covered you keep a larger share of each extra sale than the commission would give you. Below it, commission pays more, because the fixed rent takes a bigger bite out of a smaller month. If your revenue moves around a lot, compare your quietest month with the break-even figure, not just your average.</p>
+<p>If the calculator shows no break-even, your commission share and product cost together take 100% of revenue or more. In that case booth rent can never catch up, because every sale leaves you less as a renter than on commission before the rent is even paid.</p>
+<p>The comparison only covers money that changes between the two arrangements. Booth rent usually also means paying for your own insurance, booking software, marketing and holidays, and commission often comes with training, a front desk and clients walked in by the salon. Put any of those costs that you can price into the rent figure, and weigh the rest yourself. This page does not suggest what commission share or rent is fair; it only compares the two offers in front of you.</p>
+
+<h2>Using it to plan</h2>
+<p>Once you know which arrangement pays more, the <a href="/booth-rent-calculator/">booth rent calculator</a> shows how many clients a week cover the rent and what the chair earns over a year. The <a href="/salon-service-price-calculator/">salon service price calculator</a> helps you set prices as a renter, where the overhead is now yours, and the <a href="/commission-calculator/">commission calculator</a> works out commission on any sale.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does it include tax?</h3>
+<p>No. Both take-home figures are before tax. Your tax position may also differ between being employed and self-employed, so check that separately.</p>
+<h3>What if the salon also pays a base wage?</h3>
+<p>Add the base wage to the commission take-home yourself, or raise the commission share until the take-home matches what you are paid in total.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/booth-rent-calculator/">Booth rent calculator</a></li>
+  <li><a href="/salon-service-price-calculator/">Salon service price calculator</a></li>
+  <li><a href="/commission-calculator/">Commission calculator</a></li>
+</ul>
