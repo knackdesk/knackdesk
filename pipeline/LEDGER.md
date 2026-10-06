@@ -15,3 +15,4 @@ Refreshed by `npm run polar:sales`. Amounts in USD.
 | loan-lease-comparison-workbook | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_KxX8Vt9WRK0bnQjFZBz17Q1xyIPhAZMYKKDSI0oneuN | 12.00 | 0 | 0.00 | 0.00 |
 | trade-job-quote-workbook | digital | 2026-10-01 | https://buy.polar.sh/polar_cl_rPRP4PWuSTgLZ1N8e666QYzwKTurZS8mIGVqu0cqSJX | 12.00 | 0 | 0.00 | 0.00 |
 | event-catering-quote-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_57pIQcc5seQAoQqY3uUYAuJdPJdGYmyD6RH6Y3t3lta | 12.00 | 0 | 0.00 | 0.00 |
+| restaurant-numbers-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_WX8Gc8mmEPwOGXMhxBNudPx7kp8GfiTavHLrt48UEsz | 14.00 | 0 | 0.00 | 0.00 |
