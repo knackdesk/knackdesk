@@ -1,0 +1,67 @@
+<!-- title: Event Staffing Calculator -->
+<!-- description: Work out how many servers an event needs from the guest count and service style, the paid hours each works including setup and any minimum shift, and the total labour cost and cost per guest. -->
+<h1>Event Staffing Calculator</h1>
+<p>Enter the number of guests, how many guests one server looks after, how long the event runs, the setup and breakdown time, any minimum paid shift and the hourly rate. You get the servers needed, the paid hours per server, the total hours, the labour cost and the labour cost per guest. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Event staffing cost is the number of servers the guest count needs, times the hours each one is paid for, times the hourly rate.</p>
+<p class="formula"><strong>Formula:</strong> servers = guests ÷ guests per server, rounded up; hours per server = the larger of (event hours + setup and breakdown hours) and the minimum paid shift; total hours = servers × hours per server; labour cost = total hours × hourly rate; cost per guest = labour cost ÷ guests.</p>
+
+<form class="tool" id="f">
+  <label>Guests<br><input type="number" id="guests" min="1" step="1" value="120"></label>
+  <label>Service style (fills in guests per server)<br><select id="style">
+    <option value="25" selected>Buffet: 25 guests per server</option>
+    <option value="15">Plated dinner: 15 guests per server</option>
+    <option value="30">Cocktail reception: 30 guests per server</option>
+  </select></label>
+  <label>Guests per server (edit to suit your event)<br><input type="number" id="ratio" min="1" step="any" value="25"></label>
+  <label>Event hours (service time)<br><input type="number" id="event" min="0" step="any" value="5"></label>
+  <label>Setup and breakdown hours per server<br><input type="number" id="setup" min="0" step="any" value="2"></label>
+  <label>Minimum paid shift in hours (0 if none)<br><input type="number" id="minimum" min="0" step="any" value="4"></label>
+  <label>Hourly rate per server<br><input type="number" id="rate" min="0" step="any" value="22"></label>
+  <p><button class="primary" type="submit">Calculate staffing</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { eventStaffing } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+syncWraps();
+$("style").addEventListener("change", () => { $("ratio").value = $("style").value; });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = eventStaffing({ guests: Number($("guests").value) || 0, guestsPerServer: Number($("ratio").value) || 0, eventHours: Number($("event").value) || 0, setupHours: Number($("setup").value) || 0, minimumHours: Number($("minimum").value) || 0, hourlyRate: Number($("rate").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Servers needed</td><td><strong>${r.servers}</strong></td></tr><tr><td>Paid hours per server</td><td>${fmt(r.hoursPerServer)}</td></tr><tr><td>Total paid hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Labour cost</td><td><strong>${fmt(r.laborCost)}</strong></td></tr><tr><td>Labour cost per guest</td><td>${fmt(r.costPerGuest)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How many servers an event needs</h2>
+<p>The number of servers comes from one ratio: how many guests a single server can look after properly. The service style menu fills in a ratio for you: 25 guests per server for a buffet, 15 for a plated dinner and 30 for a cocktail reception. These are common starting points, not rules, and you can type any ratio into the box below the menu.</p>
+<p>Adjust the ratio for the event in front of you. A plated dinner with several courses, wine poured at the table or a tight timing plan needs more hands than a simple two-course meal. A buffet where staff also carve, clear and replenish needs more than one where guests serve themselves and plates are cleared at the end. Passed canapés at a cocktail reception need more servers than a static grazing table. Venue layout matters too: a long walk between kitchen and room slows everyone down.</p>
+<p>The calculator rounds the server count up, because you cannot book part of a person. With 120 guests at 25 per server the division gives 4.8, so you need 5 servers. If the round-up adds a whole extra person for a few guests, you can decide whether a slightly stretched team is acceptable, but make that a deliberate choice.</p>
+
+<h2>Paid hours are longer than the event</h2>
+<p>Staff are paid from when they arrive to when they leave, not for the hours guests are in the room. Setup covers laying tables, setting stations and the briefing; breakdown covers clearing, packing and loading. Enter the combined setup and breakdown time each server works. With a five-hour event and two hours of setup and breakdown, each server is paid for seven hours.</p>
+<p>Some agencies and employment arrangements set a minimum shift, so a server booked for a short event is still paid for a set number of hours. Enter that minimum and the calculator pays whichever is longer: the actual hours or the minimum. Leave it at zero if it does not apply to you. Overtime, night rates or holiday rates are not modelled here; if they apply, use a blended hourly rate that reflects them.</p>
+
+<h2>From labour cost to the quote</h2>
+<p>The hourly rate should be what each server costs you, including any employer contributions or agency margin, not what you bill. The labour cost is total hours times that rate, and the cost per guest divides it across the guest list so you can fold it into a per-head price.</p>
+<p>If you are a caterer, enter the total hours from this page as staff hours in the <a href="/catering-price-per-guest-calculator/">catering price per guest calculator</a> to build the full per-guest price with food, rentals and margin. Bartenders are a separate team: the <a href="/bar-cost-calculator/">bar cost calculator</a> gives a bartender count you can cost here by entering the bar's guests per bartender as the ratio. To set a billing rate that covers overhead and profit on top of wages, start from the <a href="/hourly-rate-calculator/">hourly rate calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include a supervisor or captain?</h3>
+<p>The ratio covers servers only. If you add a supervisor, kitchen staff or runners, cost them separately or add their hours to your quote as their own line.</p>
+<h3>Are the service style ratios a standard?</h3>
+<p>No. They are common starting points. Your own experience of the venue, the menu and the client is a better guide, so edit the ratio whenever it differs.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/catering-price-per-guest-calculator/">Catering price per guest calculator</a></li>
+  <li><a href="/bar-cost-calculator/">Bar cost calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+</ul>

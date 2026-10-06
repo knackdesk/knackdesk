@@ -1,0 +1,78 @@
+<!-- title: Event Budget Calculator -->
+<!-- description: Add up an event budget line by line: venue, catering, drinks, decor, entertainment and more. See the total, cost per guest, each line's share and per-guest cost, and how much is left or over budget. -->
+<h1>Event Budget Calculator</h1>
+<p>Enter the budget you have, the number of guests and what each part of the event costs. You get the total, the cost per guest, how much budget is left (or how far over you are) and, for every line, its share of the total and its cost per guest. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> An event budget is the sum of every cost line compared with the money available, read per guest so you can see which lines drive the cost.</p>
+<p class="formula"><strong>Formula:</strong> total = sum of all lines; cost per guest = total ÷ guests; remaining = budget − total (negative means over budget); line share = line ÷ total × 100; line per guest = line ÷ guests.</p>
+
+<form class="tool" id="f">
+  <label>Total budget<br><input type="number" id="budget" min="0" step="any" value="10000"></label>
+  <label>Guests<br><input type="number" id="guests" min="1" step="1" value="80"></label>
+  <fieldset id="lines">
+    <legend>Budget lines (name and amount)</legend>
+    <p class="line"><input type="text" aria-label="Line name" value="Venue"> <input type="number" aria-label="Amount" min="0" step="any" value="3000"></p>
+    <p class="line"><input type="text" aria-label="Line name" value="Catering"> <input type="number" aria-label="Amount" min="0" step="any" value="4000"></p>
+    <p class="line"><input type="text" aria-label="Line name" value="Drinks"> <input type="number" aria-label="Amount" min="0" step="any" value="1200"></p>
+    <p class="line"><input type="text" aria-label="Line name" value="Decor"> <input type="number" aria-label="Amount" min="0" step="any" value="800"></p>
+    <p class="line"><input type="text" aria-label="Line name" value="Entertainment"> <input type="number" aria-label="Amount" min="0" step="any" value="600"></p>
+    <p class="line"><input type="text" aria-label="Line name" value="Other"> <input type="number" aria-label="Amount" min="0" step="any" value="300"></p>
+  </fieldset>
+  <p><button type="button" id="add">Add a line</button> <button class="primary" type="submit">Calculate budget</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { eventBudget } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c]);
+syncWraps();
+$("add").addEventListener("click", () => {
+  const p = document.createElement("p"); p.className = "line";
+  const name = document.createElement("input"); name.type = "text"; name.setAttribute("aria-label", "Line name"); name.placeholder = "Line name";
+  const amt = document.createElement("input"); amt.type = "number"; amt.min = "0"; amt.step = "any"; amt.setAttribute("aria-label", "Amount");
+  p.append(name, " ", amt); $("lines").append(p); name.focus();
+});
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const lines = [...$("lines").querySelectorAll(".line")]
+      .map((p) => { const [n, a] = p.querySelectorAll("input"); return { name: n.value.trim(), amount: a.value === "" ? null : Number(a.value) }; })
+      .filter((l) => l.amount !== null);
+    const r = eventBudget({ budget: Number($("budget").value) || 0, guests: Number($("guests").value) || 0, lines });
+    const rows = r.lines.map((l) => `<tr><td>${esc(l.name)}</td><td>${fmt(l.amount)}</td><td>${fmt(l.share)}%</td><td>${fmt(l.perGuest)}</td></tr>`).join("");
+    const left = r.remaining >= 0 ? `<tr><td>Left in budget</td><td><strong>${fmt(r.remaining)}</strong></td></tr>` : `<tr><td>Over budget by</td><td><strong>${fmt(-r.remaining)}</strong></td></tr>`;
+    $("out").innerHTML = `<table><tr><td>Total</td><td><strong>${fmt(r.total)}</strong></td></tr><tr><td>Cost per guest</td><td><strong>${fmt(r.perGuest)}</strong></td></tr>${left}</table><table><tr><th>Line</th><th>Amount</th><th>Share</th><th>Per guest</th></tr>${rows}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Build the budget from the lines, then check it against the total</h2>
+<p>Most event budgets start with a single number: what the client, the company or the couple can spend. That number is only useful once it is broken into the things it has to pay for. List every line you expect to pay for, even small ones, and put a real figure next to each: a quote you have in hand, a price from a supplier's website, or your best estimate marked as an estimate. Lines left blank have a way of turning up on the invoice later.</p>
+<p>The calculator adds the lines, compares the total with the budget and tells you what is left. A negative figure means you are over budget by that amount. Leave some room on purpose: a contingency line covers the extra hour of venue hire, the delivery charge nobody mentioned and the rain plan. Put it in as its own line so it is visible rather than hidden inside another one, and decide in advance what it can be spent on.</p>
+
+<h2>Cost per guest shows where the money really goes</h2>
+<p>Dividing the total by the guest count turns a large number into one people can reason about. With the example figures, a total of 9,900 for 80 guests is 123.75 per guest. Per-guest figures for each line make the trade-offs visible: the venue at 3,000 is 37.50 per guest, catering at 4,000 is 50 per guest and 40.4% of the whole budget.</p>
+<p>Lines behave differently when the guest list changes. Catering and drinks rise and fall with numbers. The venue, entertainment and most decor are fixed: they cost the same for 60 guests or 100. That means cutting guests saves less than you might expect, and adding guests to a fixed venue lowers the cost per guest of that line. Try a few guest counts and watch which per-guest figures move.</p>
+<p>The share column answers a different question: which line is worth negotiating. In the example, a 10% saving on catering (400) is worth more than dropping the 300 "other" line altogether. Start your cuts, or your supplier conversations, where the share is highest.</p>
+
+<h2>Getting the line figures right</h2>
+<p>Each line can be worked out on its own and brought back here. The <a href="/catering-price-per-guest-calculator/">catering price per guest calculator</a> builds a catering figure from food, staff, rentals and margin, which is useful if you are the caterer or want to sanity-check a quote. The <a href="/bar-cost-calculator/">bar cost calculator</a> estimates drink quantities and cost from guests and hours. For staff you hire directly, the <a href="/event-staffing-calculator/">event staffing calculator</a> gives servers and labour cost. If you are selling tickets to cover the event, the <a href="/ticket-price-calculator/">ticket price calculator</a> turns this total into a break-even ticket price.</p>
+<p>Check each quote for what it includes. Service charges, delivery, setup and breakdown, overtime and sales tax are often listed separately, and it is easy to enter the headline figure and miss the rest. Enter the full amount you will actually pay for each line.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I include deposits I have already paid?</h3>
+<p>Yes. The budget is about the full cost of the event, not what is still to pay. Enter each line at its full amount and track payments separately.</p>
+<h3>What does a negative remaining amount mean?</h3>
+<p>The lines add up to more than the budget. The figure shown is how much you need to cut, or how much more money you need, to break even with the budget.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/catering-price-per-guest-calculator/">Catering price per guest calculator</a></li>
+  <li><a href="/ticket-price-calculator/">Ticket price calculator</a></li>
+  <li><a href="/project-budget-calculator/">Project budget calculator</a></li>
+</ul>

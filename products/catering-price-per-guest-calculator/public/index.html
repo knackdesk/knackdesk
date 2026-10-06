@@ -1,0 +1,63 @@
+<!-- title: Catering Price per Guest Calculator -->
+<!-- description: Price a catered event per guest from food cost per head, staff hours at your rate, rentals, other costs and the profit margin you want on the price. Shows total cost, the event price, price per guest and profit. -->
+<h1>Catering Price per Guest Calculator</h1>
+<p>Enter the guest count, what the food costs you per guest, the staff hours and what you pay per hour, any rentals and other costs, and the profit margin you want. You get the total cost of the event, the price to quote, the price per guest and the profit. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A per-guest catering price is the whole cost of the event, food, staff, rentals and extras, grossed up so your margin is a share of the price, then divided by the number of guests.</p>
+<p class="formula"><strong>Formula:</strong> food cost = guests × food cost per guest; labour cost = staff hours × hourly rate; total cost = food + labour + rentals + other costs; price = total cost ÷ (1 − margin %); price per guest = price ÷ guests; profit = price − total cost.</p>
+
+<form class="tool" id="f">
+  <label>Guests<br><input type="number" id="guests" min="1" step="1" value="100"></label>
+  <label>Food cost per guest (ingredients and disposables)<br><input type="number" id="food" min="0" step="any" value="18"></label>
+  <label>Staff hours (all staff, including prep, travel and cleanup)<br><input type="number" id="hours" min="0" step="any" value="40"></label>
+  <label>Staff cost per hour (what you pay, including on-costs)<br><input type="number" id="rate" min="0" step="any" value="25"></label>
+  <label>Rentals (linen, tableware, equipment)<br><input type="number" id="rentals" min="0" step="any" value="600"></label>
+  <label>Other costs (transport, fuel, permits, overhead share)<br><input type="number" id="other" min="0" step="any" value="200"></label>
+  <label>Profit margin wanted (% of the price)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="30"></label>
+  <p><button class="primary" type="submit">Calculate price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { cateringPrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = cateringPrice({ guests: Number($("guests").value) || 0, foodCostPerGuest: Number($("food").value) || 0, laborHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, rentals: Number($("rentals").value) || 0, otherCosts: Number($("other").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Food cost</td><td>${fmt(r.foodCost)}</td></tr><tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Cost per guest</td><td>${fmt(r.costPerGuest)}</td></tr><tr><td>Event price to quote</td><td><strong>${fmt(r.price)}</strong></td></tr><tr><td>Price per guest</td><td><strong>${fmt(r.pricePerGuest)}</strong></td></tr><tr><td>Profit</td><td>${fmt(r.profit)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What goes into the cost of a catered event</h2>
+<p>Food is the cost everyone remembers, and it is the one that scales neatly with the guest count. Work it out from your menu: cost each dish per portion, add the portions each guest gets, and include the disposables, garnishes and the extra you prepare so you never run short. That gives a food cost per guest you can reuse whenever the menu repeats.</p>
+<p>Everything else is easy to undercount. Staff hours are not just the hours of service. Count prep in the kitchen, loading, travel to the venue, setup, service, breakdown, the drive back and washing up, for every person on the job. Multiply by what each hour costs you, including any employer contributions and holiday pay, not the rate you might bill. If you are not sure how many people you need on the floor, the <a href="/event-staffing-calculator/">event staffing calculator</a> works out servers and paid hours from the guest count and service style.</p>
+<p>Rentals cover what you hire for this event alone: linen, crockery, glassware, chafing dishes, tables, a marquee kitchen. Other costs pick up fuel, parking, permits, ice, and a share of your fixed overhead such as insurance, kitchen rent and vehicle costs. If you leave overhead out of every quote, no single event pays for it and the business does.</p>
+
+<h2>Margin on the price, not markup on the food</h2>
+<p>This calculator asks for profit as a share of the price because that is how it shows up when you look back at the event. The price is total cost divided by one minus the margin. With the example figures, a total cost of 3,600 and a 30% margin gives a price of 5,142.86, so 1,542.86 of every event at that size is profit, and that is exactly 30% of the price.</p>
+<p>Adding 30% to the cost instead would give 4,680, which is only a 23% margin. The gap grows with the margin you want, which is why quoting by markup tends to leave caterers earning less than they planned. The <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two if a client or supplier talks in markup.</p>
+<p>Some caterers price only from food cost, multiplying it by a fixed factor. That can work when every event looks the same, but it hides the cost of staff and rentals, which do not move in step with the food. A small, staff-heavy plated dinner and a large drop-off buffet can share a food cost per guest and still need very different prices.</p>
+
+<h2>Turning the result into a quote</h2>
+<p>The price per guest is what most clients compare, so show it, but quote the event total as well and state the minimum guest count it applies to. Staff and rentals do not halve when the guest list does, so if numbers fall the per-guest price should rise. Rerun the calculator at the lowest likely count and you will see how much.</p>
+<p>Ask for a deposit when the booking is confirmed so your food and rental spend is covered before the day. The <a href="/deposit-split-calculator/">deposit split calculator</a> splits a total into a deposit and staged payments. If the client is working from a fixed budget, the <a href="/event-budget-calculator/">event budget calculator</a> shows what share of it catering takes and what is left for everything else. Add sales tax or VAT on top of the price shown here when you present it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should drinks be in the food cost per guest?</h3>
+<p>Only if you supply them as part of the menu. If the bar is separate, cost it on its own with the <a href="/bar-cost-calculator/">bar cost calculator</a> and quote it as its own line so the client can see both.</p>
+<h3>What if the guest count changes after I quote?</h3>
+<p>Run the numbers again at the new count. Food cost moves with guests but staff, rentals and other costs mostly do not, so the price per guest goes up when numbers go down.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/event-staffing-calculator/">Event staffing calculator</a></li>
+  <li><a href="/bar-cost-calculator/">Bar cost calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

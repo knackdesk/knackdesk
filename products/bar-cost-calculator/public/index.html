@@ -1,0 +1,67 @@
+<!-- title: Bar Cost Calculator -->
+<!-- description: Estimate how many drinks an event needs from guests and hours, split them into beer, wine and spirits, and cost the bar. Shows drinks and cost by type, total bar cost, cost per guest and bartenders needed. -->
+<h1>Bar Cost Calculator</h1>
+<p>Enter the number of guests, how long the bar is open, how many drinks a guest has in the first hour and in each hour after, your mix of beer, wine and spirits, and what one drink of each costs you. You get the total drinks, the drinks and cost for each type, the total bar cost, the cost per guest and how many bartenders to book. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A bar estimate is guests times drinks per guest over the length of the event, split by what people drink and priced per drink.</p>
+<p class="formula"><strong>Formula:</strong> total drinks = guests × (first-hour drinks + later-hour drinks × (hours − 1)); drinks by type = total drinks × share %; cost by type = drinks × cost per drink; total cost = beer + wine + spirits; cost per guest = total ÷ guests; bartenders = guests ÷ guests per bartender, rounded up.</p>
+
+<form class="tool" id="f">
+  <label>Guests<br><input type="number" id="guests" min="1" step="1" value="100"></label>
+  <label>Hours the bar is open<br><input type="number" id="hours" min="1" step="any" value="4"></label>
+  <label>Drinks per guest in the first hour<br><input type="number" id="first" min="0" step="any" value="2"></label>
+  <label>Drinks per guest in each later hour<br><input type="number" id="later" min="0" step="any" value="1"></label>
+  <label>Beer share (%)<br><input type="number" id="beerP" min="0" max="100" step="any" value="40"></label>
+  <label>Wine share (%)<br><input type="number" id="wineP" min="0" max="100" step="any" value="40"></label>
+  <label>Spirits share (%)<br><input type="number" id="spiritsP" min="0" max="100" step="any" value="20"></label>
+  <label>Cost per beer<br><input type="number" id="beerC" min="0" step="any" value="2.5"></label>
+  <label>Cost per glass of wine<br><input type="number" id="wineC" min="0" step="any" value="3"></label>
+  <label>Cost per spirit drink (including mixer)<br><input type="number" id="spiritsC" min="0" step="any" value="4"></label>
+  <label>Guests per bartender<br><input type="number" id="perBar" min="1" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate bar cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { barCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const syncWraps = () => { for (const w of document.querySelectorAll("[id$=\"Wrap\"]")) for (const el of w.querySelectorAll("input,select,textarea")) el.disabled = w.hidden; };
+const v = (id) => Number($(id).value) || 0;
+syncWraps();
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = barCost({ guests: v("guests"), hours: v("hours"), drinksFirstHour: v("first"), drinksPerLaterHour: v("later"), beerPercent: v("beerP"), winePercent: v("wineP"), spiritsPercent: v("spiritsP"), beerCost: v("beerC"), wineCost: v("wineC"), spiritsCost: v("spiritsC"), guestsPerBartender: v("perBar") });
+    $("out").innerHTML = `<table><tr><th>Type</th><th>Drinks</th><th>Cost</th></tr><tr><td>Beer</td><td>${fmt(r.beerDrinks)}</td><td>${fmt(r.beerCost)}</td></tr><tr><td>Wine</td><td>${fmt(r.wineDrinks)}</td><td>${fmt(r.wineCost)}</td></tr><tr><td>Spirits</td><td>${fmt(r.spiritsDrinks)}</td><td>${fmt(r.spiritsCost)}</td></tr><tr><td><strong>Total</strong></td><td><strong>${fmt(r.totalDrinks)}</strong></td><td><strong>${fmt(r.totalCost)}</strong></td></tr></table><table><tr><td>Bar cost per guest</td><td><strong>${fmt(r.costPerGuest)}</strong></td></tr><tr><td>Bartenders needed</td><td><strong>${r.bartenders}</strong></td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How many drinks to plan for</h2>
+<p>The estimate rests on two numbers: how many drinks a guest has in the first hour, and how many in each hour after that. The defaults here, two in the first hour and one per hour after, are common starting points used by planners and caterers, not rules. Guests arriving thirsty after a ceremony, a long daytime party, a crowd that mostly drives home, or a dinner where wine is poured at the table will all behave differently. Change the numbers to match the event you are planning and the people coming to it.</p>
+<p>The first hour is counted separately because arrivals, welcome drinks and toasts tend to bunch consumption at the start. A four-hour event with the default rates works out to five drinks per guest: two in the first hour and one in each of the remaining three. Multiply by the guest count and you have the total. If the bar only opens for part of the event, enter the hours it is open, not the length of the event.</p>
+
+<h2>Splitting the order into beer, wine and spirits</h2>
+<p>The mix is your estimate of what share of drinks will be beer, wine and spirits. The three shares must add up to 100. Base them on what you know: the host's guests, the menu, the time of day and anything the client tells you. If you are running a beer-and-wine-only bar, set spirits to zero and split the rest between the other two.</p>
+<p>Cost per drink is the cost of one serve, not one bottle. Divide the price of a case of beer by the cans or bottles in it, a bottle of wine by the glasses you pour from it, and a bottle of spirits by the measures it holds, then add the mixer and garnish to the spirit figure. Use the prices you will actually pay, after any trade or sale-or-return arrangement. The calculator multiplies drinks by cost for each type and adds them up.</p>
+<p>Turning drinks back into stock to buy is a separate step: divide the beer, wine and spirits drink counts by serves per case or bottle and round up. Order a little over the estimate if you can return unopened stock, and confirm the return terms with your supplier before the event.</p>
+
+<h2>Bartenders and the cost per guest</h2>
+<p>The bartender count divides guests by the number one bartender can serve and rounds up. Fifty guests per bartender is a common starting point for a straightforward beer, wine and simple mixed-drink bar, not a rule: cocktails, a short peak like a post-ceremony rush, or a bar far from the guests all call for a lower number. Cost the bartenders as labour with the <a href="/event-staffing-calculator/">event staffing calculator</a>, which also handles setup time and minimum shifts.</p>
+<p>The cost per guest is the figure to compare with a per-head bar package or to put into a quote. If you are a caterer adding the bar to a quote, apply your margin to it the same way as food with the <a href="/catering-price-per-guest-calculator/">catering price per guest calculator</a>, or bring the total into the <a href="/event-budget-calculator/">event budget calculator</a> as the drinks line.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does this include non-alcoholic drinks?</h3>
+<p>No. Soft drinks, water and coffee are usually cheap per serve but should still be costed; add them as an other cost in your quote or as their own line in your budget.</p>
+<h3>Why must the mix add up to exactly 100?</h3>
+<p>The shares divide the total drinks between the three types. If they add up to more or less than 100, some drinks would be counted twice or not at all.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/event-staffing-calculator/">Event staffing calculator</a></li>
+  <li><a href="/catering-price-per-guest-calculator/">Catering price per guest calculator</a></li>
+  <li><a href="/cost-per-unit-calculator/">Cost per unit calculator</a></li>
+</ul>
