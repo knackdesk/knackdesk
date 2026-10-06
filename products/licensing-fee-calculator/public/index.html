@@ -1,0 +1,68 @@
+<!-- title: Licensing Fee Calculator -->
+<!-- description: Scale a base image licensing fee by your own factors for duration, territory, media and exclusivity. The factors are editable pricing choices, not an industry standard. -->
+<h1>Licensing Fee Calculator</h1>
+<p>Enter a base fee for the image or set of images, then the factors you use to scale it for how long the licence lasts, where the images will be used, which media they will appear in, and whether the licence is exclusive. You get the licence fee and how much the usage adds to the base fee. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A licensing fee is the price for permission to use your images in a defined way, and this calculator builds it by multiplying a base fee by your own factors for duration, territory, media and exclusivity.</p>
+<p class="formula"><strong>Formula:</strong> fee = base fee × duration factor × territory factor × media factor × (exclusivity factor if exclusive, otherwise 1); uplift = fee − base fee.</p>
+<p><strong>The factors are your own pricing choices.</strong> There is no industry standard for these multipliers. The defaults below are only editable examples to show how the calculation works; replace them with the factors you decide to use and keep them the same from quote to quote.</p>
+
+<form class="tool" id="f">
+  <label>Base fee (your price for the smallest licence you offer)<br><input type="number" id="base" min="0" step="any" value="500"></label>
+  <label>Duration factor (1 = your base term)<br><input type="number" id="duration" min="0" step="any" value="2"></label>
+  <label>Territory factor (1 = your base territory)<br><input type="number" id="territory" min="0" step="any" value="1.5"></label>
+  <label>Media factor (1 = your base media)<br><input type="number" id="media" min="0" step="any" value="1.2"></label>
+  <label><input type="checkbox" id="exclusive" checked> Exclusive licence</label>
+  <label>Exclusivity factor (applied only when exclusive)<br><input type="number" id="exfactor" min="0" step="any" value="1.5"></label>
+  <p><button class="primary" type="submit">Calculate licence fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { licensingFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const input = { baseFee: Number($("base").value) || 0, durationFactor: Number($("duration").value) || 0, territoryFactor: Number($("territory").value) || 0, mediaFactor: Number($("media").value) || 0, exclusivityFactor: Number($("exfactor").value) || 0 };
+    const r = licensingFee({ ...input, exclusive: $("exclusive").checked });
+    const plain = licensingFee({ ...input, exclusive: false });
+    $("out").innerHTML = `<table><tr><td>Licence fee</td><td><strong>${fmt(r.fee)}</strong></td></tr><tr><td>Added to the base fee by usage</td><td>${fmt(r.uplift)}</td></tr><tr><td>Fee if not exclusive</td><td>${fmt(plain.fee)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>How the factors work</h2>
+<p>Licensing prices the use of an image, not the time it took to make it. The same photograph can be worth very different amounts to a client depending on how widely they will use it. A factor is a simple way to write that down: 1 means your base licence, a number above 1 means wider use that costs more, and a number below 1 means narrower use that costs less. Each factor multiplies the base fee, so they combine.</p>
+<p>The usual meaning of each one is the same across most creative fields, even though the numbers are not:</p>
+<ul>
+  <li><strong>Duration.</strong> A longer licence term costs more than a shorter one, because the client gets more value from the image over time.</li>
+  <li><strong>Territory.</strong> A wider territory costs more: national use more than local, international more than national.</li>
+  <li><strong>Media.</strong> More media costs more. Adding print, outdoor, packaging or paid online ads to a licence that started as web only widens the use.</li>
+  <li><strong>Exclusivity.</strong> An exclusive licence costs more because you give up the chance to license the same images to anyone else for that use and term.</li>
+</ul>
+<p>In the example, a base fee of 500 with factors of 2 for duration, 1.5 for territory and 1.2 for media comes to 1,800 without exclusivity. Making it exclusive with a factor of 1.5 brings the fee to 2,700, which is 2,200 more than the base fee.</p>
+
+<h2>Choosing your own factors</h2>
+<p>Because there is no standard, the factors are decisions you make and then apply consistently. Start by defining your base licence in plain words, for example one year, one country, website and social media, non-exclusive. Then decide what each step up is worth to you: what you charge for two years instead of one, for several countries instead of one, for adding print. Write those factors in a price sheet so every quote uses the same ones and you can explain them to a client.</p>
+<p>The base fee itself should at least cover the work behind the images. Work it out from your <a href="/photographer-day-rate-calculator/">photographer day rate</a> or your <a href="/hourly-rate-calculator/">hourly rate</a>, then treat the licence as the value of the use on top. For a commissioned shoot, quote the production and the licence as separate lines so the client sees what each pays for; the <a href="/photography-package-price-calculator/">photography package price calculator</a> handles the production side.</p>
+<p>Some photographers prefer factors below 1 for very narrow use, such as a single internal presentation. That works the same way: the fee falls below the base.</p>
+
+<h2>Putting the licence in writing</h2>
+<p>Whatever the fee, the licence is only as clear as its terms. State the images covered, the term and its start date, the territory, the media, whether it is exclusive, and what happens if the client wants to extend it later. An extension can be priced with the same calculator by using the factor for the extra term. This page does not give legal advice; have a contract checked if the licence is large or unusual. For ongoing work with the same client, the <a href="/retainer-calculator/">retainer calculator</a> can help price a regular arrangement.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Where do the default factors come from?</h3>
+<p>They are examples to show how the calculation works, not a recommendation or a standard. Replace each one with the factor you choose to charge.</p>
+<h3>Can a factor be below 1?</h3>
+<p>Yes. A factor below 1 lowers the fee for use narrower than your base licence. A factor of 0 makes the fee zero, so the calculator allows it but it is rarely useful in a real quote.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/photographer-day-rate-calculator/">Photographer day rate calculator</a></li>
+  <li><a href="/photography-package-price-calculator/">Photography package price calculator</a></li>
+  <li><a href="/print-markup-calculator/">Print markup calculator</a></li>
+</ul>

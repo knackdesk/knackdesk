@@ -1,0 +1,59 @@
+<!-- title: Photographer Day Rate Calculator -->
+<!-- description: Work out a photographer day rate from the income you want, your yearly business costs and the shoot days you can book, with a half-day rate and the effective hourly rate once editing is counted. -->
+<h1>Photographer Day Rate Calculator</h1>
+<p>Enter the income you want to take home before tax, what the business costs to run each year, the number of shoot days you expect to book, the hours on a shoot day and the editing hours each shoot creates. You get the revenue you need, the day rate, a half-day rate and what the day rate works out to per hour once editing is counted. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A photographer day rate is the revenue the business needs in a year, your income plus your costs, divided by the number of days you can realistically book a shoot.</p>
+<p class="formula"><strong>Formula:</strong> revenue needed = income goal + business costs; day rate = revenue needed ÷ shoot days per year; hours per booking = shoot hours + editing hours; effective hourly rate = day rate ÷ hours per booking; half-day rate = day rate × 0.6.</p>
+
+<form class="tool" id="f">
+  <label>Income goal for the year (what you want to pay yourself)<br><input type="number" id="income" min="0" step="any" value="60000"></label>
+  <label>Business costs for the year (gear, software, insurance, studio, travel, fees)<br><input type="number" id="costs" min="0" step="any" value="12000"></label>
+  <label>Shoot days you expect to book in a year<br><input type="number" id="days" min="1" step="any" value="80"></label>
+  <label>Hours on a shoot day (including travel and setup)<br><input type="number" id="hours" min="0" step="any" value="8"></label>
+  <label>Editing hours each shoot day creates (culling, editing, delivery)<br><input type="number" id="editing" min="0" step="any" value="6"></label>
+  <p><button class="primary" type="submit">Calculate day rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { dayRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = dayRate({ incomeGoal: Number($("income").value) || 0, businessCosts: Number($("costs").value) || 0, shootDaysPerYear: Number($("days").value) || 0, hoursPerShootDay: Number($("hours").value) || 0, editingHoursPerShootDay: Number($("editing").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Revenue needed in a year</td><td>${fmt(r.revenueNeeded)}</td></tr><tr><td>Day rate</td><td><strong>${fmt(r.dayRate)}</strong></td></tr><tr><td>Half-day rate (60% of the day rate)</td><td>${fmt(r.halfDayRate)}</td></tr><tr><td>Hours per booking (shoot plus editing)</td><td>${fmt(r.hoursPerBooking)}</td></tr><tr><td>Effective hourly rate</td><td>${fmt(r.effectiveHourly)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Start from what you need, not from what others charge</h2>
+<p>Looking at what other photographers charge tells you what clients in your area might be used to paying, but it says nothing about whether that number works for you. Their costs, their booking calendar and the way they edit are different from yours. This calculator works the other way round: it starts from the income you want and the costs you actually carry, then asks how many days you can sell.</p>
+<p>The income goal is what you want to pay yourself for the year before income tax. Business costs are everything the business spends to keep going: camera bodies and lenses spread over the years you expect to use them, computers, editing and gallery software, insurance, a studio or storage, marketing, website, accounting, card fees and the travel you do not pass on to clients. Add them up from last year's bank statements if you have them. With the example figures, an income goal of 60,000 and costs of 12,000 mean the business needs 72,000 in revenue.</p>
+<p>Shoot days are the hardest number to be honest about. A year has far more working days than you will ever book, because some go on admin, marketing, editing, enquiries that never turn into bookings, and quiet months. Use the number of paid shoot days you booked last year, or a careful estimate if you are new. Divide 72,000 by 80 shoot days and the day rate is 900. If you can only book 60 days, the same goals need a day rate of 1,200, which is why the calculator lets you test different counts.</p>
+
+<h2>Why the hourly figure looks lower than you expect</h2>
+<p>A shoot day rarely ends when the camera goes back in the bag. Culling, editing, retouching, exporting and delivering the gallery all come after, and that time is paid for by the same day rate. The calculator adds the editing hours each shoot creates to the hours on the day itself. In the example, 8 hours of shooting and 6 of editing make 14 hours per booking, so a 900 day rate is worth 64.29 per hour of work.</p>
+<p>That effective hourly figure is the honest one to compare with other work you might take on, or with an hourly rate you set elsewhere. The <a href="/effective-hourly-rate/">effective hourly rate calculator</a> does the same check for any project with unpaid hours around it, and the <a href="/hourly-rate-calculator/">hourly rate calculator</a> works out an hourly rate from an income goal and billable hours if you price some jobs by the hour.</p>
+<p>If the hourly figure is lower than you want, there are three levers: raise the day rate, book more days, or cut editing time per shoot with presets, a tighter cull or fewer delivered images. Rerun the calculator with each change to see which one moves the number most.</p>
+
+<h2>Half days, packages and quoting</h2>
+<p>Half-day bookings rarely take half the effort. You still travel, set up, and often lose the other half of the day to the drive or to waiting. This calculator prices a half day at 60% of the full day rate. That 60% is a pricing choice built into this tool, not a rule; pick your own ratio and multiply the day rate by it if you prefer.</p>
+<p>When a client wants a fixed price for a particular job rather than a day, build it up from hours, travel and products with the <a href="/photography-package-price-calculator/">photography package price calculator</a>. If they ask about extra images after the gallery is delivered, the <a href="/cost-per-edited-image-calculator/">cost per edited image calculator</a> shows what each one costs you. For commercial clients who want to use the images in advertising, add a usage fee with the <a href="/licensing-fee-calculator/">licensing fee calculator</a>. Add sales tax or VAT on top of the figures shown here where it applies.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should equipment go in business costs?</h3>
+<p>Yes, spread over its working life. A lens you expect to use for four years adds a quarter of its price to each year's costs. Leaving gear out makes the day rate look affordable until something needs replacing.</p>
+<h3>What if I book more days than planned?</h3>
+<p>Then you earn more than the goal at the same rate. It is safer to plan on a modest number of days and treat extra bookings as a bonus than to plan on a busy year and fall short.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/photography-package-price-calculator/">Photography package price calculator</a></li>
+  <li><a href="/effective-hourly-rate/">Effective hourly rate calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+</ul>

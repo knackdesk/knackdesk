@@ -1,0 +1,60 @@
+<!-- title: Print Markup Calculator -->
+<!-- description: Turn a lab print cost and shipping into a print price with your markup, see the profit and the margin, or find the price that gives the margin you want. -->
+<h1>Print Markup Calculator</h1>
+<p>Enter what the lab charges for a print, the shipping or packaging cost per print, and either the markup you want or the margin you want. You get the total cost, the print price, the profit and the margin by markup, and the price that hits your target margin. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Print markup is how much you add on top of what a print costs you, lab and shipping together, expressed as a percentage of that cost.</p>
+<p class="formula"><strong>Formula:</strong> cost = lab cost + shipping; price = cost × (1 + markup %); profit = price − cost; margin = profit ÷ price × 100; price for a target margin = cost ÷ (1 − margin %).</p>
+
+<form class="tool" id="f">
+  <label>Lab cost per print<br><input type="number" id="lab" min="0" step="any" value="12"></label>
+  <label>Shipping and packaging per print<br><input type="number" id="shipping" min="0" step="any" value="3"></label>
+  <label>Markup (% of cost)<br><input type="number" id="markup" min="0" step="any" value="150"></label>
+  <label>Or a target margin (% of the price)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="60"></label>
+  <p><button class="primary" type="submit">Calculate print price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { printMarkup, printPriceForMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const labCost = Number($("lab").value) || 0, shipping = Number($("shipping").value) || 0;
+    const m = printMarkup({ labCost, shipping, markupPercent: Number($("markup").value) || 0 });
+    const t = printPriceForMargin({ labCost, shipping, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Total cost per print</td><td>${fmt(m.cost)}</td></tr><tr><td>Price with your markup</td><td><strong>${fmt(m.price)}</strong></td></tr><tr><td>Profit per print</td><td>${fmt(m.profit)}</td></tr><tr><td>Margin at that price</td><td>${fmt(m.marginPercent)}%</td></tr><tr><td>Price for your target margin</td><td><strong>${fmt(t.price)}</strong></td></tr><tr><td>Markup that gives that margin</td><td>${fmt(t.markupPercent)}%</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Start from the full cost of a print</h2>
+<p>The lab invoice is only part of what a print costs you. Shipping from the lab, or to the client, packaging, backing boards and sleeves all come out of the same sale. If you mark up the lab price alone, those costs eat into the profit on every order. This calculator adds shipping and packaging to the lab cost before it applies any markup, so in the example a 12 print with 3 of shipping costs 15.</p>
+<p>If you order several prints in one shipment, divide the shipping by the number of prints to get a per-print figure. If the client pays shipping separately, set it to zero here and charge it as its own line.</p>
+<p>The calculator also leaves out the time you spend choosing crops, preparing files, checking proofs and handling orders. That time is real. If prints are a large part of your business, include it in your markup, or price it with the <a href="/cost-per-edited-image-calculator/">cost per edited image calculator</a> and add it to the cost.</p>
+
+<h2>Markup and margin are not the same number</h2>
+<p>Markup is a percentage of what the print costs you. Margin is a percentage of what the client pays. With a cost of 15 and a 150% markup, the price is 37.50 and the profit is 22.50. That profit is 150% of the cost but only 60% of the price, so a 150% markup is a 60% margin.</p>
+<p>The difference matters when you set targets. If you decide you want 60% of every print sale to be profit, a 60% markup would give you a price of only 24 and a margin of 37.5%, far less than you meant. The second half of the calculator works backwards from the margin: it divides the cost by one minus the target margin, so 15 ÷ 0.4 = 37.50, and shows the markup that produces it.</p>
+<p>A margin of 100% is impossible because it would mean the print cost nothing, so the calculator rejects a target margin of 100 or more. For the general case with any product, the <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two.</p>
+
+<h2>Setting print prices you can stand behind</h2>
+<p>There is no standard print markup that suits every photographer. A print sold as part of a wedding package, a fine art edition and a quick reprint for a family client are different products, and you can price them differently. Choose the margin you need from each, then check that the resulting price makes sense next to your packages.</p>
+<p>Price each size and finish separately, because lab costs do not scale neatly with size. Keep your price list in step with the lab: when their prices or shipping change, rerun the numbers. If prints are bundled into a package, use the <a href="/photography-package-price-calculator/">photography package price calculator</a> to add them with your markup alongside your hours. If you sell prints of your own artwork alongside other handmade goods, the <a href="/craft-pricing-calculator/">craft pricing calculator</a> covers materials and time together. Add sales tax or VAT on top of the prices shown here where it applies.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should framing go in the lab cost?</h3>
+<p>Yes, if you supply the frame. Add everything the client receives to the cost per print so the markup covers it all.</p>
+<h3>Why does the margin never reach the markup percentage?</h3>
+<p>Because margin divides the same profit by the price, which is always larger than the cost. The two only match at zero.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/photography-package-price-calculator/">Photography package price calculator</a></li>
+  <li><a href="/licensing-fee-calculator/">Licensing fee calculator</a></li>
+</ul>

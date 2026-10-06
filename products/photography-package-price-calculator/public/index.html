@@ -1,0 +1,60 @@
+<!-- title: Photography Package Price Calculator -->
+<!-- description: Price a photography package from shoot hours, editing hours, your hourly rate, travel and the prints, albums or products you mark up. Shows labour cost, products price, package price and profit on products. -->
+<h1>Photography Package Price Calculator</h1>
+<p>Enter the hours you will spend shooting, the hours of editing the job creates, your hourly rate, any travel costs, what the prints, albums or other products in the package cost you and the markup you put on them. You get the labour cost, the price of the products, the package price and the profit the products make. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A photography package price is all the hours the job takes, shooting and editing, at your hourly rate, plus travel, plus the products in the package at their marked-up price.</p>
+<p class="formula"><strong>Formula:</strong> labour cost = (shoot hours + editing hours) × hourly rate; products price = products cost × (1 + markup %); package price = labour cost + travel + products price; profit on products = products price − products cost.</p>
+
+<form class="tool" id="f">
+  <label>Shoot hours (time at the shoot, including setup)<br><input type="number" id="shoot" min="0" step="any" value="6"></label>
+  <label>Editing hours (culling, editing, retouching, delivery)<br><input type="number" id="editing" min="0" step="any" value="10"></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="60"></label>
+  <label>Travel (fuel, parking, transport you do not bill separately)<br><input type="number" id="travel" min="0" step="any" value="50"></label>
+  <label>Products cost (what the lab charges for prints, albums, USBs)<br><input type="number" id="products" min="0" step="any" value="200"></label>
+  <label>Markup on products (%)<br><input type="number" id="markup" min="0" step="any" value="50"></label>
+  <p><button class="primary" type="submit">Calculate package price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { packagePrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = packagePrice({ shootHours: Number($("shoot").value) || 0, editingHours: Number($("editing").value) || 0, hourlyRate: Number($("rate").value) || 0, travel: Number($("travel").value) || 0, productsCost: Number($("products").value) || 0, productsMarkupPercent: Number($("markup").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour cost (shoot plus editing)</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Products price</td><td>${fmt(r.productsPrice)}</td></tr><tr><td>Package price</td><td><strong>${fmt(r.packagePrice)}</strong></td></tr><tr><td>Profit on products</td><td>${fmt(r.profitOnProducts)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Count every hour the package takes</h2>
+<p>The hours at the shoot are the visible part of a package. The rest happens later: importing, backing up, culling, editing, retouching the images that need it, building the gallery, designing an album, answering questions and delivering. For many packages the editing side takes longer than the shoot itself. If the package price only covers the shoot hours, the editing is free work.</p>
+<p>Write down the time for one recent job of the same kind from start to finish, then use those numbers here. In the example, 6 shoot hours and 10 editing hours at an hourly rate of 60 make a labour cost of 960. If you have not set an hourly rate yet, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> works one out from the income you want and the hours you can bill, and the <a href="/photographer-day-rate-calculator/">photographer day rate calculator</a> does the same from the number of shoot days you can book.</p>
+<p>Travel goes in as a cost you pass on: fuel, parking, train fares, a second shooter's transport. If the job needs an overnight stay, include it here too. A package that looks generous on paper can lose money once the drive is counted.</p>
+
+<h2>Products: mark them up, do not sell them at cost</h2>
+<p>Prints, albums, wall art and USB boxes cost you money at the lab, but they also cost time to choose, order, check and deliver, and a damaged item has to be replaced. Selling them at the lab price leaves all of that unpaid. This calculator adds your markup to the products cost: 200 of products with a 50% markup are priced at 300 in the package and make 100 of profit.</p>
+<p>Markup is a percentage of what the products cost you; margin is a percentage of what the client pays. A 50% markup is a margin of one third of the products price. If you prefer to think in margin, the <a href="/print-markup-calculator/">print markup calculator</a> finds the price for a target margin, and the <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two for any product. The markup you choose is your own decision; there is no fixed figure that suits every photographer.</p>
+<p>Put together, the example package is 960 of labour, 50 of travel and 300 of products, a package price of 1,310.</p>
+
+<h2>Building tiers and quoting</h2>
+<p>Most photographers offer two or three packages. Run the calculator once per tier with its own hours and products, rather than adding a fixed amount to the smallest one, so each tier pays for the work it actually involves. If a larger tier adds more delivered images, the <a href="/cost-per-edited-image-calculator/">cost per edited image calculator</a> shows what each extra image costs in time.</p>
+<p>Ask for a booking deposit to hold the date, and split the balance into payments before the event if the package is large; the <a href="/deposit-split-calculator/">deposit split calculator</a> works out the amounts. Add sales tax or VAT on top of the price shown here where it applies.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should a second shooter go in the hourly rate?</h3>
+<p>Keep your own rate for your own hours. What you pay a second shooter is a cost of the job, so add it to the travel line, which the calculator passes straight into the price without markup, and name it separately in the quote if the client asks.</p>
+<h3>What if the client does not want any products?</h3>
+<p>Set the products cost to zero. The package price is then labour plus travel, which is the minimum the job should be quoted at.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/photographer-day-rate-calculator/">Photographer day rate calculator</a></li>
+  <li><a href="/cost-per-edited-image-calculator/">Cost per edited image calculator</a></li>
+  <li><a href="/print-markup-calculator/">Print markup calculator</a></li>
+</ul>

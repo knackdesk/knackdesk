@@ -1,0 +1,59 @@
+<!-- title: Cost per Edited Image Calculator -->
+<!-- description: Spread your shoot and editing time over the images you deliver to find the cost per edited image, the minutes each one takes and a fair price for extra photos with your markup. -->
+<h1>Cost per Edited Image Calculator</h1>
+<p>Enter the hours you spent shooting, the hours of editing, your hourly rate, the number of edited images you delivered and the markup you want on extra images. You get the total hours, the total cost of your time, the cost per edited image, a price for each extra image and the minutes each image took. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> The cost per edited image is the value of all the time a job took, shooting and editing, divided by the number of finished images you delivered.</p>
+<p class="formula"><strong>Formula:</strong> total hours = shoot hours + editing hours; total cost = total hours × hourly rate; cost per image = total cost ÷ images delivered; extra image price = cost per image × (1 + markup %); minutes per image = total hours × 60 ÷ images delivered.</p>
+
+<form class="tool" id="f">
+  <label>Shoot hours<br><input type="number" id="shoot" min="0" step="any" value="6"></label>
+  <label>Editing hours (culling, editing, retouching, export)<br><input type="number" id="editing" min="0" step="any" value="10"></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="60"></label>
+  <label>Edited images delivered<br><input type="number" id="images" min="1" step="1" value="200"></label>
+  <label>Markup on extra images (%)<br><input type="number" id="markup" min="0" step="any" value="100"></label>
+  <p><button class="primary" type="submit">Calculate cost per image</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { costPerImage } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = costPerImage({ shootHours: Number($("shoot").value) || 0, editingHours: Number($("editing").value) || 0, hourlyRate: Number($("rate").value) || 0, imagesDelivered: Number($("images").value) || 0, markupPercent: Number($("markup").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Total hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Total cost of your time</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Cost per edited image</td><td><strong>${fmt(r.costPerImage)}</strong></td></tr><tr><td>Price per extra image</td><td><strong>${fmt(r.extraImagePrice)}</strong></td></tr><tr><td>Minutes per image</td><td>${fmt(r.minutesPerImage)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What one edited image really costs</h2>
+<p>Every image in a delivered gallery carries a share of the whole job: the time at the shoot, the time spent culling hundreds of frames down to the keepers, the editing and retouching, and the export and upload. None of that shows when a client looks at a single photo, which is why the question "how much for a few more?" is hard to answer on the spot.</p>
+<p>This calculator adds the shoot and editing hours together, values them at your hourly rate and divides by the number of images delivered. In the example, 6 shoot hours and 10 editing hours make 16 hours. At 60 per hour that is 960 of time, and spread over 200 images it comes to 4.80 per image, or 4.8 minutes of work each. Use the hours from a real job of the same type; a portrait session, a wedding and a product shoot will give very different answers.</p>
+<p>If you do not have an hourly rate to start from, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> sets one from your income goal and billable hours, and the <a href="/photographer-day-rate-calculator/">photographer day rate calculator</a> shows what your day rate is worth per hour once editing is counted.</p>
+
+<h2>Pricing extra images</h2>
+<p>The cost per image is a floor, not a price. An extra image sold at cost pays for the editing time and nothing more, and it takes some of the value out of the larger packages you offer. The markup you add is your choice: it sets how much more an extra image costs than its share of the time. With a 100% markup, the example cost of 4.80 becomes an extra image price of 9.60.</p>
+<p>Think about how extra images sit next to your packages. If a client can buy the next tier's extra images more cheaply one at a time than by upgrading, the markup is too low. Build the packages first with the <a href="/photography-package-price-calculator/">photography package price calculator</a>, then set the markup so single extras cost more per image than the step up.</p>
+<p>Extra images can also take more editing than the average, because the client often picks frames you left out for a reason. If that is common for you, raise the markup or quote heavily retouched images separately.</p>
+
+<h2>Using minutes per image to work faster</h2>
+<p>Minutes per image is a useful check on your workflow. If it climbs from job to job, look at where the time goes: shooting more frames than you need makes culling slower, and editing each image from scratch takes longer than starting from a preset. Cutting a minute or two per image across a large gallery adds up to hours you can sell elsewhere. The <a href="/effective-hourly-rate/">effective hourly rate calculator</a> shows how those saved hours change what a fixed-price job actually pays you.</p>
+<p>The same calculation works for other per-item creative work, such as edited video clips or retouched product shots. For physical items with materials, the <a href="/cost-per-unit-calculator/">cost per unit calculator</a> is a better fit.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should rejected frames count as delivered images?</h3>
+<p>No. Count only the finished images the client receives. The time spent on rejected frames is part of the cost, so it is spread over the images that make it into the gallery.</p>
+<h3>Do I add the markup to the package price too?</h3>
+<p>No. The markup here is only for extra images sold after the gallery is delivered. The package price is set separately from hours, travel and products.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/photography-package-price-calculator/">Photography package price calculator</a></li>
+  <li><a href="/photographer-day-rate-calculator/">Photographer day rate calculator</a></li>
+  <li><a href="/print-markup-calculator/">Print markup calculator</a></li>
+</ul>
