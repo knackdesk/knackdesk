@@ -1,0 +1,64 @@
+<!-- title: Hygiene Department Profit Calculator -->
+<!-- description: Find the profit and margin of a dental hygiene department from hygiene production, loaded hygienist wages, supplies and overhead, with hourly figures. -->
+<h1>Hygiene Department Profit Calculator</h1>
+<p>Enter the production your hygiene team did in a period, the hygienists' wages, the employer payroll taxes and benefits on those wages, the supplies the team used, the hours they worked and the share of practice overhead you want the department to carry. You get the loaded wage cost, the total cost, the department's profit and margin, its production per hour and its cost per hour. It is built for dentists and dental practice owners and managers who want to see whether the hygiene department pays for itself. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Hygiene department profit is the production the hygiene team did, less the wages, payroll costs, supplies and share of overhead it took to do it.</p>
+<p class="formula"><strong>Formula:</strong> loaded wages = hygienist wages × (1 + payroll tax % ÷ 100); total cost = loaded wages + supplies + overhead allocation; department profit = hygiene production − total cost; margin % = department profit ÷ hygiene production × 100; production per hour = hygiene production ÷ hygienist hours; cost per hour = total cost ÷ hygienist hours.</p>
+
+<form class="tool" id="f">
+  <label>Hygiene production for the period<br><input type="number" id="prod" min="0" step="any" value="22000"></label>
+  <label>Hygienist wages for the period<br><input type="number" id="wages" min="0" step="any" value="8000"></label>
+  <label>Employer payroll taxes and benefits, % of wages (optional)<br><input type="number" id="tax" min="0" max="100" step="any" value="15"></label>
+  <label>Hygiene supplies (optional)<br><input type="number" id="supplies" min="0" step="any" value="1200"></label>
+  <label>Hygienist hours worked<br><input type="number" id="hours" min="0" step="any" value="130"></label>
+  <label>Overhead allocated to hygiene (optional)<br><input type="number" id="alloc" min="0" step="any" value="4000"></label>
+  <p><button class="primary" type="submit">Calculate department profit</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { hygieneDepartmentProfit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = hygieneDepartmentProfit({ hygieneProduction: Number($("prod").value) || 0, hygienistWages: Number($("wages").value) || 0, payrollTaxPercent: Number($("tax").value) || 0, suppliesCost: Number($("supplies").value) || 0, hygienistHours: Number($("hours").value) || 0, overheadAllocation: Number($("alloc").value) || 0 });
+    const note = r.departmentProfit < 0 ? `<p>A negative department profit means the hygiene department cost more in the period than the production it did.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Loaded wages</td><td>${fmt(r.loadedWages)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Department profit</td><td>${fmt(r.departmentProfit)}</td></tr><tr><td>Margin</td><td><strong>${fmt(r.marginPercent)}%</strong></td></tr><tr><td>Production per hour</td><td>${fmt(r.productionPerHour)}</td></tr><tr><td>Cost per hour</td><td>${fmt(r.costPerHour)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Production is the value of the work done, priced at the practice's own fees, whether or not it has been paid yet. Collections are the money actually received. Hygiene production is the production your practice management software credits to hygienists in the period; most systems can filter the production report by provider or provider type. Some practices credit the dentist's examination during a hygiene visit to hygiene, and others credit it to the dentist. Either is fine, as long as you do it the same way every time you run the numbers. If insurance write-downs are large in your practice, take the hygiene share of them off, so the figure is closer to what the department will actually collect.</p>
+<p>Hygienist wages are the gross pay of every hygienist for the same period, from your payroll reports, including paid holiday and sick pay. The payroll tax percentage loads those wages with what the practice pays on top: employer payroll taxes, pension contributions, health cover and other benefits. To find your own figure, add up those employer costs from payroll for a period and divide by the gross wages for the same period, then multiply by 100.</p>
+<p>Hygiene supplies are the consumables the department uses: disposables, polishing and prophylaxis materials, instruments that are replaced and anything else bought mainly for hygiene. Your supplier invoices or your accounts give the total. Hygienist hours are the hours the hygienists were scheduled to see patients, from your schedule. Use the same hours for both hourly figures so they can be compared directly.</p>
+
+<h2>The overhead allocation is your choice</h2>
+<p>The hygiene department uses rooms, reception time, the phone system, software, sterilisation and cleaning that the whole practice pays for. The overhead allocation is the share of those shared costs you want hygiene to carry. There is no single right figure. Three ways practices do it are by rooms, by hours and by production. By rooms: if hygiene uses two of six treatment rooms, it carries two sixths of the premises cost. By hours: hygiene's share of all provider hours, applied to total overhead. By production: hygiene's share of total production, applied to total overhead. Each method gives a different answer, and none is more correct than the others.</p>
+<p>Pick the one that matches how you think about the practice, write it down and use it every time. Total overhead comes from the <a href="/practice-overhead-percentage-calculator/">practice overhead percentage calculator</a>; leave out the costs already entered here, the hygienists' wages and hygiene supplies, so they are not counted twice. You can also enter 0. The result then shows what the department contributes before shared costs, which is useful when you want to know what the practice would lose without it.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, hygiene production of 22,000, wages of 8,000 with 15 percent payroll taxes and benefits, supplies of 1,200, 130 hours and an overhead allocation of 4,000, loaded wages come to 9,200 and total cost to 14,400. The department's profit is 7,600, a margin of 34.55 percent. It produced 169.23 per hour and cost 110.77 per hour.</p>
+<p>Cost per hour is the production per hour the department needs just to cover its costs. Every hour that produces more than 110.77 adds to profit, and every hour that produces less takes from it. The gap between the two hourly figures, here 58.46, is what each hygienist hour leaves after its costs. Empty slots in the hygiene schedule still cost wages, so cancellations and unfilled appointments push production per hour down while cost per hour stays where it is.</p>
+<p>When department profit is negative, the hygiene team cost more than it produced. Look at the hours first: if many were unbooked, the cost is there but the production is not. Then look at the allocation, since a large share of overhead can turn a contributing department into a loss on paper. This page is written for dental practices; the calculator does not say what margin a hygiene department ought to earn, so compare your own results over time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are hygienist hours required?</h3>
+<p>Both hourly figures divide by the hours. With 0 hours there is nothing to divide by, so the calculator asks for a figure above 0.</p>
+<h3>Should I use production or collections?</h3>
+<p>The calculator works with either. Production shows the value of the work; collections show the money. Use the same one each time.</p>
+<h3>Does this include the dentist's time?</h3>
+<p>Only if you credit exam production to hygiene. The dentist's pay is not in the inputs.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/production-per-hour-calculator/">Production per hour calculator</a></li>
+  <li><a href="/practice-overhead-percentage-calculator/">Practice overhead percentage calculator</a></li>
+  <li><a href="/labor-cost-percentage-calculator/">Labor cost percentage calculator</a></li>
+</ul>

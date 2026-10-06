@@ -1,0 +1,73 @@
+<!-- title: Practice Overhead Percentage Calculator -->
+<!-- description: Work out your practice overhead percentage from collections and running costs, with profit before and after owner pay, for dental and other clinic owners. -->
+<h1>Practice Overhead Percentage Calculator</h1>
+<p>Enter what the practice collected in a period and what it spent to run in the same period: staff, premises, supplies and lab, marketing and everything else. Add what the owner took out. You get the total overhead, the overhead percentage, the profit before the owner is paid, the profit after the owner is paid and the profit margin. It is built for dentists and dental practice owners and managers, and it works the same way for physiotherapy, veterinary, chiropractic, optometry and other clinics. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Overhead percentage is the share of the money a practice collects that goes on running the practice, before the owner is paid.</p>
+<p class="formula"><strong>Formula:</strong> total overhead = staff costs + rent and facilities + supplies and lab + marketing + other overhead; overhead % = total overhead ÷ collections × 100; profit before owner pay = collections − total overhead; profit after owner pay = profit before owner pay − owner compensation; profit margin % = profit before owner pay ÷ collections × 100.</p>
+
+<form class="tool" id="f">
+  <label>Collections for the period<br><input type="number" id="col" min="0" step="any" value="60000"></label>
+  <label>Staff costs, excluding the owner<br><input type="number" id="staff" min="0" step="any" value="18000"></label>
+  <label>Rent and facilities<br><input type="number" id="rent" min="0" step="any" value="6000"></label>
+  <label>Supplies and lab<br><input type="number" id="supplies" min="0" step="any" value="7000"></label>
+  <label>Marketing<br><input type="number" id="mkt" min="0" step="any" value="1500"></label>
+  <label>Other overhead<br><input type="number" id="other" min="0" step="any" value="4500"></label>
+  <label>Owner compensation (optional)<br><input type="number" id="owner" min="0" step="any" value="12000"></label>
+  <p><button class="primary" type="submit">Calculate overhead</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { practiceOverheadPercentage } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = practiceOverheadPercentage({ collections: Number($("col").value) || 0, staffCosts: Number($("staff").value) || 0, rentAndFacilities: Number($("rent").value) || 0, suppliesAndLab: Number($("supplies").value) || 0, marketing: Number($("mkt").value) || 0, otherOverhead: Number($("other").value) || 0, ownerCompensation: Number($("owner").value) || 0 });
+    const note = r.profitBeforeOwner < 0 ? `<p>A negative profit before owner pay means the practice spent more to run than it collected, before the owner was paid anything.</p>` : r.profitAfterOwner < 0 ? `<p>A negative profit after owner pay means the owner took out more than the practice earned in the period.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Total overhead</td><td>${fmt(r.totalOverhead)}</td></tr><tr><td>Overhead percentage</td><td><strong>${fmt(r.overheadPercent)}%</strong></td></tr><tr><td>Profit before owner pay</td><td>${fmt(r.profitBeforeOwner)}</td></tr><tr><td>Profit after owner pay</td><td>${fmt(r.profitAfterOwner)}</td></tr><tr><td>Profit margin before owner pay</td><td>${fmt(r.profitMarginPercent)}%</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Collections are the money the practice actually received in the period: payments from patients, payments from insurers and any other receipts for care, less refunds. They are not the same as production, which is the value of the work done at the practice's own fees, whether or not anyone has paid for it yet. This calculator uses collections because the bills are paid from money received, not from work booked. Your practice management software has a collections or payments report, and your accountant's profit and loss statement shows the same money as income. Any period works, a month, a quarter or a year, as long as every cost you enter covers the same period.</p>
+<p>Staff costs are the pay of everyone the practice employs other than the owner: associates, hygienists or other clinicians, assistants, reception and managers, plus employer payroll taxes, pension contributions and benefits. Your payroll reports give the total. If an associate is paid a share of their own production, that pay goes here too, because it is a cost of running the practice.</p>
+<p>Rent and facilities covers rent or mortgage interest on the premises, utilities, cleaning, repairs, building insurance and equipment leases. Supplies and lab is clinical and office supplies plus laboratory fees, or whatever outside services play that part in your kind of clinic. Marketing is everything spent to attract patients: advertising, the website, directory listings and referral campaigns. Other overhead catches the rest of the profit and loss statement: software subscriptions, professional indemnity insurance, card processing fees, accountancy and legal fees, training and loan repayments on equipment.</p>
+<p>Owner compensation is what the owner took out for their own clinical work and management, whether as salary, drawings or dividends. If several owners work in the practice, add their pay together.</p>
+
+<h2>Why owner pay is shown separately</h2>
+<p>Owner pay is left out of overhead on purpose. In many practices the owner is also a working clinician, and what they take out depends on how they choose to pay themselves, on tax planning and on what is left at the end of the month. If owner pay were counted as overhead, the overhead percentage would move every time the owner changed their own salary, even though the practice cost exactly the same to run.</p>
+<p>Keeping it apart means the overhead percentage answers one clear question: of every unit of money collected, how much went on running the practice. The two profit figures then answer the next questions: what was left for the owner, and what was left once the owner had been paid. It also means a practice where the owner is paid through payroll and one where the owner takes drawings show the same overhead when their running costs are the same. If your payroll includes the owner's salary, take it out of staff costs and enter it as owner compensation instead.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, collections of 60,000 against staff costs of 18,000, rent and facilities of 6,000, supplies and lab of 7,000, marketing of 1,500 and other overhead of 4,500, total overhead is 37,000. That is an overhead percentage of 61.67 percent: of every 100 collected, 61.67 went on running the practice. Profit before owner pay is 23,000, a profit margin of 38.33 percent. After the owner takes 12,000, 11,000 is left in the practice.</p>
+<p>The overhead percentage and the profit margin before owner pay always add up to 100 percent, because together they split collections into what was spent and what was left. A change in one is a change in the other. To find out what moved, run the calculator for two periods and compare each input, not only the percentage. A rise in overhead percentage can come from a cost going up or from collections going down, and the fix is different in each case.</p>
+
+<h2>What a negative profit after owner pay means</h2>
+<p>When owner compensation is larger than profit before owner pay, profit after owner pay turns negative. The owner has taken more out of the practice than it earned in the period, and the negative figure is the gap. For a single month this can be timing: a large lab bill or a quarterly insurance premium can land in one month while the collections for that work arrive in the next. Over a longer period it means the gap is being covered from somewhere else, such as cash reserves, a credit line or money the owner puts back in.</p>
+<p>The inputs show where to look. If profit before owner pay is positive but smaller than owner pay, the practice covers its running costs but not the pay the owner has set, so collections need to rise, costs need to fall, or the owner's pay is more than the practice currently supports. If profit before owner pay is itself negative, overhead is larger than collections and the practice is spending more to run than it receives, before the owner is paid anything.</p>
+
+<h2>Using the overhead percentage</h2>
+<p>The calculator does not say what overhead percentage a practice ought to have. That depends on where you are, which services you offer, how many clinicians you employ and how far along the practice is: a new practice paying off equipment and building its patient list looks different from a long-established one. The useful comparison is with your own figures, the same practice last quarter or last year, or one site against another if you run more than one.</p>
+<p>Profit before owner pay is the figure the owner's pay and any reinvestment come out of. The <a href="/net-profit-margin-calculator/">net profit margin calculator</a> takes the next step and shows the margin after every cost, and the <a href="/production-per-hour-calculator/">production per hour calculator</a> turns your overhead into a cost per provider hour.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I use collections or production?</h3>
+<p>Use collections. Production includes work that has not been paid for and amounts that insurers will never pay, so overhead measured against production makes the practice look cheaper to run than it is.</p>
+<h3>Where does an associate's pay go?</h3>
+<p>In staff costs. Only the owner's own pay goes in owner compensation.</p>
+<h3>Why does the overhead percentage show 0?</h3>
+<p>When collections are 0 there is nothing to divide by, so the percentages are shown as 0. The profit figures still show the costs as a loss.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/production-per-hour-calculator/">Production per hour calculator</a></li>
+  <li><a href="/net-profit-margin-calculator/">Net profit margin calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

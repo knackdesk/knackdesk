@@ -1,0 +1,67 @@
+<!-- title: Cost per New Patient Calculator -->
+<!-- description: Work out the marketing cost per new patient and set it against what a patient is worth over the years they stay, with the new patients needed to break even. -->
+<h1>Cost per New Patient Calculator</h1>
+<p>Enter what the practice spent on marketing in a period and how many new patients came in during it. Add what a new patient brings in during their first year, the share who stay on in later years and how many years you want to count. You get the cost per new patient, the patient's value over those years, the ratio of value to cost, the value left after the cost and the number of new patients the spend needed to pay for itself in their first year. It is built for dentists and dental practice owners and managers, and it works the same way for physiotherapy, veterinary, chiropractic, optometry and other clinics. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cost per new patient is the marketing spend for a period divided by the new patients who came in during it.</p>
+<p class="formula"><strong>Formula:</strong> cost per new patient = marketing spend ÷ new patients; lifetime value = first-year value + first-year value × retention % ÷ 100 × (years retained − 1); value-to-cost ratio = lifetime value ÷ cost per new patient; net value per patient = lifetime value − cost per new patient; break-even new patients = marketing spend ÷ first-year value.</p>
+
+<form class="tool" id="f">
+  <label>Marketing spend for the period<br><input type="number" id="spend" min="0" step="any" value="3000"></label>
+  <label>New patients in the period<br><input type="number" id="np" min="0" step="1" value="20"></label>
+  <label>First-year value of a new patient (optional)<br><input type="number" id="fyv" min="0" step="any" value="900"></label>
+  <label>Patients retained each later year, % (optional)<br><input type="number" id="ret" min="0" max="100" step="any" value="60"></label>
+  <label>Years to count (optional)<br><input type="number" id="yrs" min="1" step="any" value="3"></label>
+  <p><button class="primary" type="submit">Calculate cost per new patient</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { costPerNewPatient } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const ret = $("ret").value === "" ? 100 : Number($("ret").value);
+    const yrs = $("yrs").value === "" ? 1 : Number($("yrs").value);
+    const r = costPerNewPatient({ marketingSpend: Number($("spend").value) || 0, newPatients: Number($("np").value) || 0, firstYearValue: Number($("fyv").value) || 0, retentionPercent: ret, yearsRetained: yrs });
+    const note = r.netValuePerPatient < 0 ? `<p>A negative net value means a new patient cost more to attract than they brought in over the years you counted.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Cost per new patient</td><td><strong>${fmt(r.costPerNewPatient)}</strong></td></tr><tr><td>Lifetime value</td><td>${fmt(r.lifetimeValue)}</td></tr><tr><td>Value-to-cost ratio</td><td>${orNa(r.valueToCostRatio, "n/a (no marketing spend entered)")}</td></tr><tr><td>Net value per patient</td><td>${fmt(r.netValuePerPatient)}</td></tr><tr><td>Break-even new patients</td><td>${orNa(r.breakEvenNewPatients, "n/a (no first-year value entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Marketing spend is everything the practice spent to attract new patients in the period: advertising, the website and its upkeep, directory listings, printed material, referral campaigns and the cost of any agency. Your accountant's profit and loss statement or your own accounts give the total. New patients is the number of patients who had their first visit in the same period, from the new patient report in your practice management software. Use the same dates for both, otherwise the cost per patient will be off.</p>
+<p>You can count every new patient, or only the ones who came from marketing. Counting every new patient includes people referred by friends or family who would have come anyway, so the cost per patient looks lower. Counting only those who came from marketing needs a record of how each patient heard about you. To compare channels, run the calculator once per channel with that channel's spend and that channel's new patients.</p>
+
+<h2>First-year value is your own figure</h2>
+<p>First-year value is what a new patient brings the practice in their first twelve months. It is not a benchmark and the calculator does not suggest one; it comes from your own records. Take the patients who joined in a past year, add up the collections from those patients in their first twelve months, and divide by the number of patients. Collections are the money actually received. You could use production instead, the value of the work done at your fees whether or not it has been paid, but collections are closer to what the patient really brought in. Many practice management systems can report collections by patient and by first visit date; if yours cannot, your software supplier or accountant can usually help pull it.</p>
+<p>The retention percentage is the share of those patients who come back in each later year. Your software's active patient or recall report shows how many patients from a given year were still attending a year later. Years to count is how far ahead you want to look. With 1 year, the lifetime value is simply the first-year value.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 3,000 of marketing brought in 20 new patients, a cost of 150 per new patient. A first-year value of 900, with 60 percent of patients staying for each of the next two years, gives a lifetime value of 900 + 900 × 0.6 × 2 = 1,980 over three years. The value is 13.2 times the cost, and each patient leaves 1,830 after the cost of attracting them. The spend paid for itself after 3.33 new patients' first-year value.</p>
+<p>The lifetime value here is money brought in, not profit. Treating a patient costs clinician time, supplies, lab fees and overhead, none of which is subtracted. So the net value per patient is what is left after marketing, before the cost of the care itself. To see how much of each unit of collections the practice keeps, use the <a href="/practice-overhead-percentage-calculator/">practice overhead percentage calculator</a>.</p>
+<p>The lifetime value is also kept simple on purpose. It assumes the same retention share earns the full first-year value in every later year and does not discount future money. If your patients tend to spend more in the first year than later, enter fewer years or a lower first-year value for a more cautious figure.</p>
+
+<h2>When net value is negative</h2>
+<p>If the cost per new patient is more than the lifetime value, net value turns negative: over the years you counted, the patients brought in less than they cost to attract. Check whether the new patient count covers the same dates as the spend, then look at which channels brought in the patients. The calculator does not say what a new patient ought to cost; compare your own periods and channels with each other. A channel that brings in fewer new patients at a higher cost can still be worth keeping if those patients stay longer, which is why the retention and years inputs matter as much as the spend.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the value-to-cost ratio shown as n/a?</h3>
+<p>The ratio divides by the cost per new patient. With no marketing spend the cost is 0 and there is nothing to divide by.</p>
+<h3>Why must years be 1 or more?</h3>
+<p>The first year is always counted. Later years are added on top of it.</p>
+<h3>Does this include patients who only came once?</h3>
+<p>Yes. They are part of the new patients count and part of the first-year value; the retention percentage accounts for those who do not return.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/practice-overhead-percentage-calculator/">Practice overhead percentage calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+  <li><a href="/chair-utilization-calculator/">Chair utilization calculator</a></li>
+</ul>

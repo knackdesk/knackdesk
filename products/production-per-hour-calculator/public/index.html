@@ -1,0 +1,67 @@
+<!-- title: Production per Hour Calculator -->
+<!-- description: Turn gross production, adjustments and provider hours into production per hour and per day, and profit per hour after overhead, for dental and other clinics. -->
+<h1>Production per Hour Calculator</h1>
+<p>Enter a provider's gross production for a period, the adjustments taken off it, the hours and days they worked, and what the practice's overhead costs for each provider hour. You get net production, production per hour, production per day and profit per hour after overhead. It is built for dentists and dental practice owners and managers, and it works the same way for physiotherapy, veterinary, chiropractic, optometry and other clinics where providers book time with patients. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Production per hour is the value of the work a provider did, after adjustments, for each hour they spent seeing patients.</p>
+<p class="formula"><strong>Formula:</strong> net production = gross production − adjustments; production per hour = net production ÷ hours worked; production per day = net production ÷ days worked; profit per hour = production per hour − overhead per hour.</p>
+
+<form class="tool" id="f">
+  <label>Gross production for the period<br><input type="number" id="gross" min="0" step="any" value="48000"></label>
+  <label>Adjustments (optional)<br><input type="number" id="adj" min="0" step="any" value="6000"></label>
+  <label>Hours worked with patients<br><input type="number" id="hours" min="0" step="any" value="120"></label>
+  <label>Days worked (optional)<br><input type="number" id="days" min="0" step="1" value="15"></label>
+  <label>Overhead per hour (optional)<br><input type="number" id="ovh" min="0" step="any" value="210"></label>
+  <p><button class="primary" type="submit">Calculate production per hour</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { productionPerHour } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = productionPerHour({ grossProduction: Number($("gross").value) || 0, adjustments: Number($("adj").value) || 0, hoursWorked: Number($("hours").value) || 0, daysWorked: Number($("days").value) || 0, overheadPerHour: Number($("ovh").value) || 0 });
+    const note = r.profitPerHour < 0 ? `<p>A negative profit per hour means each hour of provider time produced less than the overhead it takes to keep the practice open for that hour.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Net production</td><td>${fmt(r.netProduction)}</td></tr><tr><td>Production per hour</td><td><strong>${fmt(r.productionPerHour)}</strong></td></tr><tr><td>Production per day</td><td>${orNa(r.productionPerDay, "n/a (no days entered)")}</td></tr><tr><td>Profit per hour after overhead</td><td>${fmt(r.profitPerHour)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Production is the value of the work a provider did, priced at the practice's own fees, whether or not it has been paid yet. Collections are the money the practice actually received. This page works with production because it measures what a provider's time turns into, not when the money arrives. Gross production comes from the production report in your practice management software, filtered to one provider and one period. You can also run it for the whole practice by using everyone's production and everyone's hours together.</p>
+<p>Adjustments are the amounts taken off gross production that the practice will never collect. The largest are usually insurance write-downs: the difference between your fee and the amount an insurer's contract allows for the same treatment. Discounts for family members, staff or membership plans, courtesy reductions and fee waivers are adjustments too. Your software lists them in an adjustments report or on the same production report. Leave out bad debt that you still expect to chase, because that is a collection problem, not a reduction in the value of the work.</p>
+<p>Hours worked are the hours the provider was scheduled to see patients in the period, from your schedule or appointment book. Leave out lunch breaks and days off, and leave out administrative time unless you want production spread across every hour they were paid. Days worked is optional. With it, the calculator also shows production per day, which is handy when providers work days of different lengths.</p>
+
+<h2>Where overhead per hour comes from</h2>
+<p>Overhead per hour is what it costs to keep the practice open for each hour a provider spends with patients. Work out your total overhead with the <a href="/practice-overhead-percentage-calculator/">practice overhead percentage calculator</a>: staff, premises, supplies and lab, marketing and other running costs, without the owner's pay. Then divide that overhead by the total provider hours across the whole practice in the same period. If three providers worked 120, 120 and 80 hours in a month with overhead of 67,200, overhead per hour is 67,200 ÷ 320 = 210.</p>
+<p>Using all provider hours spreads the cost of the building, the reception team and the software across everyone who uses them. If you would rather load one provider with a larger share, for example because they use the most expensive equipment, that is your choice; write down the method so that next month's figure is comparable.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, gross production of 48,000 less 6,000 in adjustments gives net production of 42,000. Over 120 hours that is 350 per hour, and over 15 days it is 2,800 per day. With overhead of 210 per hour, each hour leaves 140 after overhead.</p>
+<p>That 140 is what each hour contributes towards the owner's pay and the practice's profit. If the provider is an associate whose pay is already in staff costs, the overhead per hour includes them, and the 140 is profit after their pay. If the provider is the owner, the 140 is what their hour leaves before they pay themselves.</p>
+<p>Net production is still not cash. Some of it will arrive late and some may never arrive. Compare it with collections for the same provider and period to see how much of the work turned into money. A provider with high net production and low collections may have unpaid balances that need following up, which this calculator cannot see.</p>
+
+<h2>What a negative profit per hour means</h2>
+<p>When overhead per hour is larger than production per hour, profit per hour is negative: each hour the provider worked produced less than the practice spent to keep that hour open. Check adjustments first. A rise in write-downs can cut net production without anyone working less. Then check hours: gaps in the schedule, cancellations and no-shows all add hours that produce nothing. If both look normal, the overhead itself may have grown faster than production.</p>
+<p>The calculator does not say what production per hour a provider ought to reach. Compare the same provider over time, and providers in your own practice with each other, using the same method each time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is production per day shown as n/a?</h3>
+<p>Production per day divides by the days worked. When days is 0 or left empty, there is nothing to divide by, so the calculator leaves that figure out.</p>
+<h3>Why can adjustments not be larger than gross production?</h3>
+<p>Adjustments are taken off gross production, so they cannot be more than it. A larger figure usually means the two numbers come from different periods or different providers.</p>
+<h3>Should hygienists be included?</h3>
+<p>You can run the calculator for any provider. For a dental hygiene team as a whole, the hygiene department profit calculator also counts their wages and supplies.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/practice-overhead-percentage-calculator/">Practice overhead percentage calculator</a></li>
+  <li><a href="/hygiene-department-profit-calculator/">Hygiene department profit calculator</a></li>
+  <li><a href="/chair-utilization-calculator/">Chair utilization calculator</a></li>
+</ul>

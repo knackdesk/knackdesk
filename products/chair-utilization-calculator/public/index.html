@@ -1,0 +1,65 @@
+<!-- title: Chair Utilization Calculator -->
+<!-- description: Measure chair utilization from chairs, opening hours and scheduled hours, with idle chair hours and the production they hold, for dental and other clinics. -->
+<h1>Chair Utilization Calculator</h1>
+<p>Enter how many treatment chairs the practice has, how many hours a day it is open, how many days a month it opens and how many chair hours were booked with patients. Add the production you get from a booked hour if you want money figures. You get the available chair hours, the utilization percentage, the idle chair hours, current production, production if every hour were booked and the unrealised production in the idle hours. It is built for dentists and dental practice owners and managers, and it works the same way for treatment rooms in physiotherapy, veterinary, chiropractic, optometry and other clinics. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Chair utilization is the share of the chair hours a practice has open that were booked with patients.</p>
+<p class="formula"><strong>Formula:</strong> available chair hours = chairs × hours open per day × days per month; utilization % = scheduled hours ÷ available chair hours × 100; idle hours = available chair hours − scheduled hours; current production = scheduled hours × production per scheduled hour; production at full utilization = available chair hours × production per scheduled hour; unrealised production = production at full utilization − current production.</p>
+
+<form class="tool" id="f">
+  <label>Treatment chairs<br><input type="number" id="chairs" min="0" step="1" value="4"></label>
+  <label>Hours open per day<br><input type="number" id="hpd" min="0" step="any" value="8"></label>
+  <label>Days open per month<br><input type="number" id="days" min="0" step="1" value="20"></label>
+  <label>Scheduled chair hours per month<br><input type="number" id="sched" min="0" step="any" value="448"></label>
+  <label>Production per scheduled hour (optional)<br><input type="number" id="rate" min="0" step="any" value="180"></label>
+  <p><button class="primary" type="submit">Calculate utilization</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { chairUtilization } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = chairUtilization({ chairs: Number($("chairs").value) || 0, hoursOpenPerDay: Number($("hpd").value) || 0, daysPerMonth: Number($("days").value) || 0, scheduledHours: Number($("sched").value) || 0, productionPerScheduledHour: Number($("rate").value) || 0 });
+    const note = r.unrealisedProduction > 0 ? `<p>Unrealised production is a ceiling, not a forecast: it assumes every idle hour could be booked at the same production per hour.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Available chair hours</td><td>${fmt(r.availableChairHours)}</td></tr><tr><td>Utilization</td><td><strong>${fmt(r.utilizationPercent)}%</strong></td></tr><tr><td>Idle chair hours</td><td>${fmt(r.idleHours)}</td></tr><tr><td>Current production</td><td>${fmt(r.currentProduction)}</td></tr><tr><td>Production at full utilization</td><td>${fmt(r.productionAtFull)}</td></tr><tr><td>Unrealised production</td><td>${fmt(r.unrealisedProduction)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Treatment chairs are the chairs or rooms that are equipped and usable for patients. Count a chair that is out of action for the whole month as 0, and leave out rooms used only for consultations if they cannot take treatment. Hours open per day are the hours the practice books patients, from the first appointment to the end of the last, and days open per month are the days it opens in that month. If the practice keeps different hours on different days, add up the open hours across the month and enter that total as the hours with 1 as the days.</p>
+<p>Scheduled chair hours are the hours that were booked with patients across all chairs in the month. Your practice management software's schedule or appointment book report gives booked time per chair or per provider; add them up. Decide whether to count booked hours or hours actually attended. Booked hours show how full the schedule was; attended hours leave out cancellations and no-shows. Either works, as long as you use the same one each month.</p>
+<p>Production per scheduled hour turns hours into money. Production is the value of the work done, priced at the practice's own fees, whether or not it has been paid; collections are the money actually received. Take total production for the month from your production report and divide it by the scheduled hours you entered. Note that this is per chair hour, not per provider hour. A provider working across two chairs produces in both, so the <a href="/production-per-hour-calculator/">production per hour calculator</a> will give a different figure for the same month.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 4 chairs open 8 hours a day for 20 days give 640 available chair hours. With 448 of them booked, utilization is 70 percent and 192 chair hours were idle. At 180 per scheduled hour, the booked hours produced 80,640. If all 640 hours had been booked at the same rate, production would be 115,200, so the idle hours hold 34,560 of unrealised production.</p>
+<p>The calculator rejects scheduled hours greater than available chair hours, because a chair cannot be booked for more hours than it is open. If you see that message, check whether the scheduled hours include provider time booked outside opening hours, or whether a chair is missing from the count.</p>
+
+<h2>Why 100 percent is not the goal</h2>
+<p>Full utilization would mean every chair booked from opening to closing, every day. A practice cannot run like that. Chairs need cleaning and setting up between patients. Staff need breaks. Urgent patients need somewhere to go on the day they call. Every chair needs a clinician and usually an assistant, so the number of staff, not the number of chairs, often sets how many chairs can be booked at once. A schedule with no slack also has no room for a procedure that runs long.</p>
+<p>The useful question is what is behind your idle hours. Some idle time is the price of running a safe and sensible schedule. Some is a chair with no one to staff it, which points to hiring or to fewer opening hours. Some is gaps left by cancellations and no-shows, which the <a href="/no-show-cost-calculator/">no-show cost calculator</a> puts a figure on. The calculator does not say what utilization a practice ought to reach; compare your own months with each other.</p>
+
+<h2>Unrealised production is a ceiling, not a forecast</h2>
+<p>Unrealised production is the production the idle hours would hold if every one of them were booked at the current rate. It is the upper limit of what more bookings could add, not a prediction of what they will add. Filling idle hours takes patients who want those times, staff to treat them and supplies to treat them with, and each of those costs money that this figure does not subtract. Treat it as the size of the space you are working with, not as income you are missing. To judge whether a change in the schedule worked, compare current production with the same month before the change, not with this ceiling.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does the calculator reject 0 chairs or 0 hours?</h3>
+<p>Utilization divides by available chair hours. With no chairs, no hours or no days, there are no available hours to divide by.</p>
+<h3>Should I count hygiene chairs?</h3>
+<p>Yes, if they are part of the capacity you want to measure. You can also run hygiene and treatment chairs separately.</p>
+<h3>What period should I use?</h3>
+<p>A month suits most practices. Keep the chairs, hours, days and scheduled hours to the same month.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/appointment-capacity-calculator/">Appointment capacity calculator</a></li>
+  <li><a href="/no-show-cost-calculator/">No-show cost calculator</a></li>
+  <li><a href="/production-per-hour-calculator/">Production per hour calculator</a></li>
+</ul>
