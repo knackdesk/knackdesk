@@ -19,3 +19,4 @@ Refreshed by `npm run polar:sales`. Amounts in USD.
 | salon-pricing-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_xzHTD956LozjszlOivo0qH6JAPgn04a5bxvu23pDh8O | 12.00 | 0 | 0.00 | 0.00 |
 | bookkeeping-pricing-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_wPU7SsB5KkCYcyvsbQ53U1oKulPr8GHxrGPYI0otoxe | 14.00 | 0 | 0.00 | 0.00 |
 | msp-contract-pricing-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_rx5wrXHIjG7LX6PPAB9o56jnjH5wDZlqTEi123UNJGM | 14.00 | 0 | 0.00 | 0.00 |
+| dental-practice-numbers-workbook | digital | 2026-10-06 | https://buy.polar.sh/polar_cl_Uag32G49MCJoGaCx0afdYnTx9NepArX3yfc5X2zpSaX | 14.00 | 0 | 0.00 | 0.00 |
