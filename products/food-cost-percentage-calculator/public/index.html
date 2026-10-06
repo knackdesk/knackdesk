@@ -1,0 +1,65 @@
+<!-- title: Food Cost Percentage Calculator -->
+<!-- description: Work out the food cost percentage of a dish from its ingredient cost and menu price, with gross profit and gross margin, or find the menu price that meets a food cost percentage you choose. -->
+<h1>Food Cost Percentage Calculator</h1>
+<p>Enter what the ingredients in one portion of a dish cost and the price it sells for. You get the food cost percentage, the gross profit on each plate and the gross margin. Add a target food cost percentage of your own and the calculator also shows the menu price that would meet it. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Food cost percentage is the share of a dish's selling price that is spent on the ingredients that go into it.</p>
+<p class="formula"><strong>Formula:</strong> food cost % = ingredient cost ÷ menu price × 100; gross profit = menu price − ingredient cost; gross margin % = gross profit ÷ menu price × 100; menu price for a target = ingredient cost ÷ (target food cost % ÷ 100).</p>
+
+<form class="tool" id="f">
+  <label>Ingredient cost of one portion<br><input type="number" id="cost" min="0" step="any" value="4.5"></label>
+  <label>Menu price of one portion (before sales tax or VAT)<br><input type="number" id="price" min="0" step="any" value="15"></label>
+  <label>Your target food cost percentage (optional, used to suggest a price)<br><input type="number" id="target" min="0" max="99.99" step="any" value="28"></label>
+  <p><button class="primary" type="submit">Calculate food cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { foodCostPercent, priceForFoodCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const ingredientCost = Number($("cost").value) || 0;
+    const r = foodCostPercent({ ingredientCost, menuPrice: Number($("price").value) || 0 });
+    let rows = `<tr><td>Food cost percentage</td><td><strong>${fmt(r.foodCostPercent)}%</strong></td></tr><tr><td>Gross profit per portion</td><td>${fmt(r.grossProfit)}</td></tr><tr><td>Gross margin</td><td>${fmt(r.grossMarginPercent)}%</td></tr>`;
+    if ($("target").value !== "") {
+      const t = Number($("target").value);
+      const p = priceForFoodCost({ ingredientCost, targetFoodCostPercent: t });
+      rows += `<tr><td>Menu price for a ${fmt(t)}% food cost</td><td>${fmt(p.price)}</td></tr>`;
+    }
+    $("out").innerHTML = `<table>${rows}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Cost one portion, exactly as it leaves the pass</h2>
+<p>The number that matters is the cost of the ingredients on one plate as it is actually served, not the cost of the main ingredient alone. That means the protein, the starch and the vegetables, and also the sauce, the oil in the pan, the butter used to finish, the garnish, the bread on the side and any condiment that goes out with it. Small items are easy to leave out, and together they can move the percentage noticeably.</p>
+<p>Use what you paid on your most recent supplier invoices, not a price from memory. If an ingredient is trimmed or loses weight in cooking, cost the amount you had to buy to get the portion, not the finished weight. For dishes with many components, build the cost up line by line with the <a href="/recipe-cost-calculator/">recipe cost calculator</a>, which adds a waste allowance and divides a batch into portions, then bring the cost per portion back here.</p>
+<p>With the example figures, a dish that costs 4.50 in ingredients and sells for 15.00 has a food cost of 30%. Each plate leaves 10.50 of gross profit, a gross margin of 70%, to pay for staff, rent, energy and everything else before any profit is left.</p>
+
+<h2>Choosing a target is your decision</h2>
+<p>You will see target food cost percentages quoted in articles and by suppliers, but a single figure cannot fit every business. A kitchen with expensive premises and a large team needs more left over from each plate than a takeaway with two staff. A dish with a costly main ingredient but little preparation can carry a higher food cost than a cheap dish that takes an hour of labour. So this calculator does not suggest a target. It shows the calculation, and you set the number.</p>
+<p>One way to arrive at your own target is to work backwards from the rest of the business. Add up what labour, rent and overheads cost over a month, decide what profit you want, and compare that with expected sales. What remains is what ingredients can take. The <a href="/prime-cost-calculator/">prime cost calculator</a> shows food, beverage and labour together as a share of sales, which is a useful check on whether the target you pick leaves enough for wages.</p>
+<p>Once you have a target, enter it and the calculator divides the ingredient cost by it. At a 28% target, the same 4.50 dish needs a menu price of 16.07. Round that to a price that suits your menu; the percentage then moves slightly, and you can run the calculation again with the rounded price to see where it lands.</p>
+
+<h2>Percentage versus cash on each plate</h2>
+<p>A low food cost percentage is not automatically better. A cheap pasta dish at 20% might leave 8.00 of gross profit, while a steak at 35% might leave 15.00. The second plate costs more as a percentage but pays more towards the bills each time it sells. That is why the calculator shows the gross profit in money next to the percentage. When you compare dishes, look at both, and at how many of each you actually sell.</p>
+<p>Food cost percentage and gross margin are two sides of the same calculation: together they always add to 100%. If you think about pricing in terms of markup on cost instead, the <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two, and the <a href="/gross-profit-margin-calculator/">gross profit margin calculator</a> does the same sum for a whole business rather than one dish.</p>
+<p>Remember that the menu price here should be the price before any sales tax or VAT you collect, because that tax is not yours to spend on ingredients. If your menu prices include tax, take it out first.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I use the cost of one portion or a whole batch?</h3>
+<p>One portion. If you make a batch, divide the batch cost by the number of portions it yields, after allowing for waste, and enter that figure as the ingredient cost.</p>
+<h3>Why does the calculator refuse a target of 100% or more?</h3>
+<p>At 100% the whole price goes on ingredients and there is no gross profit at all, and above that every sale loses money. A target must be more than 0 and less than 100 for a price to be worked out.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/recipe-cost-calculator/">Recipe cost calculator</a></li>
+  <li><a href="/prime-cost-calculator/">Prime cost calculator</a></li>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+</ul>

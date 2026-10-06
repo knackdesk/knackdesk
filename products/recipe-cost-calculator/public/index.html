@@ -1,0 +1,74 @@
+<!-- title: Recipe Cost Calculator -->
+<!-- description: Cost a recipe from its ingredients, quantities and unit costs, add a waste allowance and divide by portions to get the batch cost, the cost per portion and the food cost percentage at your menu price. -->
+<h1>Recipe Cost Calculator</h1>
+<p>List the ingredients in a recipe with the quantity used and what each unit costs you, add a waste allowance and the number of portions the recipe makes. You get the raw ingredient cost, the batch cost with waste, the cost per portion and, if you enter a menu price, the food cost percentage. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Recipe cost is the total cost of every ingredient a recipe uses, including what is lost to trim and waste, divided by the number of portions it produces.</p>
+<p class="formula"><strong>Formula:</strong> raw cost = sum of (quantity × unit cost) for each ingredient; batch cost = raw cost × (1 + waste % ÷ 100); cost per portion = batch cost ÷ portions; food cost % = cost per portion ÷ menu price × 100.</p>
+
+<form class="tool" id="f">
+  <table class="rows">
+    <tr><th>Ingredient</th><th>Quantity used</th><th>Cost per unit</th></tr>
+    <tr><td><input type="text" id="n0" value="" aria-label="Ingredient 1"></td><td><input type="number" id="q0" min="0" step="any" value="" aria-label="Quantity 1"></td><td><input type="number" id="c0" min="0" step="any" value="" aria-label="Unit cost 1"></td></tr>
+    <tr><td><input type="text" id="n1" value="Flour" aria-label="Ingredient 2"></td><td><input type="number" id="q1" min="0" step="any" value="3" aria-label="Quantity 2"></td><td><input type="number" id="c1" min="0" step="any" value="2" aria-label="Unit cost 2"></td></tr>
+    <tr><td><input type="text" id="n2" value="" aria-label="Ingredient 3"></td><td><input type="number" id="q2" min="0" step="any" value="" aria-label="Quantity 3"></td><td><input type="number" id="c2" min="0" step="any" value="" aria-label="Unit cost 3"></td></tr>
+    <tr><td><input type="text" id="n3" value="" aria-label="Ingredient 4"></td><td><input type="number" id="q3" min="0" step="any" value="" aria-label="Quantity 4"></td><td><input type="number" id="c3" min="0" step="any" value="" aria-label="Unit cost 4"></td></tr>
+    <tr><td><input type="text" id="n4" value="" aria-label="Ingredient 5"></td><td><input type="number" id="q4" min="0" step="any" value="" aria-label="Quantity 5"></td><td><input type="number" id="c4" min="0" step="any" value="" aria-label="Unit cost 5"></td></tr>
+    <tr><td><input type="text" id="n5" value="" aria-label="Ingredient 6"></td><td><input type="number" id="q5" min="0" step="any" value="" aria-label="Quantity 6"></td><td><input type="number" id="c5" min="0" step="any" value="" aria-label="Unit cost 6"></td></tr>
+    <tr><td><input type="text" id="n6" value="" aria-label="Ingredient 7"></td><td><input type="number" id="q6" min="0" step="any" value="" aria-label="Quantity 7"></td><td><input type="number" id="c6" min="0" step="any" value="" aria-label="Unit cost 7"></td></tr>
+    <tr><td><input type="text" id="n7" value="" aria-label="Ingredient 8"></td><td><input type="number" id="q7" min="0" step="any" value="" aria-label="Quantity 8"></td><td><input type="number" id="c7" min="0" step="any" value="" aria-label="Unit cost 8"></td></tr>
+  </table>
+  <label>Waste and trim allowance (%)<br><input type="number" id="waste" min="0" step="any" value="10"></label>
+  <label>Portions the recipe makes<br><input type="number" id="portions" min="1" step="any" value="4"></label>
+  <label>Menu price of one portion (optional, before sales tax or VAT)<br><input type="number" id="price" min="0" step="any" value="9"></label>
+  <p><button class="primary" type="submit">Cost the recipe</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { recipeCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const ingredients = [];
+    for (let i = 0; i < 8; i++) {
+      const q = $(`q${i}`).value, c = $(`c${i}`).value;
+      if (q !== "" || c !== "") ingredients.push({ name: $(`n${i}`).value || `Ingredient ${i + 1}`, quantity: Number(q) || 0, unitCost: Number(c) || 0 });
+    }
+    const r = recipeCost({ ingredients, wastePercent: Number($("waste").value) || 0, portions: Number($("portions").value) || 0, menuPrice: Number($("price").value) || 0 });
+    const fc = r.foodCostPercent === null ? "Enter a menu price to see this" : `${fmt(r.foodCostPercent)}%`;
+    $("out").innerHTML = `<table><tr><td>Raw ingredient cost</td><td>${fmt(r.rawCost)}</td></tr><tr><td>Batch cost with waste</td><td>${fmt(r.batchCost)}</td></tr><tr><td>Cost per portion</td><td><strong>${fmt(r.costPerPortion)}</strong></td></tr><tr><td>Food cost percentage</td><td>${fc}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Use the units you buy in</h2>
+<p>Each line needs a quantity and a cost per unit in the same unit. If you buy flour by the kilogram, enter the kilograms the recipe uses and the price of one kilogram. If eggs come by the tray, work out the price of one egg and enter the number of eggs. The calculator does not convert between units, so the only rule is to keep the quantity and the unit cost on the same basis within each line. Different lines can use different units.</p>
+<p>The unit cost should come from your latest supplier invoice. Divide the price you paid by the quantity in the pack: a 25 kg sack at 20.00 is 0.80 per kilogram. In the example, 3 units of an ingredient at 2.00 and half a unit of another at 5.00 make a raw cost of 8.50. Leave unused rows blank; only rows with a quantity or a cost are counted.</p>
+<p>Include the small things. Oil for the pan, salt, herbs, a spoon of stock, the parchment the bake goes on if you count it as a food cost. They are easy to skip, and skipping them always pushes the cost per portion down, never up.</p>
+
+<h2>Why a waste allowance</h2>
+<p>What you buy is rarely what reaches the plate. Vegetables are peeled and trimmed, meat loses fat and bone, sauces stick to the pan, a tray of portions comes out a little uneven and the last one is short. The waste allowance adds a percentage on top of the raw cost to pay for that loss. There is no correct figure for every kitchen, so set it from your own experience, or measure it: weigh what you buy for a recipe and weigh what is usable after preparation, and the difference as a share of the usable weight is your figure.</p>
+<p>In the example, a 10% allowance on 8.50 makes the batch cost 9.35. Divided across 4 portions that is 2.34 a portion. The calculator divides the unrounded batch cost, so the cost per portion is as close as possible before it is rounded for display.</p>
+<p>If you already measured your ingredients as the usable amount after trimming, you can instead cost each line at the buying quantity and set the allowance to 0. Do one or the other, not both, or waste will be counted twice.</p>
+
+<h2>From cost per portion to a menu price</h2>
+<p>Enter a menu price and the calculator shows the food cost percentage, the share of the price spent on ingredients. At 9.00 a portion, a 2.34 cost per portion is a food cost of 25.97%. What percentage is right is your decision, because it depends on your labour, rent and the profit you want. The <a href="/food-cost-percentage-calculator/">food cost percentage calculator</a> takes the cost per portion and a target you choose and works out the menu price that meets it.</p>
+<p>For items you sell in bulk, such as a tray bake cut into squares or a batch of sauce sold by the jar, the <a href="/cost-per-unit-calculator/">cost per unit calculator</a> adds packaging and labour per unit. If the recipe is going on a catering menu priced per head, take the cost per portion into the <a href="/catering-price-per-guest-calculator/">catering price per guest calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>How often should I recost a recipe?</h3>
+<p>Whenever an important ingredient changes price on your invoices, and whenever the recipe or the portion size changes. Keeping the ingredient list saved somewhere makes recosting quick.</p>
+<h3>What if the recipe has more than eight ingredients?</h3>
+<p>Group minor ingredients into one line, such as "seasoning and garnish", with an estimated total cost and a quantity of 1, or cost a sub-recipe like a sauce separately and enter it as one ingredient.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/food-cost-percentage-calculator/">Food cost percentage calculator</a></li>
+  <li><a href="/cost-per-unit-calculator/">Cost per unit calculator</a></li>
+  <li><a href="/catering-price-per-guest-calculator/">Catering price per guest calculator</a></li>
+</ul>

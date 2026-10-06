@@ -1,0 +1,59 @@
+<!-- title: Prime Cost Calculator -->
+<!-- description: Add food, beverage and labour costs for a week or month and compare them with sales: prime cost, prime cost percentage, each part as a share of sales and what is left for everything else. -->
+<h1>Prime Cost Calculator</h1>
+<p>Enter your sales for a period, such as a week or a month, and what food, drinks and labour cost you over the same period. You get the prime cost, the prime cost as a percentage of sales, each of the three parts as a percentage of sales, and the amount left to cover rent, energy, other overheads and profit. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Prime cost is the combined cost of food, beverages and labour, the largest costs a restaurant or bar can control from week to week, measured against sales.</p>
+<p class="formula"><strong>Formula:</strong> prime cost = food cost + beverage cost + labour cost; prime cost % = prime cost ÷ sales × 100; food %, beverage % and labour % = each cost ÷ sales × 100; remaining = sales − prime cost.</p>
+
+<form class="tool" id="f">
+  <label>Sales for the period (before sales tax or VAT)<br><input type="number" id="sales" min="0" step="any" value="50000"></label>
+  <label>Food cost for the period<br><input type="number" id="food" min="0" step="any" value="15000"></label>
+  <label>Beverage cost for the period<br><input type="number" id="bev" min="0" step="any" value="5000"></label>
+  <label>Labour cost for the period (wages, payroll taxes, benefits)<br><input type="number" id="labor" min="0" step="any" value="16000"></label>
+  <p><button class="primary" type="submit">Calculate prime cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { primeCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = primeCost({ sales: Number($("sales").value) || 0, foodCost: Number($("food").value) || 0, beverageCost: Number($("bev").value) || 0, laborCost: Number($("labor").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Prime cost</td><td>${fmt(r.primeCost)}</td></tr><tr><td>Prime cost as a share of sales</td><td><strong>${fmt(r.primeCostPercent)}%</strong></td></tr><tr><td>Food cost as a share of sales</td><td>${fmt(r.foodPercent)}%</td></tr><tr><td>Beverage cost as a share of sales</td><td>${fmt(r.beveragePercent)}%</td></tr><tr><td>Labour cost as a share of sales</td><td>${fmt(r.laborPercent)}%</td></tr><tr><td>Left for overheads and profit</td><td>${fmt(r.remaining)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Getting the inputs right</h2>
+<p>All four figures must cover the same period. Mixing a month of sales with four weeks of payroll, or with a supplier statement that runs to a different date, gives a percentage that looks precise and is not. Pick a period that matches how you are paid and how your suppliers bill you, and stick to it so that one period can be compared with the next.</p>
+<p>Food and beverage cost should be what you actually used, not simply what you bought. The usual way is opening stock plus purchases minus closing stock. If you buy a large delivery at the end of a month and only count purchases, that month looks expensive and the next looks cheap. Counting stock at the start and end of each period evens this out. Keep drinks separate from food if you can, because the two often behave differently and are priced differently.</p>
+<p>Labour cost means everything you pay for staff time: gross wages and salaries, overtime, employer payroll taxes, pension contributions and benefits. Include salaried managers and, if you work in the business yourself and pay yourself a wage, include that too, so the figure reflects what the hours really cost. The <a href="/employee-cost-calculator/">employee cost calculator</a> helps you build the full cost of a team member from a wage.</p>
+<p>Sales should be net of sales tax or VAT, because that money is collected for the tax authority and is not available to pay costs.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, sales of 50,000 against food of 15,000, beverages of 5,000 and labour of 16,000 give a prime cost of 36,000, which is 72% of sales. Food is 30%, beverages 10% and labour 32%. That leaves 14,000 to pay rent, energy, insurance, repairs, card fees, marketing and everything else, with whatever remains after that being profit.</p>
+<p>What prime cost percentage is acceptable depends on the rest of your costs and the profit you want, so this page does not give a target. Work it out from your own accounts: add up the overheads that are not part of prime cost over the same period, add the profit you want, and subtract both from sales. What is left is the most prime cost can be. If your rent is high, that ceiling is lower; if you own the building, it is higher.</p>
+<p>The split between the three parts matters as much as the total. A business can hold the same prime cost while food rises and labour falls, for example after buying in more prepared ingredients. Watching each part over several periods shows where a change came from.</p>
+
+<h2>What to do when it is higher than you planned</h2>
+<p>Start with the largest part. If food is the problem, check portion sizes, waste, and whether supplier prices have risen without menu prices following. The <a href="/food-cost-percentage-calculator/">food cost percentage calculator</a> checks each dish against a target you choose, and the <a href="/recipe-cost-calculator/">recipe cost calculator</a> recosts a dish from its ingredients.</p>
+<p>If labour is the problem, compare the rota with the sales each shift actually brings in. The <a href="/labor-cost-percentage-calculator/">labour cost percentage calculator</a> shows how many hours a projected sales figure supports at a labour percentage you set. Sometimes the fix is on the sales side instead: a full room with the same staff lowers every percentage at once.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I calculate prime cost weekly or monthly?</h3>
+<p>Whichever you can do accurately. Weekly figures catch problems sooner but need weekly stock counts; monthly figures are easier to produce from your bookkeeping.</p>
+<h3>Why are the percentages different from my accountant's?</h3>
+<p>Usually because of what is included. Check whether your accountant includes payroll taxes, management salaries and drinks in the same lines you do, and whether stock changes are counted.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/labor-cost-percentage-calculator/">Labour cost percentage calculator</a></li>
+  <li><a href="/food-cost-percentage-calculator/">Food cost percentage calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

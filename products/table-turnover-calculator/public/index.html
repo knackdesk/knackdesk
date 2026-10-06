@@ -1,0 +1,60 @@
+<!-- title: Table Turnover Calculator -->
+<!-- description: Work out table turns per seat, covers per day and revenue per day from your seats, opening hours, average dining time, how full the room is and the average check per cover. -->
+<h1>Table Turnover Calculator</h1>
+<p>Enter the number of seats, the hours a service is open, how long a party usually stays at the table, how full the room is on average and the average check per cover. You get the number of times each seat can turn, the covers you can expect in a day and the revenue those covers bring in. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Table turnover is the number of times a seat or table can be used by a new party during a service, set by how long the service runs and how long each party stays.</p>
+<p class="formula"><strong>Formula:</strong> turns per seat = hours open × 60 ÷ average dining minutes; covers per day = seats × turns per seat × occupancy % ÷ 100; revenue per day = covers per day × average check.</p>
+
+<form class="tool" id="f">
+  <label>Seats in the room<br><input type="number" id="seats" min="0" step="any" value="80"></label>
+  <label>Hours open for seated service<br><input type="number" id="hours" min="0" step="any" value="6"></label>
+  <label>Average time a party spends at the table (minutes, including reset)<br><input type="number" id="minutes" min="1" step="any" value="90"></label>
+  <label>Average occupancy while open (%)<br><input type="number" id="occ" min="0" max="100" step="any" value="70"></label>
+  <label>Average check per cover (optional)<br><input type="number" id="check" min="0" step="any" value="28"></label>
+  <p><button class="primary" type="submit">Calculate turnover</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { tableTurnover } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = tableTurnover({ seats: Number($("seats").value) || 0, hoursOpen: Number($("hours").value) || 0, averageDiningMinutes: Number($("minutes").value) || 0, occupancyPercent: $("occ").value === "" ? 100 : Number($("occ").value), averageCheck: Number($("check").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Turns per seat</td><td>${fmt(r.turnsPerSeat)}</td></tr><tr><td>Covers per day</td><td><strong>${fmt(r.coversPerDay)}</strong></td></tr><tr><td>Revenue per day</td><td>${fmt(r.revenuePerDay)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Seats are the chairs you can sell at once, not the number of tables. Counting seats rather than tables keeps the arithmetic simple, though in practice a table for four taken by two guests leaves two seats empty; the occupancy figure is where that loss shows up.</p>
+<p>Hours open should be the time you actually seat guests. If the kitchen closes at ten and the last table is seated at half past nine, the useful window ends then. If you run separate lunch and dinner services, either add the hours together or run the calculator once for each service, which is often clearer because dining times and checks usually differ between them.</p>
+<p>Average dining time is the minutes from a party sitting down to the table being ready for the next one. Include the time it takes to clear and reset, because a seat is not available while that happens. The most reliable source is your own booking or till system: the time between a check opening and closing, plus a few minutes for the reset. Watching a few services with a notepad works too.</p>
+<p>Occupancy is how full the room is, on average, across the hours open. It covers quiet periods, empty seats at partly filled tables and gaps between one party leaving and the next arriving. It is the figure most people are tempted to set too high. A room that is packed at eight and half empty at six averages somewhere in between.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 6 hours of service and an average stay of 90 minutes mean each seat can turn 4 times. Eighty seats turning 4 times would be 320 covers if every seat were always full; at 70% occupancy the calculator gives 224 covers in the day. At an average check of 28 per cover, that is 6,272 in revenue.</p>
+<p>Turns per seat is a ceiling set by time alone, and covers per day is a planning figure. Compare the covers with what your till shows on a typical day. If the real number is much lower, the gap is either occupancy, a longer dining time than you assumed, or both, and rerunning the calculator with your actual figures shows which.</p>
+<p>This calculator does not suggest how many turns a restaurant should achieve. A tasting-menu dining room and a lunch counter are built for very different stays, and both can be good businesses. The useful comparison is with your own past figures and with the revenue you need.</p>
+
+<h2>Using it to plan</h2>
+<p>Revenue per day is a starting point for other plans. Multiply it by the days you open to get a month, and compare that with your fixed costs using the <a href="/break-even-calculator/">break-even calculator</a>. The covers figure tells you how many plates the kitchen must produce, which feeds the rota; the <a href="/labor-cost-percentage-calculator/">labour cost percentage calculator</a> checks a schedule against projected sales, and the <a href="/prime-cost-calculator/">prime cost calculator</a> puts labour and ingredients together against sales.</p>
+<p>It is also a way to test changes before you make them. Shortening the average stay by ten minutes, adding a few seats or opening an hour longer each change one input, and you can see the effect on covers and revenue straight away.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Can I use it for a cafe without table service?</h3>
+<p>Yes. Use the average time a customer stays in a seat. Takeaway sales do not use seats, so add them to the revenue separately.</p>
+<h3>Why does it reject an occupancy above 100%?</h3>
+<p>Occupancy is the share of seats in use, so it cannot be more than all of them. Extra parties served in the same seats are already counted by the turns.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/prime-cost-calculator/">Prime cost calculator</a></li>
+  <li><a href="/labor-cost-percentage-calculator/">Labour cost percentage calculator</a></li>
+  <li><a href="/break-even-calculator/">Break-even calculator</a></li>
+</ul>

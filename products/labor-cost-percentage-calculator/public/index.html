@@ -1,0 +1,62 @@
+<!-- title: Labor Cost Percentage Calculator -->
+<!-- description: Check a staff schedule against projected sales: labour cost with payroll taxes, labour cost as a percentage of sales, and how many hours a labour percentage you choose allows. -->
+<h1>Labour Cost Percentage Calculator</h1>
+<p>Enter the hours on your rota for a period, the average hourly wage, payroll taxes and other on-costs as a percentage of wages, and the sales you expect over the same period. You get the labour cost, labour cost as a percentage of sales and, if you enter a target percentage of your own, the hours that target allows and how many scheduled hours are over it. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Labour cost percentage is the cost of the staff hours you schedule, including employer taxes and on-costs, divided by the sales those hours are expected to serve.</p>
+<p class="formula"><strong>Formula:</strong> labour cost = scheduled hours × average wage × (1 + payroll tax % ÷ 100); labour cost % = labour cost ÷ projected sales × 100; allowed labour cost = projected sales × target % ÷ 100; hours allowed = allowed labour cost ÷ (average wage × (1 + payroll tax % ÷ 100)); hours over = scheduled hours − hours allowed, or 0 if the schedule is within the target.</p>
+
+<form class="tool" id="f">
+  <label>Scheduled hours for the period (all staff)<br><input type="number" id="hours" min="0" step="any" value="400"></label>
+  <label>Average hourly wage<br><input type="number" id="wage" min="0" step="any" value="15"></label>
+  <label>Payroll taxes and on-costs (% of wages)<br><input type="number" id="tax" min="0" step="any" value="12"></label>
+  <label>Projected sales for the period (before sales tax or VAT)<br><input type="number" id="sales" min="0" step="any" value="25000"></label>
+  <label>Your target labour cost percentage (optional)<br><input type="number" id="target" min="0" step="any" value="25"></label>
+  <p><button class="primary" type="submit">Calculate labour cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { laborCostPercent } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const target = Number($("target").value) || 0;
+    const r = laborCostPercent({ scheduledHours: Number($("hours").value) || 0, averageWage: Number($("wage").value) || 0, payrollTaxPercent: Number($("tax").value) || 0, projectedSales: Number($("sales").value) || 0, targetPercent: target });
+    let rows = `<tr><td>Labour cost</td><td>${fmt(r.laborCost)}</td></tr><tr><td>Labour cost as a share of sales</td><td><strong>${fmt(r.laborPercent)}%</strong></td></tr>`;
+    if (target > 0) rows += `<tr><td>Labour cost allowed at ${fmt(target)}%</td><td>${fmt(r.allowedLaborCost)}</td></tr><tr><td>Hours allowed at ${fmt(target)}%</td><td>${fmt(r.hoursAllowed)}</td></tr><tr><td>Scheduled hours over the target</td><td>${fmt(r.hoursOver)}</td></tr>`;
+    $("out").innerHTML = `<table>${rows}</table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>Build the hours and the wage from your rota</h2>
+<p>Scheduled hours are every paid hour on the rota for the period: front of house, kitchen, cleaning, supervisors and any manager paid by the hour. Use the same period as the sales projection, whether that is a single busy Saturday, a week or a month. A week is a good unit for most rotas because it captures the pattern of quiet and busy days.</p>
+<p>The average wage is total wages for those hours divided by the hours. If most staff earn one rate and a few earn more, a weighted average is better than a simple one: multiply each person's hours by their rate, add the results and divide by total hours. Overtime paid at a higher rate pushes the average up; the <a href="/overtime-calculator/">overtime calculator</a> works out overtime pay, which you can fold into the average.</p>
+<p>Payroll taxes and on-costs cover what you pay on top of the wage: employer social security or national insurance, pension contributions, holiday pay accrual and benefits. Express them as a percentage of wages. The rate depends on your country and your staff, so enter your own; the <a href="/employee-cost-calculator/">employee cost calculator</a> helps you build the full cost of an employee from a wage if you are not sure.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 400 hours at an average of 15 with 12% on-costs cost 6,720. Against projected sales of 25,000, labour is 26.88% of sales. With a target of 25%, the sales projection allows 6,250 of labour, which buys 372.02 hours at the same loaded hourly cost, so the rota is 27.98 hours over the target.</p>
+<p>The target is yours to set. Published figures for labour percentage cover businesses with very different service styles, menus and wage levels, so they are a poor guide to what your business needs. A practical way to choose is to start from your accounts: decide what share of sales food, rent, other overheads and profit need, and what remains is what labour can take. The <a href="/prime-cost-calculator/">prime cost calculator</a> shows labour next to food and drink costs as a share of sales, which helps when you decide how to balance the two.</p>
+<p>Labour cost percentage is sensitive to the sales figure. A rota that is over the target on a forecast of 25,000 may be under it if the week brings in 28,000. That is why it is worth checking the actual percentage after the period, using real sales and real hours worked, as well as the forecast before it.</p>
+
+<h2>Bringing a rota back in line</h2>
+<p>If the schedule is over, the hours-over figure tells you how many hours to find. The quietest shifts are usually where to look first: shortening the opening and closing shifts, staggering start times so staff arrive as the room fills, or combining roles during slow periods. The <a href="/table-turnover-calculator/">table turnover calculator</a> estimates covers per day from your seats and dining times, which helps you see where the busy hours really are, and the <a href="/event-staffing-calculator/">event staffing calculator</a> plans staff for a single event.</p>
+<p>The alternative is to lift sales at the same hours, through more covers or a higher average check. Run the calculator with a higher sales figure to see how much would bring the current rota within your target.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should salaried managers be included?</h3>
+<p>For a complete picture, yes. Convert their salary for the period into hours and an hourly rate, or add their cost to the hours as a separate calculation and combine the totals.</p>
+<h3>Why does the calculator need a wage above 0?</h3>
+<p>The hours a target allows are found by dividing the allowed labour cost by the cost of one hour. With a wage of 0 that division has no meaning, so the calculator asks for a wage first.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/prime-cost-calculator/">Prime cost calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/table-turnover-calculator/">Table turnover calculator</a></li>
+</ul>
