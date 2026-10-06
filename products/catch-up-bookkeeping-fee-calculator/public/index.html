@@ -1,0 +1,61 @@
+<!-- title: Catch-Up Bookkeeping Fee Calculator -->
+<!-- description: Quote catch-up bookkeeping from the months behind, hours per month, your hourly rate, a setup fee and any discount, and see the total and the cost per month. -->
+<h1>Catch-Up Bookkeeping Fee Calculator</h1>
+<p>Enter how many months of books are behind, the hours each month takes to bring up to date, your hourly rate, any one-off setup fee and any discount you are offering. You get the total hours, the labour cost, the subtotal, the discount, the total quote and what the job works out to per month of books. It is built for bookkeepers, accountants and tax preparers quoting clean-up work before an ongoing engagement or a filing deadline. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Catch-up bookkeeping is the one-off job of recording, categorising and reconciling the months a client has fallen behind on, so their books are current before regular monthly work begins.</p>
+<p class="formula"><strong>Formula:</strong> total hours = months behind × hours per month; labour cost = total hours × hourly rate; subtotal = labour cost + setup fee; discount = subtotal × discount % ÷ 100; total = subtotal − discount; per month = total ÷ months behind.</p>
+
+<form class="tool" id="f">
+  <label>Months of books behind<br><input type="number" id="months" min="1" step="any" value="9"></label>
+  <label>Hours to bring one month up to date<br><input type="number" id="hpm" min="0" step="any" value="4"></label>
+  <label>Hourly rate<br><input type="number" id="rate" min="0" step="any" value="75"></label>
+  <label>One-off setup fee (optional)<br><input type="number" id="setup" min="0" step="any" value="200"></label>
+  <label>Discount (%) (optional)<br><input type="number" id="disc" min="0" max="100" step="any" value="10"></label>
+  <p><button class="primary" type="submit">Calculate catch-up fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { catchUpBookkeepingFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = catchUpBookkeepingFee({ monthsBehind: Number($("months").value) || 0, hoursPerMonth: Number($("hpm").value) || 0, hourlyRate: Number($("rate").value) || 0, setupFee: Number($("setup").value) || 0, discountPercent: Number($("disc").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Total hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Labour cost</td><td>${fmt(r.labourCost)}</td></tr><tr><td>Subtotal with setup fee</td><td>${fmt(r.subtotal)}</td></tr><tr><td>Discount</td><td>${fmt(r.discount)}</td></tr><tr><td>Total quote</td><td><strong>${fmt(r.total)}</strong></td></tr><tr><td>Per month of books</td><td>${fmt(r.perMonth)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Months behind is the number of months that have not been recorded or reconciled. Count from the last month that was properly closed to the most recent complete month. If the client says they are "about a year behind", check: open their accounting software or their last filed return and find the date the books were really last reconciled. That date can be earlier than the client remembers.</p>
+<p>Hours per month is your estimate of the time it takes to bring one month up to date: importing or entering transactions, categorising them, matching receipts, reconciling each account and dealing with the questions that come up. The most reliable source is your own time tracking or practice management software, from a past catch-up job for a client of a similar size. If you have no comparable job, ask for one month of bank and card statements, work through it, time yourself and use that figure. A month with many transactions or many accounts will take longer, so look at the client's statements before you settle on a number.</p>
+<p>The hourly rate is the rate you need for this kind of work. Catch-up work can be slower and messier than routine monthly bookkeeping, with missing receipts and unexplained transfers, so some practices use a different rate for it. Whichever rate you use, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> shows what it needs to be to cover your costs and your own pay.</p>
+<p>The setup fee is a one-off charge for the work that does not belong to any single month: getting access to bank feeds and the accounting file, setting up or cleaning the chart of accounts, and collecting the documents. Leave it at zero if that time is already in your hours per month.</p>
+<p>The discount is a percentage taken off the subtotal, for example when the client also signs up for ongoing monthly work. It cannot be more than 100 percent.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 9 months behind at 4 hours a month is 36 hours. At 75 an hour, the labour cost is 2,700. Adding a 200 setup fee gives a subtotal of 2,900. A 10 percent discount takes off 290, so the total quote is 2,610, which works out to 290 per month of books.</p>
+<p>The per-month figure helps when you present the quote. A client looking at a single total may balk; seeing what each month of clean books costs, next to what you will charge for ongoing work once they are current, makes the quote easier to understand. If you also price the monthly package, the <a href="/bookkeeping-package-price-calculator/">bookkeeping package price calculator</a> builds that figure from volume, accounts and add-ons.</p>
+<p>The calculator does not say what catch-up work should cost. The right quote depends on the state of the client's records, your own speed and the rate you need, so base every input on your own figures.</p>
+
+<h2>Protecting yourself on the quote</h2>
+<p>Catch-up jobs are hard to estimate, because you do not know what you will find until you start. A few habits help. State the months covered in the quote and the engagement letter, so a client who turns out to be further behind gets a revised quote rather than free work. Say what the client must provide and by when. Consider asking for part of the fee up front, and set clear payment terms for the rest; the <a href="/invoice-due-date/">invoice due date calculator</a> helps you state a due date that matches those terms.</p>
+<p>If the client has many months outstanding, quote in blocks: the most recent months first, then earlier periods. That gives the client a usable set of books sooner and gives you a check on your hours estimate before you commit to the whole job.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I quote catch-up work hourly or as a fixed fee?</h3>
+<p>Either works. This calculator turns an hourly estimate into a fixed quote. If you would rather bill hourly, use the total hours as an estimate and say clearly that the final bill follows the time recorded.</p>
+<h3>Why does it reject zero months?</h3>
+<p>The per-month figure divides the total by the months behind, and a catch-up job needs at least one month of work, so the field must be more than 0.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/bookkeeping-package-price-calculator/">Bookkeeping package price calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+</ul>

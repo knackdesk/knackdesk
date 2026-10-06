@@ -1,0 +1,69 @@
+<!-- title: Bookkeeping Package Price Calculator -->
+<!-- description: Price a monthly bookkeeping package from a base fee, transactions, bank accounts and add-ons, and see the annual fee and the effective hourly rate it pays. -->
+<h1>Bookkeeping Package Price Calculator</h1>
+<p>Enter your base fee, the client's monthly transaction volume and your rate per transaction, the number of bank and card accounts and your fee per account, any add-ons and the hours you expect the work to take. You get the monthly fee, the annual fee and the effective hourly rate the package pays you. It is built for bookkeepers, accountants and other practices that price ongoing monthly work. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A bookkeeping package price is a fixed monthly fee built from a base charge plus charges for the things that drive the work, such as transaction volume, the number of accounts to reconcile and any extra services.</p>
+<p class="formula"><strong>Formula:</strong> monthly fee = base fee + transactions × rate per transaction + accounts × fee per account + add-ons; annual fee = monthly fee × 12; effective hourly rate = monthly fee ÷ estimated hours.</p>
+
+<form class="tool" id="f">
+  <label>Base monthly fee<br><input type="number" id="base" min="0" step="any" value="250"></label>
+  <label>Transactions per month<br><input type="number" id="tx" min="0" step="any" value="150"></label>
+  <label>Rate per transaction<br><input type="number" id="txrate" min="0" step="any" value="1.5"></label>
+  <label>Bank and card accounts to reconcile<br><input type="number" id="accts" min="0" step="any" value="3"></label>
+  <label>Fee per account<br><input type="number" id="acctfee" min="0" step="any" value="25"></label>
+  <label>Add-ons per month (payroll, tax returns, reports)<br><input type="number" id="addons" min="0" step="any" value="100"></label>
+  <label>Estimated hours per month (optional)<br><input type="number" id="hours" min="0" step="any" value="8"></label>
+  <p><button class="primary" type="submit">Calculate package price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { bookkeepingPackagePrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = bookkeepingPackagePrice({ baseFee: Number($("base").value) || 0, transactionsPerMonth: Number($("tx").value) || 0, perTransactionRate: Number($("txrate").value) || 0, bankAccounts: Number($("accts").value) || 0, perAccountFee: Number($("acctfee").value) || 0, addOns: Number($("addons").value) || 0, estimatedHours: Number($("hours").value) || 0 });
+    const rate = r.effectiveHourlyRate === null ? "Enter hours to see this" : fmt(r.effectiveHourlyRate);
+    $("out").innerHTML = `<table><tr><td>Transaction charge</td><td>${fmt(r.transactionCharge)}</td></tr><tr><td>Account charge</td><td>${fmt(r.accountCharge)}</td></tr><tr><td>Monthly fee</td><td><strong>${fmt(r.monthlyFee)}</strong></td></tr><tr><td>Annual fee</td><td>${fmt(r.annualFee)}</td></tr><tr><td>Effective hourly rate</td><td>${rate}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The base fee is the fixed part of the price. It pays for the work that happens every month whatever the volume: reconciling, reviewing the books, closing the month and sending the client their reports. The best way to set it is from your own records. Look in your time tracking or practice management software at a client with very little activity and see how long a quiet month took; that time, at the hourly rate you need, is a sound floor for the base.</p>
+<p>Transactions per month and the rate per transaction capture volume, which can make one client take far longer than another. Count transactions from the client's bank and card statements or from the bank feed in their accounting software, and take an average over several months, because volume moves with the seasons. Some practices charge for every transaction and keep the base small; others include a block of transactions in the base and charge only for lines above it. If you work the second way, enter only the transactions above the included block.</p>
+<p>Bank and card accounts count separately because each one needs its own reconciliation, its own feed to watch and its own statement to match. A client with five accounts and a client with one can have the same volume and still take very different amounts of time.</p>
+<p>Add-ons are the extras a client takes on top of core bookkeeping: payroll runs, sales tax or VAT returns, bill payment, management reports, a monthly call. Enter the total monthly charge for the extras this client has agreed to. If you price an add-on per run, multiply it out to a monthly figure first.</p>
+<p>Estimated hours is the time you expect to spend on the client each month, including review. For an existing client, take it from your time records. For a new one, use a similar client of yours as a guide, or the hours a sample month took during onboarding. The field is optional; leave it at zero and the calculator still gives the fee.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, the base fee is 250. The client has 150 transactions a month at 1.50 each, which adds 225, and three accounts at 25 each, which adds 75. Add-ons are 100. The monthly fee is 650 and the annual fee is 7,800. If the work takes 8 hours a month, the package pays an effective 81.25 an hour.</p>
+<p>The effective hourly rate is the check on everything else. Compare it with the hourly rate you need to cover your costs, your own pay and the time you cannot bill; the <a href="/hourly-rate-calculator/">hourly rate calculator</a> works that figure out. If the package rate comes out lower, either one of the charges is too small for this client or your hours estimate is high, and changing one input at a time shows which change closes the gap.</p>
+<p>The calculator does not suggest what a bookkeeping package should cost. Practices differ in what they include, how they work and who they serve, so the useful comparison is with your own costs, your own time records and the income you need.</p>
+
+<h2>Building a price list</h2>
+<p>Using the same rates for every client keeps pricing consistent and easy to explain. One way to build a price list is to pick three real clients from your own book, a small one, a middle one and a large one, and run each through the calculator. The results give you package tiers grounded in work you have actually done. The annual fee is the figure to put in an engagement letter and to compare with what the client paid last year.</p>
+<p>If a client is moving from hourly billing to a package, the <a href="/hourly-to-fixed-fee-calculator/">hourly to fixed fee calculator</a> shows how a buffer for overruns and a discount for committing to a year change the monthly figure. When it is time to review your rates, the <a href="/price-increase-calculator/">price increase calculator</a> shows what a change does to revenue.</p>
+
+<h2>When volume changes during the year</h2>
+<p>Transaction counts drift. A client who takes on staff, opens a second location or starts selling online can double their volume without telling you. Rerun the calculator each quarter with fresh counts from the bank feed, and agree in the engagement letter that the fee is reviewed when volume moves beyond an agreed band. That keeps the effective hourly rate where you set it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should I charge per transaction, per account or both?</h3>
+<p>Charge for whatever drives your time. Look at your time records for a few clients: if hours follow volume, the transaction rate matters most; if they follow the number of accounts, the account fee does. You can set either rate to zero.</p>
+<h3>Why does the effective hourly rate say to enter hours?</h3>
+<p>The rate is the monthly fee divided by hours, so it needs an hours figure above zero. Enter your estimate to see it.</p>
+<h3>Does the fee include sales tax or VAT?</h3>
+<p>No. The calculator works with the fee before tax. If you charge tax on your services, add it on top, for example with the <a href="/vat-calculator/">VAT calculator</a>.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/catch-up-bookkeeping-fee-calculator/">Catch-up bookkeeping fee calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+  <li><a href="/client-capacity-calculator/">Client capacity calculator</a></li>
+</ul>

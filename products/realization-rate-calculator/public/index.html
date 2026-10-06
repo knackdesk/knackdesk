@@ -1,0 +1,59 @@
+<!-- title: Realization Rate Calculator -->
+<!-- description: Work out billing, collection and overall realization from hours, standard rate, amount billed and amount collected, plus write-offs and the rate you earned. -->
+<h1>Realization Rate Calculator</h1>
+<p>Enter the hours worked in a period, your standard hourly rate, the amount you billed for that work and the amount you collected. You get the value of the time at standard rates, the share of it you billed, the share of the bills you collected, the share of the time value you actually received, the amounts written off and still unpaid, and the hourly rate you really earned. It is built for accountants, bookkeepers, tax preparers, law firms, consultants and other practices that record time against a standard rate. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Realization rate is the share of the value of your recorded time, at your standard rates, that you actually bill and then collect.</p>
+<p class="formula"><strong>Formula:</strong> standard fees = hours worked × standard rate; billing realization = amount billed ÷ standard fees × 100; collection realization = amount collected ÷ amount billed × 100; overall realization = amount collected ÷ standard fees × 100; write-offs = standard fees − amount billed; uncollected = amount billed − amount collected; effective rate = amount collected ÷ hours worked.</p>
+
+<form class="tool" id="f">
+  <label>Hours worked in the period<br><input type="number" id="hours" min="0" step="any" value="120"></label>
+  <label>Standard hourly rate<br><input type="number" id="rate" min="0" step="any" value="150"></label>
+  <label>Amount billed for that work<br><input type="number" id="billed" min="0" step="any" value="15300"></label>
+  <label>Amount collected from those bills<br><input type="number" id="collected" min="0" step="any" value="14535"></label>
+  <p><button class="primary" type="submit">Calculate realization</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { realizationRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = realizationRate({ hoursWorked: Number($("hours").value) || 0, standardRate: Number($("rate").value) || 0, amountBilled: Number($("billed").value) || 0, amountCollected: Number($("collected").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Standard fees (time at standard rate)</td><td>${fmt(r.standardFees)}</td></tr><tr><td>Billing realization</td><td>${fmt(r.billingRealizationPercent)}%</td></tr><tr><td>Collection realization</td><td>${fmt(r.collectionRealizationPercent)}%</td></tr><tr><td>Overall realization</td><td><strong>${fmt(r.overallRealizationPercent)}%</strong></td></tr><tr><td>Written off before billing</td><td>${fmt(r.writeOffs)}</td></tr><tr><td>Billed but not collected</td><td>${fmt(r.uncollected)}</td></tr><tr><td>Effective hourly rate</td><td>${fmt(r.effectiveRate)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours worked is the time recorded against the clients or matters you are measuring, for a period you choose: a month, a quarter, a year, or a single engagement. Take it from your time tracking or practice management software. Use recorded time, not billed time, because the gap between the two is exactly what the calculator measures.</p>
+<p>The standard rate is the hourly rate you would charge if every recorded hour were billed in full. If different people or different kinds of work carry different rates, the simplest approach is to take the value of all recorded time at standard rates from your practice management software, divide it by the hours, and enter the result as a single blended rate. That keeps the standard fees figure accurate.</p>
+<p>The amount billed is what you actually invoiced for that same work, after any discounts and reductions. The amount collected is what the client has paid against those invoices. Take both from your invoices and your bank statements or billing software. Make sure all four figures cover the same work; mixing hours from one quarter with payments for an earlier quarter gives a misleading result. Because of that, the calculator will not accept more collected than billed for the same work.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 120 hours at a standard rate of 150 are worth 18,000. You billed 15,300, so billing realization is 85 percent and 2,700 was written off before the invoice went out. The client paid 14,535 of the 15,300, so collection realization is 95 percent and 765 is still unpaid. Overall, you received 80.75 percent of the value of your time, which works out to an effective 121.13 an hour.</p>
+<p>The three percentages answer different questions. Billing realization shows how much of your time survives the step from timesheet to invoice. A low figure points to write-downs: work that took longer than the client will pay for, fixed fees that were set too low, or time spent on things the client does not see as billable. Collection realization shows how much of what you bill turns into cash. A low figure points to slow payers, disputes or bad debts. Overall realization combines the two, and the effective hourly rate turns it back into money per hour, which can be the clearest way to see what the gap costs.</p>
+<p>A write-off can be negative. That happens when you bill more than your time is worth at standard rates, for example on a fixed fee that took less time than expected, and billing realization then goes above 100 percent.</p>
+<p>The calculator does not set a target realization rate. That depends on how you price and what kind of work you do, so compare each figure with your own past periods and with the rate you need.</p>
+
+<h2>Acting on the figures</h2>
+<p>Run the calculator per client or per type of work as well as for the whole practice. A healthy average can hide one engagement where most of the time is written off. Where billing realization is low, look at scope, the estimate behind the fee and whether the work should be priced differently. Where collection realization is low, look at payment terms and follow-up; the <a href="/late-fee-calculator/">late fee calculator</a> shows what a late payment charge would add, and the <a href="/effective-hourly-rate/">effective hourly rate calculator</a> checks what a single project paid per hour.</p>
+<p>Realization works alongside utilization. Utilization measures how much of your time is recorded to clients; realization measures how much of that recorded time turns into money. The <a href="/utilization-rate-calculator/">utilization rate calculator</a> covers the first half, and the <a href="/client-capacity-calculator/">client capacity calculator</a> shows how many clients your hours can hold.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why can the amount collected not be more than the amount billed?</h3>
+<p>Collection realization measures how much of a set of bills was paid, so the payments must belong to the same bills. If a client paid more, the extra may be for an earlier period or an advance, and it belongs in that period's figures.</p>
+<h3>What if I billed nothing?</h3>
+<p>Collection realization shows 0, since there were no bills to collect against. Billing and overall realization still show the share of your time that turned into money.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+  <li><a href="/effective-hourly-rate/">Effective hourly rate calculator</a></li>
+  <li><a href="/late-fee-calculator/">Late fee calculator</a></li>
+</ul>

@@ -1,0 +1,61 @@
+<!-- title: Hourly to Fixed Fee Calculator -->
+<!-- description: Turn monthly hours and your hourly rate into a fixed monthly fee, with a buffer for overruns, a commitment discount and the hourly rate an overrun leaves you. -->
+<h1>Hourly to Fixed Fee Calculator</h1>
+<p>Enter the hours a client's work takes each month, your hourly rate, a buffer for months that run long, any discount for committing to a year and an overrun to test. You get the fixed monthly fee, the annual fee and the hourly rate you would actually earn if the work ran over by that much. It is built for bookkeepers, accountants, tax preparers and other practices moving ongoing clients from hourly billing to a fixed monthly price. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Converting hourly billing to a fixed fee means agreeing one monthly price for a defined scope of work, set from the hours the work takes, so the client knows what they will pay and you carry the risk of the work taking longer.</p>
+<p class="formula"><strong>Formula:</strong> base monthly = hours per month × hourly rate; with buffer = base monthly × (1 + buffer % ÷ 100); fixed fee = with buffer × (1 − commitment discount % ÷ 100); annual fee = fixed fee × 12; effective hourly at overrun = fixed fee ÷ (hours per month × (1 + overrun % ÷ 100)).</p>
+
+<form class="tool" id="f">
+  <label>Hours the work takes per month<br><input type="number" id="hours" min="0" step="any" value="10"></label>
+  <label>Hourly rate<br><input type="number" id="rate" min="0" step="any" value="80"></label>
+  <label>Buffer for months that run long (%)<br><input type="number" id="buffer" min="0" step="any" value="15"></label>
+  <label>Discount for a yearly commitment (%) (optional)<br><input type="number" id="disc" min="0" max="100" step="any" value="5"></label>
+  <label>Overrun to test (%)<br><input type="number" id="overrun" min="0" step="any" value="20"></label>
+  <p><button class="primary" type="submit">Calculate fixed fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { hourlyToFixedFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = hourlyToFixedFee({ hoursPerMonth: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, bufferPercent: Number($("buffer").value) || 0, commitmentDiscountPercent: Number($("disc").value) || 0, overrunPercent: Number($("overrun").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Hourly value per month</td><td>${fmt(r.baseMonthly)}</td></tr><tr><td>With buffer</td><td>${fmt(r.withBuffer)}</td></tr><tr><td>Fixed monthly fee</td><td><strong>${fmt(r.fixedFee)}</strong></td></tr><tr><td>Annual fee</td><td>${fmt(r.annualFee)}</td></tr><tr><td>Effective hourly rate at the overrun</td><td>${fmt(r.effectiveHourlyAtOverrun)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours per month is the time the client's work takes in an ordinary month. Take it from your time tracking or practice management software, averaged over the last six or twelve months, rather than from memory. Averaging matters because ongoing work is uneven: a quarter end, a year end or a tax deadline can take far longer than a quiet month. If the client is new, use the hours from a similar client of yours.</p>
+<p>The hourly rate is the rate you bill now, or the rate you need. If you are not sure the current rate covers your costs and your own pay, check it first with the <a href="/hourly-rate-calculator/">hourly rate calculator</a>.</p>
+<p>The buffer is extra margin added because a fixed fee moves the risk of overruns from the client to you. Under hourly billing a long month is paid for; under a fixed fee it is not. Look at how far your busiest months for this client ran above the average in your time records, and let that guide the buffer you choose. A client whose hours barely move needs less buffer than one whose hours swing.</p>
+<p>The commitment discount is an optional reduction offered in return for the client agreeing to a full year. It is applied after the buffer. Leave it at zero if you are not offering one. It cannot be more than 100 percent.</p>
+<p>The overrun is a test, not a charge. It asks: if the work takes this much longer than the hours you entered, what hourly rate does the fixed fee actually pay? Try the overrun you saw in the client's busiest month.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 10 hours at 80 an hour is 800 a month under hourly billing. A 15 percent buffer raises that to 920. A 5 percent discount for a yearly commitment brings the fixed fee to 874 a month, or 10,488 a year. If the work then takes 20 percent longer, 12 hours instead of 10, the fixed fee pays an effective 72.83 an hour.</p>
+<p>That last figure is the one to watch. Compare it with the lowest hourly rate you are willing to accept. If it falls below, either raise the buffer, reduce the discount or narrow the scope so that the extra work is billed separately. Changing one input at a time shows which lever matters most for this client.</p>
+<p>The calculator does not say how big a buffer or a discount should be. That depends on how predictable the client is and on what you need to earn, and the evidence for both is in your own records.</p>
+
+<h2>Defining the scope</h2>
+<p>A fixed fee only works if both sides agree what it covers. Write the scope into the engagement letter: which services, how many accounts, roughly what volume of transactions, how many meetings, and what happens to work outside that list. Name the trigger for a review, such as a change in volume or the client adding a new entity, so a fee that was right in January does not quietly become too low by autumn.</p>
+<p>Once a fixed fee is in place, keep recording your time. The hours no longer appear on an invoice, but they are the only way to know whether the fee still pays the rate you set. The <a href="/effective-hourly-rate/">effective hourly rate calculator</a> checks a finished month, and the <a href="/retainer-calculator/">retainer calculator</a> helps if you would rather sell a block of hours each month than a defined scope.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why apply the discount after the buffer?</h3>
+<p>The buffer protects the rate you need; the discount is a commercial choice. Applying the discount last shows exactly what the client pays and lets you see how much of the buffer it gives away.</p>
+<h3>Why does it reject zero hours?</h3>
+<p>The fee and the overrun test both start from the hours the work takes, so the calculator needs a figure above 0.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/retainer-calculator/">Retainer calculator</a></li>
+  <li><a href="/effective-hourly-rate/">Effective hourly rate calculator</a></li>
+  <li><a href="/bookkeeping-package-price-calculator/">Bookkeeping package price calculator</a></li>
+</ul>

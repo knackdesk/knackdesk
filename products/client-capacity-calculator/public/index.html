@@ -1,0 +1,64 @@
+<!-- title: Client Capacity Calculator -->
+<!-- description: Work out how many clients you can serve each month from your hours, admin time and hours per client, and see spare hours, open slots and revenue at capacity. -->
+<h1>Client Capacity Calculator</h1>
+<p>Enter the hours you work in a month, the share of them that goes on admin and other work you cannot bill, the hours an average client takes, how many clients you have now and the average monthly fee. You get the hours left for client work, the most clients those hours can hold, your spare hours, your open slots and the revenue now and at capacity. It is built for bookkeepers, accountants, tax preparers, law firms, consultants and other practices that serve a roster of ongoing clients. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Client capacity is the number of ongoing clients a person or team can serve in a month, set by the hours available for client work and the hours each client takes.</p>
+<p class="formula"><strong>Formula:</strong> billable hours = hours per month × (1 − admin % ÷ 100); maximum clients = billable hours ÷ hours per client, rounded down; spare hours = billable hours − current clients × hours per client; open slots = maximum clients − current clients; revenue at capacity = maximum clients × average fee.</p>
+
+<form class="tool" id="f">
+  <label>Hours worked per month<br><input type="number" id="hours" min="0" step="any" value="160"></label>
+  <label>Share of time on admin and non-client work (%)<br><input type="number" id="admin" min="0" max="100" step="any" value="25"></label>
+  <label>Hours per client per month<br><input type="number" id="hpc" min="0" step="any" value="6"></label>
+  <label>Current clients<br><input type="number" id="clients" min="0" step="1" value="15"></label>
+  <label>Average monthly fee per client (optional)<br><input type="number" id="fee" min="0" step="any" value="500"></label>
+  <p><button class="primary" type="submit">Calculate capacity</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { clientCapacity } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = clientCapacity({ hoursPerMonth: Number($("hours").value) || 0, adminPercent: Number($("admin").value) || 0, hoursPerClient: Number($("hpc").value) || 0, currentClients: Number($("clients").value) || 0, averageFee: Number($("fee").value) || 0 });
+    const note = r.spareHours < 0 ? `<p>Negative spare hours mean you are overbooked: your current clients need more hours than you have for client work.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Hours for client work</td><td>${fmt(r.billableHours)}</td></tr><tr><td>Maximum clients</td><td><strong>${r.maxClients.toLocaleString()}</strong></td></tr><tr><td>Hours used by current clients</td><td>${fmt(r.hoursUsed)}</td></tr><tr><td>Spare hours</td><td>${fmt(r.spareHours)}</td></tr><tr><td>Open slots</td><td>${r.openSlots.toLocaleString()}</td></tr><tr><td>Revenue at capacity</td><td>${fmt(r.revenueAtCapacity)}</td></tr><tr><td>Current revenue</td><td>${fmt(r.currentRevenue)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours worked per month is the total time you, or the team you are planning for, actually work in a month. Count real working hours, after holidays and leave, not the hours you could in theory work. For a team, add up each person's hours, or run the calculator once per person if their roles differ.</p>
+<p>The admin share is the part of those hours that does not go to any client: email, invoicing, chasing payments, marketing, training, internal meetings and the time lost between tasks. The most reliable source is your own time tracking or practice management software. Look at a few months, divide the hours not logged to a client by the total hours worked, and use that percentage. If you do not track non-client time, track it for a few weeks before you trust this figure, because non-client time is easy to underestimate.</p>
+<p>Hours per client is the average time one ongoing client takes in a month, including review and their share of meetings and questions. Take it from your time records: the hours logged to clients in a month divided by the number of clients served that month. If your clients differ a lot in size, run the calculator separately for each group.</p>
+<p>Current clients is the number of ongoing clients you serve now. The average monthly fee is optional; with it, the calculator shows the revenue you have now and the revenue a full roster would bring. Use the average from your invoices or your billing software over recent months.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 160 hours a month with 25 percent on admin leaves 120 hours for client work. At 6 hours per client, those hours hold 20 clients. Fifteen clients use 90 hours, so there are 30 spare hours and 5 open slots. At an average fee of 500, the current roster brings in 7,500 a month and a full roster would bring in 10,000.</p>
+<p>The maximum is rounded down, because a client you can only half serve is not a slot you can sell. Spare hours may still show time left over after the last whole client.</p>
+<p>When spare hours and open slots are negative, you are overbooked: your current clients need more hours than you have for client work. The shortfall comes from somewhere, such as evenings, weekends, slower turnaround or admin that does not get done. The negative figure tells you how many hours, or how many clients, you would need to shed, hand to someone else, or win back by working faster.</p>
+<p>The calculator does not suggest how many clients a practice should carry or how much time admin should take. Those depend on the work you do and how you do it, so the comparison that matters is with your own records from month to month.</p>
+
+<h2>Using it to plan</h2>
+<p>Capacity is the ceiling on revenue from ongoing work. If revenue at capacity is below what you need, no amount of selling closes the gap; you need higher fees, fewer hours per client, or more hours. Each is an input you can change here to see the effect. The <a href="/price-increase-calculator/">price increase calculator</a> shows what a fee rise does to revenue, and the <a href="/utilization-rate-calculator/">utilization rate calculator</a> looks at the share of your time that is billable from the other side.</p>
+<p>It also helps with hiring. Run the calculator with your current team, then again with the hours a new person would add. The extra open slots, multiplied by your average fee, show how many clients the new hire would need to win to pay for themselves.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>What do negative spare hours mean?</h3>
+<p>You are overbooked. Your current clients need more hours than you have for client work after admin, so the extra time is coming from somewhere you did not plan for.</p>
+<h3>Why does it reject zero hours per client?</h3>
+<p>The number of clients you can hold is your hours divided by the hours each client takes, so that figure must be more than 0.</p>
+<h3>Can I use it for hourly clients?</h3>
+<p>Yes. Use the average hours each client takes in a month and the average amount you bill each one per month as the fee.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+  <li><a href="/billable-hours-calculator/">Billable hours calculator</a></li>
+  <li><a href="/realization-rate-calculator/">Realization rate calculator</a></li>
+</ul>
