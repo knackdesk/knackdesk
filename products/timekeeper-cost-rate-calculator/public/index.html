@@ -1,0 +1,72 @@
+<!-- title: Timekeeper Cost Rate Calculator -->
+<!-- description: Work out what one billable hour of a timekeeper costs your firm from salary, benefits, overhead and billable hours, with margin and break-even hours. -->
+<h1>Timekeeper Cost Rate Calculator</h1>
+<p>Enter a timekeeper's annual salary, the cost of their benefits as a percentage of salary, the share of firm overhead you allocate to them, the hours they bill in a year and the rate you bill them at. A timekeeper is anyone whose time is billed to clients: a partner, an associate, a paralegal, a trainee or you. You get the loaded salary, the total annual cost, the cost of one billable hour, the margin per hour at the bill rate and the billed hours needed to cover the year's cost. It is built for law firm partners, practice managers and solo practitioners, and it works the same way for accountants, consultants and other professional practices that bill time. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A timekeeper's cost rate is what one of their billable hours costs the firm once salary, benefits and a share of overhead are spread across the hours they actually bill.</p>
+<p class="formula"><strong>Formula:</strong> loaded salary = annual salary × (1 + benefits % ÷ 100); total annual cost = loaded salary + overhead allocation; cost rate = total annual cost ÷ billable hours per year; margin per hour = bill rate − cost rate; margin % = margin per hour ÷ bill rate × 100; break-even hours = total annual cost ÷ bill rate.</p>
+
+<form class="tool" id="f">
+  <label>Annual salary<br><input type="number" id="salary" min="0" step="any" value="90000"></label>
+  <label>Benefits and employer costs, % of salary<br><input type="number" id="benefits" min="0" step="any" value="20"></label>
+  <label>Overhead allocated to this timekeeper per year<br><input type="number" id="overhead" min="0" step="any" value="60000"></label>
+  <label>Billable hours per year<br><input type="number" id="hours" min="0" step="any" value="1500"></label>
+  <label>Bill rate per hour (optional)<br><input type="number" id="rate" min="0" step="any" value="250"></label>
+  <p><button class="primary" type="submit">Calculate cost rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { timekeeperCostRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = timekeeperCostRate({ annualSalary: Number($("salary").value) || 0, benefitsPercent: Number($("benefits").value) || 0, overheadAllocationAnnual: Number($("overhead").value) || 0, billableHoursPerYear: Number($("hours").value) || 0, billRate: Number($("rate").value) || 0 });
+    const note = r.marginPerHour < 0 ? `<p>A negative margin per hour means the bill rate does not cover what an hour of this timekeeper costs the firm.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Loaded salary</td><td>${fmt(r.loadedSalary)}</td></tr><tr><td>Total annual cost</td><td>${fmt(r.totalAnnualCost)}</td></tr><tr><td>Cost rate per billable hour</td><td><strong>${fmt(r.costRate)}</strong></td></tr><tr><td>Margin per hour</td><td>${fmt(r.marginPerHour)}</td></tr><tr><td>Margin</td><td>${fmt(r.marginPercent)}%</td></tr><tr><td>Break-even billed hours</td><td>${orNa(r.breakEvenHours, "n/a (no bill rate entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Annual salary is the gross pay for the timekeeper for a full year, before tax and deductions, as shown in your payroll records. For a partner or sole practitioner who takes drawings rather than a salary, use the figure you would have to pay someone else to do the same work, or the drawings you need to take. Leaving it at zero makes partner time look free, which it is not.</p>
+<p>Benefits and employer costs cover everything the firm pays on top of salary because it employs this person: employer payroll taxes, pension or retirement contributions, health cover, insurance, professional subscriptions and practising certificate fees, and training. Add them up from payroll and your accounts for the year and divide by the salary to get the percentage. If you know the cash figure rather than the percentage, divide it by the salary and multiply by 100.</p>
+<p>Overhead allocation is the share of the firm's running costs that you assign to this timekeeper for the year: rent, practice management and time recording software, case management systems, insurance premiums, support staff, marketing, accounting and the rest. The total comes from the firm's accounts. How much of it lands on one person depends on your allocation method, which is covered below.</p>
+<p>Billable hours per year are the hours this timekeeper records to client matters and bills, not the hours they are at work. Take them from your time recording or practice management software for the last full year. If you bill only part of the time recorded, use the hours billed, because those are the hours that have to carry the cost.</p>
+<p>Bill rate is the hourly rate you charge for this timekeeper. It is optional. Without it you still get the cost rate; with it you also get the margin and the break-even hours.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a salary of 90,000 with benefits at 20 percent gives a loaded salary of 108,000. Adding an overhead allocation of 60,000 brings the total annual cost to 168,000. Spread across 1,500 billable hours, each billable hour costs the firm 112. Billed at 250, every hour earns a margin of 138, or 55.2 percent of the rate. The timekeeper covers the year's cost after 672 billed hours; every billed hour after that contributes to profit.</p>
+<p>The cost rate is the useful number. It is the floor below which billing this timekeeper loses money, and it is the figure to use when you price fixed fees, compare staffing on a matter or decide whether a discount still pays. Break-even hours turn it round: they show how much of the year's billing goes to covering this person before the work makes a profit.</p>
+<p>A negative margin means the bill rate is below the cost rate. That does not always mean the rate is wrong. It can also mean the billable hours are low, the overhead allocation is heavy, or the salary includes time spent on management or business development that no client pays for.</p>
+
+<h2>How overhead allocation changes the answer</h2>
+<p>There is no single right way to spread overhead, and the cost rate moves with the method you choose. The calculator applies whatever figure you enter, so it is worth knowing what each method does.</p>
+<p>Per head divides total overhead equally across everyone in the firm, including support staff, then loads the support staff share onto the timekeepers. It is simple and treats everyone's desk as costing the same.</p>
+<p>Per fee-earner divides overhead equally across the timekeepers only. It gives the same answer as per head when everyone bills, and a higher figure per timekeeper when the firm has many people who do not.</p>
+<p>By share of fees allocates overhead in proportion to what each timekeeper bills. A partner who bills more carries more overhead, and a junior who bills less carries less. It reflects the idea that higher billers use more of the firm's support, but it also makes the cost rates of high billers look closer to their bill rates.</p>
+<p>Pick one method, use it for every timekeeper and keep it from year to year. A cost rate compared with another cost rate worked out a different way tells you very little. If you are unsure, run the calculator with each method's figure and see how far the answer moves.</p>
+
+<h2>Using the cost rate</h2>
+<p>Run the calculator for each timekeeper, or for each grade if several people are paid alike. The results feed straight into the <a href="/flat-fee-matter-price-calculator/">flat fee matter price calculator</a>, which builds a fixed fee from the hours each grade will spend and their cost rates. They also help when you read a <a href="/matter-budget-variance-calculator/">matter budget variance</a>, because an overrun of junior hours costs the firm less than an overrun of partner hours.</p>
+<p>Rerun the figures when salaries change, when the firm's overhead changes or when a timekeeper's billable hours move. The cost of an hour depends on all three, and a rate that was profitable when it was set can drift below cost without anyone changing it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is break-even shown as n/a?</h3>
+<p>Break-even hours divide the total annual cost by the bill rate. When no bill rate is entered there is nothing to divide by, so the calculator leaves that figure out.</p>
+<h3>Do I include partners?</h3>
+<p>Yes. Give a partner a notional salary for the work they do, or the cost rate will understate what the firm gives up when a partner spends time on a matter.</p>
+<h3>Does this work for accountants and consultants?</h3>
+<p>Yes. The arithmetic is the same for any practice that bills time. Enter your own salary, overhead and hours.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/flat-fee-matter-price-calculator/">Flat fee matter price calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+</ul>

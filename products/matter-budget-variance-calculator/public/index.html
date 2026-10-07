@@ -1,0 +1,69 @@
+<!-- title: Matter Budget Variance Calculator -->
+<!-- description: Compare a matter's budget with the hours and fees actually recorded to see the overrun, the realized rate, the write-off and how much the agreed fee recovered. -->
+<h1>Matter Budget Variance Calculator</h1>
+<p>Enter the hours and fees you budgeted for a matter, the hours and fees actually recorded against it, and, if the client agreed a fixed or capped fee, that agreed figure. You get the variance in hours and fees as numbers and percentages, the fees recorded per hour worked, the amount you will have to write off and the share of the recorded time the agreed fee recovers. It is built for law firm partners, practice managers and solo practitioners, and it works the same way for accountants, consultants and other professional practices that budget their engagements. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Budget variance is the gap between what a matter was expected to take and what it actually took, in hours and in fees, and it shows whether the estimate, the scope or the staffing went wrong.</p>
+<p class="formula"><strong>Formula:</strong> hours variance = actual hours − budget hours; hours variance % = hours variance ÷ budget hours × 100; fees variance = actual fees − budget fees; fees variance % = fees variance ÷ budget fees × 100; realized rate = actual fees ÷ actual hours; write-off = actual fees − agreed fee (not below 0); recovery % = agreed fee ÷ actual fees × 100.</p>
+
+<form class="tool" id="f">
+  <label>Budget hours<br><input type="number" id="bh" min="0" step="any" value="40"></label>
+  <label>Budget fees<br><input type="number" id="bf" min="0" step="any" value="9000"></label>
+  <label>Actual hours recorded<br><input type="number" id="ah" min="0" step="any" value="52"></label>
+  <label>Actual fees recorded (time value)<br><input type="number" id="af" min="0" step="any" value="11700"></label>
+  <label>Agreed or capped fee (optional)<br><input type="number" id="agreed" min="0" step="any" value="10000"></label>
+  <p><button class="primary" type="submit">Calculate variance</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { matterBudgetVariance } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = matterBudgetVariance({ budgetHours: Number($("bh").value) || 0, budgetFees: Number($("bf").value) || 0, actualHours: Number($("ah").value) || 0, actualFees: Number($("af").value) || 0, agreedFee: Number($("agreed").value) || 0 });
+    const note = r.feesVariance > 0 ? `<p>A positive variance means the matter overran its budget.</p>` : r.feesVariance < 0 ? `<p>A negative variance means the matter came in under budget.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Hours variance</td><td>${fmt(r.hoursVariance)} (${fmt(r.hoursVariancePercent)}%)</td></tr><tr><td>Fees variance</td><td><strong>${fmt(r.feesVariance)} (${fmt(r.feesVariancePercent)}%)</strong></td></tr><tr><td>Realized rate per hour</td><td>${orNa(r.realizedRate, "n/a (no actual hours entered)")}</td></tr><tr><td>Write-off against agreed fee</td><td>${orNa(r.writeOff, "n/a (no agreed fee entered)")}</td></tr><tr><td>Recovery</td><td>${r.recoveryPercent === null ? "n/a (no agreed fee or actual fees entered)" : `${fmt(r.recoveryPercent)}%`}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Budget hours and budget fees are the estimate you gave the client or set internally when the matter opened. They usually sit in the engagement letter, the matter opening form or the budget field in your practice management software. If the budget was revised with the client's agreement, use the revised figures, because that is the budget the matter was run against.</p>
+<p>Actual hours are the hours recorded to the matter by every timekeeper, meaning anyone whose time is billed. Actual fees are the value of that time at the rates you record it at, before any discount or write-down. Your time recording software reports both per matter.</p>
+<p>The agreed fee is optional. Enter it when the client agreed a fixed fee, a cap or a fee estimate you have decided to hold to. The calculator then shows how much of the recorded time that fee covers and how much will be written off. Leave it at zero for a matter billed purely by the hour, where the recorded time is what the client pays.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a matter budgeted at 40 hours and 9,000 took 52 hours and 11,700. Hours ran 12 over, a variance of 30 percent, and fees ran 2,700 over, also 30 percent. The recorded time works out to 225 per hour. Against an agreed fee of 10,000, 1,700 of the recorded time cannot be billed and is written off, and the fee recovers 85.47 percent of the time value.</p>
+<p>A positive variance is an overrun: the matter took more than the budget. A negative variance means the matter came in under budget. When hours and fees move by different percentages, the mix of people changed. Fees rising faster than hours means more senior time went in than planned; fees rising more slowly means juniors did more of the work.</p>
+<p>The realized rate here is the recorded fees divided by the recorded hours. It is the blended rate of the people who actually worked the matter. To see what the client is really paying per hour on a fixed fee, divide the agreed fee by the actual hours yourself, or use the <a href="/realization-rate-calculator/">realization rate calculator</a>.</p>
+
+<h2>Write-off and recovery</h2>
+<p>Write-off is the recorded time value above the agreed fee. It is zero when the agreed fee covers all the time recorded. Recovery is the agreed fee as a percentage of the recorded fees. Below 100 percent, part of the time was given away; above 100 percent, the fee paid for more than the time recorded, which can happen when a matter goes more smoothly than planned.</p>
+<p>When no agreed fee is entered, both figures show as n/a. That is deliberate: on an hourly matter there is no fixed figure to measure the time against, and the question becomes whether the client pays the invoice, not whether the fee covers the work.</p>
+
+<h2>What to do with a matter that overran</h2>
+<p>An overrun is a signal about how the matter was planned, not about the time sheet. The temptation is to trim the recorded hours so the matter looks on budget. That hides the information you need and makes the next estimate just as wrong. Record the time honestly and fix the cause instead.</p>
+<p>Look first at the scope. If the client asked for work the budget did not cover, the overrun belongs in a conversation about a change in scope, ideally before the work is done rather than after. Your engagement letter is the place to set out how that conversation will happen.</p>
+<p>Next, the estimate. If the scope held and the work still took longer, the budget was too thin. Compare it with the hours recorded on similar matters and use those figures next time, or add a scope contingency with the <a href="/flat-fee-matter-price-calculator/">flat fee matter price calculator</a>.</p>
+<p>Last, the staffing. If fees overran by more than hours, senior people did work the budget gave to juniors. Ask whether that was necessary, and check the cost of each grade with the <a href="/timekeeper-cost-rate-calculator/">timekeeper cost rate calculator</a> so you can see what the change in mix cost the firm.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are write-off and recovery shown as n/a?</h3>
+<p>Both compare the recorded fees with an agreed fee. When the agreed fee is zero or left empty, there is nothing to compare against, so the calculator leaves them out.</p>
+<h3>Can I use this part way through a matter?</h3>
+<p>Yes. Enter the hours and fees recorded so far against the full budget to see how much of the budget is used. A matter that has used most of its budget with work still to do is one to raise with the client now.</p>
+<h3>Does this work for accountants and consultants?</h3>
+<p>Yes. Any engagement with a budget in hours and fees works the same way.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/realization-rate-calculator/">Realization rate calculator</a></li>
+  <li><a href="/flat-fee-matter-price-calculator/">Flat fee matter price calculator</a></li>
+  <li><a href="/timekeeper-cost-rate-calculator/">Timekeeper cost rate calculator</a></li>
+</ul>

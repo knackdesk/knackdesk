@@ -1,0 +1,70 @@
+<!-- title: Contingency Fee Split Calculator -->
+<!-- description: Split a settlement under a contingency fee: the firm's fee, any referral share, case costs before or after the fee, the client's net and the firm's hourly rate. -->
+<h1>Contingency Fee Split Calculator</h1>
+<p>Enter the settlement or award, the contingency percentage in your fee agreement, the case costs, whether those costs come off before or after the fee is worked out, any referral share paid to another firm and the hours your firm spent on the case. You get the amount the fee is worked out on, the gross fee, the referral fee, the firm's net fee, what the client receives and the firm's effective hourly rate. It is built for law firm partners, practice managers and solo practitioners who take matters on a contingency basis and want to see both sides of the split before they explain it to a client. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A contingency fee split divides a settlement between the firm's fee, any referral share, the case costs and the client, according to the percentage and the order of deductions in the fee agreement.</p>
+<p class="formula"><strong>Formula:</strong> fee base = settlement (or settlement − case costs when costs come off first); gross fee = fee base × contingency % ÷ 100; referral fee = gross fee × referral % ÷ 100; net fee to firm = gross fee − referral fee; net to client = settlement − gross fee − case costs; effective hourly rate = net fee to firm ÷ hours worked.</p>
+
+<form class="tool" id="f">
+  <label>Settlement or award<br><input type="number" id="settlement" min="0" step="any" value="120000"></label>
+  <label>Contingency percentage<br><input type="number" id="pct" min="0" step="any" value="33.33"></label>
+  <label>Case costs (optional)<br><input type="number" id="costs" min="0" step="any" value="8000"></label>
+  <label>When do case costs come off?<br><select id="order"><option value="after" selected>After the fee is worked out</option><option value="before">Before the fee is worked out</option></select></label>
+  <label>Referral share, % of the fee (optional)<br><input type="number" id="referral" min="0" step="any" value="25"></label>
+  <label>Hours the firm worked on the case (optional)<br><input type="number" id="hours" min="0" step="any" value="180"></label>
+  <p><button class="primary" type="submit">Calculate split</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { contingencyFeeSplit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = contingencyFeeSplit({ settlementAmount: Number($("settlement").value) || 0, contingencyPercent: Number($("pct").value) || 0, caseCosts: Number($("costs").value) || 0, costsDeductedBeforeFee: $("order").value === "before", referralFeePercent: Number($("referral").value) || 0, hoursWorked: Number($("hours").value) || 0 });
+    const note = r.netToClient < 0 ? `<p>A negative net to client means the fee and the case costs together are more than the settlement.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Fee base</td><td>${fmt(r.feeBase)}</td></tr><tr><td>Gross fee</td><td>${fmt(r.grossFee)}</td></tr><tr><td>Referral fee</td><td>${fmt(r.referralFee)}</td></tr><tr><td>Net fee to the firm</td><td><strong>${fmt(r.netFeeToFirm)}</strong></td></tr><tr><td>Net to the client</td><td><strong>${fmt(r.netToClient)}</strong></td></tr><tr><td>Effective hourly rate</td><td>${orNa(r.effectiveHourlyRate, "n/a (no hours entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The settlement or award is the gross amount recovered for the client, before anything is taken off. Use the figure in the settlement agreement or the judgment.</p>
+<p>The contingency percentage is the share of the recovery that the fee agreement gives the firm. Enter it exactly as the agreement states it. If the agreement sets different percentages for different stages, such as settling before or after proceedings are issued, enter the one that applies to how this case ended.</p>
+<p>Case costs are the expenses the firm paid to run the case and recovers from the settlement: court or filing fees, expert reports, medical records, depositions, travel. Your matter ledger or practice management software lists them. The calculator rejects costs greater than the settlement, because there would be nothing left to divide.</p>
+<p>The order of deductions sets whether costs come off the settlement before the percentage is applied or after. The fee agreement says which. The difference matters, and it is explained below.</p>
+<p>The referral share is the percentage of the firm's fee paid to another firm or lawyer who referred the case, as set out in the referral arrangement. Hours worked are the hours recorded to the case by every timekeeper, meaning anyone whose time is billed, taken from your time recording software. They are optional; with them you see what the case paid per hour.</p>
+<p>The calculator applies the terms you enter. The rules on whether a contingency fee may be charged, what percentage may be agreed, how costs are treated and whether referral fees may be paid differ from place to place and are a matter for your jurisdiction and professional body.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a settlement of 120,000 at 33.33 percent, with 8,000 of case costs taken after the fee, gives a fee base of the full 120,000 and a gross fee of 39,996. A 25 percent referral share sends 9,999 to the referring firm, leaving the firm a net fee of 29,997. The client receives 120,000 less the fee and the costs, which is 72,004. Over 180 hours, the firm's net fee works out to 166.65 an hour.</p>
+<p>The page shows both views at once. The firm's view is the net fee after the referral share and the hourly rate it represents. The client's view is the net to the client: what actually reaches them once the fee and the costs are paid. Both are worth having in front of you when you explain a settlement offer, because the client is deciding on their figure, not the gross.</p>
+
+<h2>Costs before or after the fee</h2>
+<p>Whether case costs come off before or after the fee is worked out is set by the fee agreement and by local rules, and it changes both sides of the split. Run the example with costs taken first and the fee base falls to 112,000. The gross fee becomes 37,329.60 and the client receives 74,670.40, which is 2,666.40 more than with costs taken after the fee. That difference is the contingency percentage applied to the costs: when costs come off first, the firm does not take a share of the money used to repay them.</p>
+<p>Use the two-option choice on the form to show a client exactly what the agreement means in money. If you are drafting an agreement, running both orders on a likely settlement figure makes the choice concrete.</p>
+
+<h2>Reading the hourly rate</h2>
+<p>The effective hourly rate is the firm's net fee divided by the hours recorded. It is a look back, not a price. A contingency case carries the risk that a case ends with no recovery and no fee, so a single case's hourly rate says little on its own. Compare it across the firm's contingency matters, including those that recovered nothing, and with the cost of the time spent, which the <a href="/timekeeper-cost-rate-calculator/">timekeeper cost rate calculator</a> works out. If the net fee per hour falls below the cost rate of the people who did the work, the case cost the firm money even though it settled.</p>
+<p>The referral share is taken from the firm's fee, not from the client's net, so it changes the firm's figures and leaves the client's unchanged. Enter zero for a case with no referral.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the hourly rate shown as n/a?</h3>
+<p>The hourly rate divides the net fee by the hours worked. When no hours are entered there is nothing to divide by, so the calculator leaves it out.</p>
+<h3>Does the referral share reduce what the client gets?</h3>
+<p>No. In this calculator the referral share comes out of the firm's fee. The client's net depends only on the settlement, the fee and the costs.</p>
+<h3>Is this the same as a scope contingency on a fixed fee?</h3>
+<p>No. A scope contingency is an allowance for unknown work inside a fixed fee, covered by the <a href="/flat-fee-matter-price-calculator/">flat fee matter price calculator</a>. A contingency fee depends on the outcome of the case.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/timekeeper-cost-rate-calculator/">Timekeeper cost rate calculator</a></li>
+  <li><a href="/lock-up-days-calculator/">Lock-up days calculator</a></li>
+  <li><a href="/realization-rate-calculator/">Realization rate calculator</a></li>
+</ul>

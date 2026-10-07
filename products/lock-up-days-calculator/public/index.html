@@ -1,0 +1,66 @@
+<!-- title: Lock-Up Days Calculator -->
+<!-- description: Work out your firm's lock-up from unbilled work in progress, unpaid bills and annual fees: WIP days, debtor days, cash tied up and cash freed per day saved. -->
+<h1>Lock-Up Days Calculator</h1>
+<p>Enter the value of your unbilled work in progress (WIP), the bills sent and not yet paid, and your fees for a year. You get the fees earned per day, the days of fees sitting as unbilled WIP, the days sitting as unpaid bills, the total lock-up in days, the cash tied up and the cash you free each time lock-up falls by one day. It is built for law firm partners, practice managers and solo practitioners who want to know how long the firm waits to be paid for work it has already done. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Lock-up is the number of days between doing the work and being paid for it, split into the days the work sits unbilled and the days the bill sits unpaid.</p>
+<p class="formula"><strong>Formula:</strong> daily fees = annual fees ÷ days in year; WIP days = unbilled WIP ÷ daily fees; debtor days = accounts receivable ÷ daily fees; lock-up days = WIP days + debtor days; locked-up cash = unbilled WIP + accounts receivable; cash per day of lock-up = daily fees.</p>
+
+<form class="tool" id="f">
+  <label>Unbilled work in progress (WIP)<br><input type="number" id="wip" min="0" step="any" value="150000"></label>
+  <label>Accounts receivable (billed, unpaid)<br><input type="number" id="ar" min="0" step="any" value="210000"></label>
+  <label>Annual fees<br><input type="number" id="fees" min="0" step="any" value="1460000"></label>
+  <label>Days in the year<br><input type="number" id="days" min="1" step="any" value="365"></label>
+  <p><button class="primary" type="submit">Calculate lock-up</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { lockUpDays } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = lockUpDays({ unbilledWip: Number($("wip").value) || 0, accountsReceivable: Number($("ar").value) || 0, annualFees: Number($("fees").value) || 0, daysInYear: Number($("days").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Fees per day</td><td>${fmt(r.dailyFees)}</td></tr><tr><td>WIP days (unbilled)</td><td>${fmt(r.wipDays)}</td></tr><tr><td>Debtor days (unpaid)</td><td>${fmt(r.debtorDays)}</td></tr><tr><td>Lock-up days</td><td><strong>${fmt(r.lockUpDays)}</strong></td></tr><tr><td>Cash locked up</td><td>${fmt(r.lockedUpCash)}</td></tr><tr><td>Cash freed per day of lock-up cut</td><td>${fmt(r.cashPerDayOfLockUp)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Unbilled WIP is the value of time recorded to client matters that has not yet been billed, plus any disbursements paid out and not yet billed. Your practice management or time recording software reports it as a WIP or unbilled time balance. Use the value at the rates you would bill it at, after any write-downs you already know about, because a figure inflated by time you will never bill makes the result look worse than it is.</p>
+<p>Accounts receivable, sometimes called debtors, is the total of bills sent and not yet paid. It comes from the aged debtors report in your accounts or billing system. Leave out money held for clients in a client or trust account; that is not the firm's money and is not part of lock-up.</p>
+<p>Annual fees are the fees the firm bills in a year. Use the last twelve months from your accounts, so the daily figure reflects the firm as it is now. If the firm is growing or shrinking fast, a recent quarter multiplied by four can give a fairer picture.</p>
+<p>Days in the year is 365 by default. Some firms count working days instead. Either works as long as you use the same count every time you compare.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, annual fees of 1,460,000 over 365 days come to 4,000 of fees a day. Unbilled WIP of 150,000 is 37.5 days of fees, and receivables of 210,000 are 52.5 days. Total lock-up is 90 days: on these figures, the firm waits 90 days from doing a piece of work to having the cash for it. In money, 360,000 of work the firm has already done is tied up. Each day of lock-up cut frees 4,000.</p>
+<p>That last figure is what makes lock-up worth watching. The cash it releases is not new income; it is money the firm has already earned and is waiting for. Bringing it in sooner pays salaries and rent without an overdraft and shortens the time the firm carries the cost of its own work.</p>
+
+<h2>Two parts, two different fixes</h2>
+<p>Lock-up has two parts, and they have different causes. Looking at the total alone hides which one needs attention.</p>
+<p>WIP days measure how long work sits before it is billed. The fix is billing cadence. Work billed at the end of a matter waits for the whole matter; work billed monthly or at agreed stages waits a few weeks at most. Interim billing, stage payments written into the engagement letter, and a fixed day each month when every timekeeper (anyone whose time is billed) finishes recording time and every partner signs off bills all shorten this part. So does recording time on the day it is worked, since time that is recorded late is billed late.</p>
+<p>Debtor days measure how long a bill sits before it is paid. The fix is collection. Clear payment terms agreed at the start, bills that are easy to check and pay, prompt reminders on a set schedule, and a named person who chases overdue accounts all shorten this part. Taking money on account before work starts removes some of it altogether. If your terms allow interest on late payment, the <a href="/late-fee-calculator/">late fee calculator</a> works out the charge.</p>
+<p>Run the calculator each month and keep the two figures side by side. When WIP days rise, look at billing. When debtor days rise, look at collection. A falling total with rising debtor days can mean the firm is billing faster and the clients are paying more slowly, which needs a different response from both parts improving together.</p>
+
+<h2>Using the figures for cash planning</h2>
+<p>Locked-up cash is a buffer in reverse: it is money the firm has spent the cost of earning but cannot yet use. Set it against what the firm has in the bank with the <a href="/cash-runway-calculator/">cash runway calculator</a> to see how far a cut in lock-up would extend the months you can run without new borrowing. If you set a goal for lock-up, set it from your own figures: take the current total and decide how many days of improvement the firm can deliver in the next quarter, then multiply by the cash per day to see what it is worth.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does the calculator refuse annual fees of 0?</h3>
+<p>Lock-up divides WIP and receivables by the fees earned per day. With no fees there is no daily figure to divide by.</p>
+<h3>Should I include disbursements in WIP?</h3>
+<p>Yes, if you have paid them and not yet billed them. They are cash the firm has spent and is waiting to recover.</p>
+<h3>Does client money count?</h3>
+<p>No. Money held in a client or trust account belongs to the client, not the firm, and is not part of lock-up.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+  <li><a href="/invoice-due-date/">Invoice due date calculator</a></li>
+  <li><a href="/realization-rate-calculator/">Realization rate calculator</a></li>
+</ul>

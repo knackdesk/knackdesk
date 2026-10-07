@@ -1,0 +1,73 @@
+<!-- title: Flat Fee Matter Price Calculator -->
+<!-- description: Price a flat fee matter from each grade's hours and cost rate, plus disbursements, a scope contingency and your margin, with the effective hourly rate. -->
+<h1>Flat Fee Matter Price Calculator</h1>
+<p>Enter the hours you expect each grade of timekeeper to spend on a matter, what an hour of each grade costs the firm, the disbursements you will carry, a contingency for scope you cannot yet name and the margin you want the fee to earn. A timekeeper is anyone whose time is billed: here, a partner, an associate and a paralegal. You get the labour cost, the cost with contingency, the total cost, the flat fee and the effective hourly rate the fee works out to. It is built for law firm partners, practice managers and solo practitioners, and it works the same way for accountants, consultants and other professional practices that quote fixed fees. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A flat fee priced from cost is the expected cost of doing the work, plus an allowance for unknown scope, grossed up so that your chosen margin is a share of the fee itself.</p>
+<p class="formula"><strong>Formula:</strong> labour cost = Σ (hours × cost rate) for each grade; cost with contingency = labour cost × (1 + contingency % ÷ 100); total cost = cost with contingency + disbursements; flat fee = total cost ÷ (1 − margin % ÷ 100); effective hourly rate = flat fee ÷ total hours.</p>
+
+<form class="tool" id="f">
+  <label>Partner hours<br><input type="number" id="ph" min="0" step="any" value="4"></label>
+  <label>Partner cost rate per hour<br><input type="number" id="pr" min="0" step="any" value="180"></label>
+  <label>Associate hours<br><input type="number" id="ah" min="0" step="any" value="12"></label>
+  <label>Associate cost rate per hour<br><input type="number" id="ar" min="0" step="any" value="110"></label>
+  <label>Paralegal hours<br><input type="number" id="lh" min="0" step="any" value="6"></label>
+  <label>Paralegal cost rate per hour<br><input type="number" id="lr" min="0" step="any" value="55"></label>
+  <label>Disbursements (optional)<br><input type="number" id="disb" min="0" step="any" value="300"></label>
+  <label>Scope contingency, % of labour cost<br><input type="number" id="cont" min="0" step="any" value="15"></label>
+  <label>Margin, % of the fee<br><input type="number" id="margin" min="0" step="any" value="35"></label>
+  <p><button class="primary" type="submit">Calculate flat fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { flatFeeMatterPrice } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = flatFeeMatterPrice({ partnerHours: Number($("ph").value) || 0, partnerCostRate: Number($("pr").value) || 0, associateHours: Number($("ah").value) || 0, associateCostRate: Number($("ar").value) || 0, paralegalHours: Number($("lh").value) || 0, paralegalCostRate: Number($("lr").value) || 0, disbursements: Number($("disb").value) || 0, contingencyPercent: Number($("cont").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Labour cost</td><td>${fmt(r.labourCost)}</td></tr><tr><td>Cost with contingency</td><td>${fmt(r.costWithContingency)}</td></tr><tr><td>Total cost</td><td>${fmt(r.totalCost)}</td></tr><tr><td>Flat fee</td><td><strong>${fmt(r.flatFee)}</strong></td></tr><tr><td>Total hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Effective hourly rate</td><td>${orNa(r.effectiveHourlyRate, "n/a (no hours entered)")}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours for each grade are your estimate of the time the matter will take at that level: the partner's review and client calls, the associate's drafting and research, the paralegal's document work and filing. The best source is your own history. Pull the time recorded on a few recent matters of the same kind from your practice management or time recording software and look at how it split between grades. If a grade has no part in the matter, leave its hours at zero.</p>
+<p>Cost rates are what an hour of each grade costs the firm, not what you bill for it. The <a href="/timekeeper-cost-rate-calculator/">timekeeper cost rate calculator</a> works this out from salary, benefits, overhead and billable hours. Pricing from cost rather than from bill rates shows you what the fee has to recover before it earns anything.</p>
+<p>Disbursements are the costs you will pay out on the client's behalf and recover inside the fee: court or filing fees, search fees, couriers, travel. If your engagement letter bills disbursements separately on top of the fixed fee, leave this at zero so they are not counted twice.</p>
+<p>The scope contingency is a percentage added to labour cost for the work you know will appear but cannot yet name. Margin is the share of the final fee you want left after all costs.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 4 partner hours at a cost of 180, 12 associate hours at 110 and 6 paralegal hours at 55 give a labour cost of 2,370. A 15 percent contingency lifts it to 2,725.50, and 300 of disbursements brings the total cost to 3,025.50. To leave a 35 percent margin, the fee is 3,025.50 divided by 0.65, which is 4,654.62. Spread over the 22 estimated hours, that fee works out to 211.57 an hour.</p>
+<p>The effective hourly rate is a check, not a target. Compare it with the rates you bill the same people at by the hour. If it is well below, the matter mix or the margin is doing less than you thought; if it is well above, the client is paying a premium for certainty and you can decide whether the quote is competitive.</p>
+
+<h2>Why the margin divides rather than multiplies</h2>
+<p>The calculator treats margin as a share of the fee. At 35 percent, 35 of every 100 in the fee is left after costs. That is why the total cost is divided by 0.65 rather than multiplied by 1.35. Adding 35 percent to the cost would give a fee of 4,084.43, and the share of that fee left after costs would be only 25.93 percent. If you think of your margin as a markup on cost, convert it first or the fee will come out lower than you meant.</p>
+<p>The same arithmetic explains why a margin of 100 percent or more is rejected. A fee where all of it is margin would leave nothing to pay for the work, so there is no fee that achieves it.</p>
+
+<h2>Scope contingency is not a contingency fee</h2>
+<p>The contingency in this calculator is an allowance for scope. On a fixed fee the firm carries the risk of the matter taking longer than planned: an extra round of correspondence, a document that arrives late and needs a second review, a counterparty who takes a different line. You cannot name these in advance, but you know from experience that something of the kind tends to appear. The contingency puts a price on that inside the fee, so the margin survives when it does. Choose the percentage from your own matters: compare the hours estimated with the hours recorded on past flat fee work of the same type.</p>
+<p>A contingency fee is something else entirely. It is a fee that depends on the outcome of the matter, usually a share of what the client recovers, and it is covered by the <a href="/contingency-fee-split-calculator/">contingency fee split calculator</a>. Whether and how a contingency fee may be agreed is a matter for your jurisdiction and professional body; nothing on this page touches it.</p>
+
+<h2>After the matter closes</h2>
+<p>Compare the hours you estimated with the hours actually recorded. The <a href="/matter-budget-variance-calculator/">matter budget variance calculator</a> shows the overrun or saving and how much of the time the fixed fee recovered. Feed what you learn back into the next estimate, grade by grade, so each quote starts from better figures than the last.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the effective hourly rate shown as n/a?</h3>
+<p>The effective rate divides the fee by the total hours. When no hours are entered there is nothing to divide by, so the calculator leaves it out.</p>
+<h3>Can I use bill rates instead of cost rates?</h3>
+<p>You can, but the margin then sits on top of a figure that already contains profit, and the fee will be higher than the cost-based one. Use cost rates if you want to know what the work costs the firm.</p>
+<h3>Does this work for accountants and consultants?</h3>
+<p>Yes. Rename the grades in your head to whatever levels your practice uses; the arithmetic is the same.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/timekeeper-cost-rate-calculator/">Timekeeper cost rate calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+  <li><a href="/matter-budget-variance-calculator/">Matter budget variance calculator</a></li>
+</ul>
