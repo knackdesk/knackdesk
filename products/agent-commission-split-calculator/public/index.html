@@ -1,0 +1,67 @@
+<!-- title: Agent Commission Split Calculator -->
+<!-- description: Split the commission a carrier pays on insurance policies between the agent and the agency, take off per-policy agency fees and see what the agent keeps. -->
+<h1>Agent Commission Split Calculator</h1>
+<p>Enter the premium of a policy, the commission percentage the carrier pays on it, the agent's share of that commission and the number of policies. Add any fee the agency charges the agent per policy. You get the gross commission, the agent's share, the agency's share, the total agency fees, what the agent keeps after the fees and that net as a percentage of the premium written. It is built for individual producers working out what a book of policies will pay them, and for owners and managers of independent insurance agencies and brokerages setting or checking a split. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A commission split divides the commission a carrier pays on a policy between the agent who wrote it and the agency the agent works through.</p>
+<p class="formula"><strong>Formula:</strong> gross commission = premium × carrier commission % ÷ 100 × policies; agent share = gross commission × agent split % ÷ 100; agency share = gross commission − agent share; agency fees = fee per policy × policies; agent net = agent share − agency fees; agent effective % of premium = agent net ÷ (premium × policies) × 100.</p>
+
+<form class="tool" id="f">
+  <label>Annual premium per policy<br><input type="number" id="prem" min="0" step="any" value="1500"></label>
+  <label>Carrier commission, %<br><input type="number" id="carr" min="0" max="100" step="any" value="12"></label>
+  <label>Agent's split of the commission, %<br><input type="number" id="split" min="0" max="100" step="any" value="60"></label>
+  <label>Number of policies (optional)<br><input type="number" id="pol" min="0" step="1" value="25"></label>
+  <label>Agency fee per policy (optional)<br><input type="number" id="fee" min="0" step="any" value="10"></label>
+  <p><button class="primary" type="submit">Calculate commission split</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { agentCommissionSplit } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const pol = $("pol").value === "" ? 1 : Number($("pol").value);
+    const r = agentCommissionSplit({ premium: Number($("prem").value) || 0, carrierCommissionPercent: Number($("carr").value) || 0, agentSplitPercent: Number($("split").value) || 0, policies: pol, agencyFeePerPolicy: Number($("fee").value) || 0 });
+    const note = r.agentNet < 0 ? `<p>A negative agent net means the agency fees are larger than the agent's share of the commission, so on these policies the agent pays more to the agency than they earn.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Gross commission from the carrier</td><td>${fmt(r.grossCommission)}</td></tr><tr><td>Agent's share</td><td>${fmt(r.agentShare)}</td></tr><tr><td>Agency's share</td><td>${fmt(r.agencyShare)}</td></tr><tr><td>Agency fees</td><td>${fmt(r.agencyFees)}</td></tr><tr><td>Agent net</td><td><strong>${fmt(r.agentNet)}</strong></td></tr><tr><td>Agent net as % of premium</td><td>${fmt(r.agentEffectivePercentOfPremium)}%</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Premium is the annual premium of one policy, the amount the client pays the carrier. If the policies you are working with have different premiums, enter the total premium divided by the number of policies, or run the calculator once per policy. The carrier commission percentage is the share of premium the carrier pays to the agency. It is on the carrier commission statement and in the carrier agreement, and it may differ between new business and renewal commission, the commission a carrier pays each time a policy renews. Run the calculator once for each rate if so.</p>
+<p>The agent's split is the share of the carrier's commission that the agency passes on to the agent who wrote the policy. In this calculator the agent is a producer: a licensed person who sells and services policies. The split is set in the producer compensation plan or the agent's contract with the agency, and it may differ for new and renewal business or for policies the agency supplied the lead for. The agency fee per policy is any fixed charge the agency takes from the agent for each policy, such as a fee for processing, technology or errors and omissions cover. Leave it at 0 if there is none. Commission structures, and what may be charged to clients, are set by carriers, contracts and your jurisdiction; the calculator applies the terms you enter and does not say what a split ought to be.</p>
+
+<h2>The producer's view</h2>
+<p>For the producer, the line that matters is the agent net: the share of commission after the agency's fees. The agent net as a percentage of premium puts that in the same terms as the carrier's commission rate, so you can see how much of each unit of premium you write ends up with you. With a fixed fee per policy, that percentage falls as premiums get smaller, because the same fee takes a larger bite out of a smaller commission. Comparing two agency offers is easier in these terms: enter each offer's split and fees against the same premium and policy count and compare the agent net.</p>
+<p>The calculator works on the policies you enter, whether that is one policy, a month's new business or the producer's whole book of business, the set of policies and clients the producer looks after and earns commission on. It does not include salary, bonuses or other pay from the agency, only the commission split and the per-policy fees.</p>
+
+<h2>The agency's view</h2>
+<p>For the agency, the agency share is the commission it keeps before its own costs, and the agency fees are added on top of that. Together they are what the agency receives from these policies. Out of that the agency pays for its office, support staff, systems and everything else that lets the agent write and service the business. Running the calculator with the agency's real figures for a recent month is a quick way to see how the split and the fees together cover the cost of supporting each producer. To set the agency's income against the people it supports, use the <a href="/revenue-per-producer-calculator/">revenue per producer calculator</a>.</p>
+
+<h2>When the agent net is negative</h2>
+<p>If the fees per policy are larger than the agent's share of the commission on each policy, the agent net turns negative and the effective percentage of premium falls below zero. On these policies the agent pays the agency more than the commission they earn. This can happen with small premiums, a low carrier commission rate or a small split. Check that the premium and commission rate are for the same term, and that the fee applies per policy rather than per client or per month.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 25 policies at 1,500 of premium each are 37,500 of premium. At a carrier commission of 12 percent the gross commission is 4,500. A 60 percent split gives the agent 2,700 and leaves the agency 1,800. Agency fees of 10 per policy come to 250, so the agent keeps 2,450, which is 6.53 percent of the premium written.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Does the split apply to renewals as well?</h3>
+<p>Only if your contract says so. If renewals have a different carrier rate or split, run the calculator separately for renewal business.</p>
+<h3>Why is the effective percentage 0 when premium is 0?</h3>
+<p>The percentage divides by the premium written. With no premium there is nothing to divide by, so it shows 0.</p>
+<h3>Can the split be 100 percent?</h3>
+<p>Yes. Enter 100 and the agency share becomes 0, leaving only any fees per policy.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/commission-calculator/">Commission calculator</a></li>
+  <li><a href="/renewal-commission-calculator/">Renewal commission calculator</a></li>
+  <li><a href="/revenue-per-producer-calculator/">Revenue per producer calculator</a></li>
+</ul>

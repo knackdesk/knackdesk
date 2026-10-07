@@ -1,0 +1,65 @@
+<!-- title: Policy Retention Rate Calculator -->
+<!-- description: Work out the share of policies an insurance agency kept over a period, the lapse rate, net growth after new business and the commission kept and lost. -->
+<h1>Policy Retention Rate Calculator</h1>
+<p>Enter how many policies were in force at the start of a period, how many were lost during it and how many new policies were written. Add the commission one policy brings in a year if you want to see what the losses cost. You get the retention rate, the lapse rate, the policies at the end of the period, the net growth of the book and the commission kept and lost. It is built for owners and managers of independent insurance agencies and brokerages, and for individual producers who want to track their own book. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Policy retention rate is the share of the policies in force at the start of a period that were still in force at the end of it.</p>
+<p class="formula"><strong>Formula:</strong> retention % = (policies at start − policies lost) ÷ policies at start × 100; lapse % = 100 − retention %; policies at end = policies at start − policies lost + new policies; net growth % = (policies at end − policies at start) ÷ policies at start × 100; commission lost = policies lost × commission per policy; commission retained = (policies at start − policies lost) × commission per policy.</p>
+
+<form class="tool" id="f">
+  <label>Policies in force at the start of the period<br><input type="number" id="start" min="0" step="1" value="400"></label>
+  <label>Policies lost during the period<br><input type="number" id="lost" min="0" step="1" value="48"></label>
+  <label>New policies written in the period (optional)<br><input type="number" id="new" min="0" step="1" value="60"></label>
+  <label>Annual commission per policy (optional)<br><input type="number" id="comm" min="0" step="any" value="120"></label>
+  <p><button class="primary" type="submit">Calculate retention rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { policyRetentionRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = policyRetentionRate({ policiesAtStart: Number($("start").value) || 0, policiesLost: Number($("lost").value) || 0, newPolicies: Number($("new").value) || 0, averageAnnualCommission: Number($("comm").value) || 0 });
+    const note = r.netGrowthPercent < 0 ? `<p>A negative net growth means the new policies written did not replace the policies lost, so the book ended the period smaller than it started.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Retention rate</td><td><strong>${fmt(r.retentionPercent)}%</strong></td></tr><tr><td>Lapse rate</td><td>${fmt(r.lapsePercent)}%</td></tr><tr><td>Policies at end of period</td><td>${fmt(r.policiesAtEnd)}</td></tr><tr><td>Net growth</td><td>${fmt(r.netGrowthPercent)}%</td></tr><tr><td>Commission lost</td><td>${fmt(r.commissionLost)}</td></tr><tr><td>Commission retained</td><td>${fmt(r.commissionRetained)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Policies at the start is the count of policies in force on the first day of the period you are measuring. Policies lost is the number of those same policies that were cancelled, not renewed, or lapsed for non-payment before the last day. New policies is the number of policies written during the period that were not in force at the start. Your agency management system can produce all three counts; look for a policy count or book of business report run on two dates, plus a list of cancellations and non-renewals between them. A book of business is the set of policies, and the clients behind them, that an agency or a producer looks after and earns commission on. A producer is a licensed person who sells and services policies.</p>
+<p>Policies lost should only count policies that were in force at the start. A policy written in March and cancelled in May belongs to neither the starting count nor the lost count for that period; leave it out of both, or the retention rate will be pulled down by business that was never part of the opening book. A policy that was rewritten with a different carrier but stayed with your agency is not lost from the agency's point of view, though it may be lost from a single carrier's point of view. Decide which view you want and apply it the same way every time.</p>
+<p>The annual commission per policy is optional. It is your own figure: the commission the agency earns on one policy in a year, taken from carrier commission statements or the commission report in your agency management system. Divide the commission earned on the book over a year by the number of policies in it. The calculator multiplies this figure by the policies lost and the policies kept, so you can see the lost and retained income in money rather than as a percentage.</p>
+
+<h2>Policy count or premium retention</h2>
+<p>This calculator measures retention by policy count: each policy counts once, whatever its size. Some agencies prefer to measure retention by premium, which compares the premium in force at the end of the period from the starting clients with the premium they had at the start. The two can tell different stories. Losing a handful of large commercial accounts may barely move the policy count but take a large share of the premium. Losing many small personal lines policies may do the reverse. Premium retention also moves when rates change, even if no client leaves, because the same policies renew at a higher or lower premium.</p>
+<p>Neither measure is right for every agency. Policy count is simpler to collect and shows how many clients and policies you are keeping. Premium retention is closer to the income the book produces. If you want a money view without switching to premium, enter the annual commission per policy and read the commission lost and retained lines. For a book with very different policy sizes, you can run the calculator once per line of business, such as personal lines and commercial lines, each with its own counts and commission.</p>
+
+<h2>Measure over the same period each time</h2>
+<p>A retention rate only means something when you know the period behind it. A rate measured over a quarter will sit higher than one measured over a full year for the same book, simply because fewer policies come up for renewal in a quarter. Pick one period, such as the calendar year or a rolling twelve months, and measure over that period every time. Then compare this year with last year, or this quarter with the same quarter last year, rather than mixing periods.</p>
+<p>Use the same reports and the same definition of a lost policy each time as well. If the agency management system changes, or you move from counting policies to counting clients, note the change so you do not read a jump in the rate as a change in the book itself.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, the agency started the period with 400 policies and lost 48 of them. That leaves 352, a retention rate of 352 ÷ 400 × 100 = 88 percent and a lapse rate of 12 percent. Sixty new policies were written, so the book ended the period with 412 policies, a net growth of 3 percent. At 120 of commission per policy a year, the 48 lost policies took 5,760 of annual commission with them, and the 352 kept policies carry 42,240 into the next year.</p>
+<p>The retention rate and the net growth answer different questions. Retention says how well the agency kept what it already had. Net growth says whether new business more than replaced what was lost. A book can grow while retention falls, if new business is strong enough to hide the losses. Reading both together shows which side of the book is doing the work. Commission structures, and what may be charged to clients, are set by carriers, contracts and your jurisdiction; the calculator applies the figures you enter and does not judge whether a rate is good or bad. Compare your own periods with each other.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Do new policies change the retention rate?</h3>
+<p>No. Retention looks only at the policies in force at the start. New policies affect the policies at the end and the net growth, not the retention rate.</p>
+<h3>Why can policies lost not be more than policies at start?</h3>
+<p>Policies lost counts only policies from the opening book, so it cannot exceed the number you started with. If your count is higher, it probably includes policies written and lost within the period.</p>
+<h3>Should a renewal with a new carrier count as lost?</h3>
+<p>From the agency's view, no, because the client stayed. From a single carrier's view, yes. Choose one view and keep to it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/renewal-commission-calculator/">Renewal commission calculator</a></li>
+  <li><a href="/cost-per-policy-acquired-calculator/">Cost per policy acquired calculator</a></li>
+  <li><a href="/churn-rate-calculator/">Churn rate calculator</a></li>
+</ul>

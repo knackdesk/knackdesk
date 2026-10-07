@@ -1,0 +1,68 @@
+<!-- title: Revenue per Producer Calculator -->
+<!-- description: Work out an insurance agency's commission revenue per producer and per employee, the producer compensation ratio and the share and amount of new business. -->
+<h1>Revenue per Producer Calculator</h1>
+<p>Enter the agency's commission revenue for a year, the number of producers and the number of support staff. Add what the producers were paid and how much of the revenue came from new business if you want the ratios. You get the revenue per producer, the revenue per employee, producer compensation as a share of revenue, new business as a share of revenue and the new business revenue per producer. It is built for owners and managers of independent insurance agencies and brokerages who want to track how productive the agency is from one year to the next. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Revenue per producer is the agency's annual commission revenue divided by the number of producers who earned it.</p>
+<p class="formula"><strong>Formula:</strong> revenue per producer = commission revenue ÷ producers; revenue per employee = commission revenue ÷ (producers + support staff); compensation ratio % = producer compensation ÷ commission revenue × 100; new business share % = new business revenue ÷ commission revenue × 100; new business per producer = new business revenue ÷ producers.</p>
+
+<form class="tool" id="f">
+  <label>Annual commission revenue<br><input type="number" id="rev" min="0" step="any" value="600000"></label>
+  <label>Producers<br><input type="number" id="prod" min="0" step="any" value="4"></label>
+  <label>Support staff (optional)<br><input type="number" id="sup" min="0" step="any" value="3"></label>
+  <label>Producer compensation for the year (optional)<br><input type="number" id="comp" min="0" step="any" value="210000"></label>
+  <label>Revenue from new business (optional)<br><input type="number" id="nb" min="0" step="any" value="150000"></label>
+  <p><button class="primary" type="submit">Calculate revenue per producer</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { revenuePerProducer } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = revenuePerProducer({ annualCommissionRevenue: Number($("rev").value) || 0, producers: Number($("prod").value) || 0, supportStaff: Number($("sup").value) || 0, producerCompensation: Number($("comp").value) || 0, newBusinessRevenue: Number($("nb").value) || 0 });
+    const note = r.compensationRatioPercent > 100 ? `<p>A compensation ratio above 100 percent means the producers were paid more than the agency's whole commission revenue for the year.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Revenue per producer</td><td><strong>${fmt(r.revenuePerProducer)}</strong></td></tr><tr><td>Revenue per employee</td><td>${fmt(r.revenuePerEmployee)}</td></tr><tr><td>Producer compensation ratio</td><td>${fmt(r.compensationRatioPercent)}%</td></tr><tr><td>New business share of revenue</td><td>${fmt(r.newBusinessSharePercent)}%</td></tr><tr><td>New business per producer</td><td>${fmt(r.newBusinessPerProducer)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Annual commission revenue is the commission and fee income the agency earned over twelve months. Take it from the accounts, or from the commission report in your agency management system if that matches the accounts. Use the same twelve months for every other input. Include any contingent or profit-sharing income only if you include it every year, so that one good year does not look like a change in productivity.</p>
+<p>A producer is a licensed person who sells and services policies, and whose job includes bringing in business. Count the people in that role over the year. If someone joined halfway through the year, or works part time, count them as a fraction: a producer who was with you for six months counts as 0.5. The same applies to support staff, the account managers, customer service representatives and administrators who service the book of business but do not carry their own sales targets. The book of business is the set of policies, and the clients behind them, that the agency looks after and earns commission on. Owners who also sell should be counted as producers for the share of their time spent selling, if you can estimate it.</p>
+<p>Producer compensation is what the producers were paid for the year: salary, commission and bonus, from payroll or the producer compensation plan. It is optional; leave it at 0 if you only want the per-head figures. New business revenue is the commission from policies written for the first time during the year, as opposed to renewal commission, which is paid when an existing policy renews. Your agency management system can split commission by new and renewal; if it cannot, the carrier commission statements show the type of each transaction. New business revenue cannot be larger than total commission revenue.</p>
+
+<h2>Revenue per producer and revenue per employee</h2>
+<p>Revenue per producer shows how much commission revenue each producer's book supports. It goes up when producers write more or retain more, and it goes down when you add producers faster than the book grows. A new producer will pull the figure down for a while, since their book takes time to build, so read a fall in the year after a hire with that in mind.</p>
+<p>Revenue per employee spreads the same revenue across everyone, producers and support staff together. It tells you how much revenue the whole team carries. If revenue per producer rises while revenue per employee falls, support staff are being added faster than revenue, which may be a deliberate choice to free producers for selling. For a broader view across any kind of business, the <a href="/revenue-per-employee-calculator/">revenue per employee calculator</a> works the same way without the producer split.</p>
+
+<h2>Compensation ratio and new business share</h2>
+<p>The compensation ratio is producer pay as a share of commission revenue. It shows how much of each unit of revenue goes back out to the people who sell. The ratio depends on how your producer compensation plan is built: plans that pay more on new business than on renewals will push the ratio up in years with strong new sales. Commission structures, and what may be charged to clients, are set by carriers, contracts and your jurisdiction; the calculator applies the figures you enter.</p>
+<p>The new business share is the part of revenue that came from policies written that year. A higher share means more of the year's revenue depended on new sales; a lower share means more of it came from renewals of the existing book. New business per producer shows how much new commission each producer brought in, spread evenly across the team. Neither share is good or bad on its own; it depends on what the agency is trying to do.</p>
+
+<h2>Compare with your own earlier periods</h2>
+<p>These figures are most useful against the agency's own earlier years, not against other agencies. Agencies differ in their mix of personal and commercial lines, in how they count producers and support staff, and in what they include in revenue, so another agency's figure will rarely have been worked out the same way as yours. Keep your own definitions fixed and run the calculator for each year you have records for. A change from one year to the next then reflects a change in the agency rather than a change in how the figure was measured.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 600,000 of commission revenue across 4 producers is 150,000 per producer. Adding 3 support staff makes 7 people, or 85,714.29 per employee. Producer compensation of 210,000 is 35 percent of revenue. New business brought in 150,000, which is 25 percent of revenue and 37,500 per producer.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should owners be counted as producers?</h3>
+<p>Count an owner for the share of their time spent selling and servicing their own clients. Keep the same rule every year.</p>
+<h3>Can I enter part-time staff?</h3>
+<p>Yes. Enter fractions, such as 0.5 for someone who worked half the year or half the hours.</p>
+<h3>Why can new business revenue not exceed total revenue?</h3>
+<p>New business revenue is part of total commission revenue, so it cannot be larger than the whole.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/revenue-per-employee-calculator/">Revenue per employee calculator</a></li>
+  <li><a href="/agent-commission-split-calculator/">Agent commission split calculator</a></li>
+  <li><a href="/renewal-commission-calculator/">Renewal commission calculator</a></li>
+</ul>

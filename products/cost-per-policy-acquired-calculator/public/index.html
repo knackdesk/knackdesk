@@ -1,0 +1,71 @@
+<!-- title: Cost per Policy Acquired Calculator -->
+<!-- description: Work out what each insurance policy cost to acquire in marketing, leads and producer time, and set it against the commission it earns over the years it stays. -->
+<h1>Cost per Policy Acquired Calculator</h1>
+<p>Enter what the agency spent on marketing and leads in a period, the producer hours spent selling and what an hour of that time costs, and the number of new policies written. Add the first-year and renewal commission per policy, the share of policies that renew and how many years to count. You get the total cost of acquiring the policies, the cost per policy, the commission one policy earns over those years, the ratio of that commission to the cost and the number of policies whose first-year commission would repay the spend. It is built for owners and managers of independent insurance agencies and brokerages, and for individual producers who pay for their own leads. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Cost per policy acquired is everything spent to win new policies in a period, divided by the new policies written in it.</p>
+<p class="formula"><strong>Formula:</strong> total acquisition cost = marketing spend + lead costs + producer hours × producer cost per hour; cost per policy = total acquisition cost ÷ policies written; lifetime commission = first-year commission + renewal commission × the sum, for each year n from 1 to (years retained − 1), of (retention % ÷ 100)<sup>n</sup>; value-to-cost ratio = lifetime commission ÷ cost per policy; payback policies = total acquisition cost ÷ first-year commission.</p>
+
+<form class="tool" id="f">
+  <label>Marketing spend for the period<br><input type="number" id="mkt" min="0" step="any" value="6000"></label>
+  <label>Lead costs for the period (optional)<br><input type="number" id="leads" min="0" step="any" value="2400"></label>
+  <label>Producer hours spent selling (optional)<br><input type="number" id="hrs" min="0" step="any" value="80"></label>
+  <label>Cost of one producer hour (optional)<br><input type="number" id="rate" min="0" step="any" value="45"></label>
+  <label>New policies written in the period<br><input type="number" id="pol" min="0" step="1" value="60"></label>
+  <label>First-year commission per policy (optional)<br><input type="number" id="fy" min="0" step="any" value="180"></label>
+  <label>Renewal commission per policy (optional)<br><input type="number" id="ren" min="0" step="any" value="120"></label>
+  <label>Policies renewing each year, % (optional)<br><input type="number" id="ret" min="0" max="100" step="any" value="88"></label>
+  <label>Years to count (optional)<br><input type="number" id="yrs" min="1" step="1" value="3"></label>
+  <p><button class="primary" type="submit">Calculate cost per policy</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { costPerPolicyAcquired } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const ret = $("ret").value === "" ? 100 : Number($("ret").value);
+    const yrs = $("yrs").value === "" ? 1 : Number($("yrs").value);
+    const r = costPerPolicyAcquired({ marketingSpend: Number($("mkt").value) || 0, leadCosts: Number($("leads").value) || 0, producerHours: Number($("hrs").value) || 0, producerCostPerHour: Number($("rate").value) || 0, policiesWritten: Number($("pol").value) || 0, firstYearCommissionPerPolicy: Number($("fy").value) || 0, renewalCommissionPerPolicy: Number($("ren").value) || 0, retentionPercent: ret, yearsRetained: yrs });
+    const note = r.lifetimeCommission < r.costPerPolicy ? `<p>The commission one policy earns over the years you counted is less than it cost to acquire, so on these figures each policy does not pay back its own cost.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Total acquisition cost</td><td>${fmt(r.totalAcquisitionCost)}</td></tr><tr><td>Cost per policy</td><td><strong>${fmt(r.costPerPolicy)}</strong></td></tr><tr><td>Lifetime commission per policy</td><td>${fmt(r.lifetimeCommission)}</td></tr><tr><td>Value-to-cost ratio</td><td>${orNa(r.valueToCostRatio, "n/a (no acquisition cost entered)")}</td></tr><tr><td>Payback policies</td><td>${orNa(r.paybackPolicies, "n/a (no first-year commission entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Marketing spend is what the agency paid to be found and chosen in the period: advertising, the website, sponsorships, printed material, events and any agency or freelancer fees. Lead costs are what you paid for leads bought from a lead vendor or aggregator, if any. Take both from the accounts for the same dates. Policies written is the number of new policies issued in those dates, from the new business report in your agency management system. Count policies, not quotes, and leave out renewals and rewrites of existing clients' policies unless the marketing in the period was aimed at them.</p>
+<p>The first-year commission per policy is what the agency earns on a new policy in its first term. Renewal commission is the commission a carrier pays each time a policy renews, and the renewal commission per policy is what the agency earns on one policy at each renewal. Both are your own figures from carrier commission statements or the commission report in your agency management system: divide new business commission by new policies, and renewal commission by renewing policies. The renewal percentage is the share of policies that renew each year, which you can work out from your own counts with the <a href="/policy-retention-rate-calculator/">policy retention rate calculator</a>. Commission structures, and what may be charged to clients, are set by carriers, contracts and your jurisdiction; the calculator applies the terms you enter.</p>
+
+<h2>Producer hours are your own time cost</h2>
+<p>A producer is a licensed person who sells and services policies. Their time spent prospecting, quoting and closing new business is a real cost of acquiring policies, even though it does not appear as a line in the marketing budget. Enter the hours spent on new business in the period, from a time log, a calendar or an honest estimate, and the cost of one of those hours. For a salaried producer, the cost of an hour is their pay and employment costs for the year divided by the hours they work in a year. For an owner or a producer working for themselves, it is what you decide your own hour is worth, such as what you would otherwise pay someone to do that work.</p>
+<p>Leaving producer time out makes cost per policy look lower than it is, especially for an agency that wins most of its business through personal selling rather than paid marketing. If you want to see marketing on its own, set the hours to 0 and compare the two results.</p>
+
+<h2>Lifetime commission is commission, not premium</h2>
+<p>The lifetime commission here is the commission a policy earns the agency over the years you count, not the premium the client pays the carrier. The premium belongs to the carrier; the agency's income is the commission on it. Comparing acquisition cost with premium would make every policy look far more valuable than it is to the agency.</p>
+<p>The calculator counts the first-year commission once, then adds renewal commission for each later year, reduced by the renewal percentage compounded year on year: with 88 percent renewing, 88 percent of policies pay renewal commission in year two, 88 percent of 88 percent in year three, and so on. With 1 year counted, the lifetime commission is just the first-year commission. The figure assumes no change in premium or commission rate and is not discounted for the time value of money. It is also income, not profit: the cost of servicing each policy is not taken off.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 6,000 of marketing, 2,400 of leads and 80 producer hours at 45 an hour add up to 12,000. Sixty new policies were written, so each cost 200 to acquire. A first-year commission of 180, then 120 at each renewal with 88 percent renewing each year, gives 180 + 120 × (0.88 + 0.7744) = 378.53 over three years. That is 1.89 times the cost per policy. The first-year commission alone would need 66.67 policies to repay the 12,000, more than the 60 written, so on these figures the spend is repaid only once renewals come in.</p>
+<p>Compare your own periods and channels with each other rather than with outside figures. To see one channel's cost, run the calculator with that channel's spend, the producer hours it took and the policies it produced.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the value-to-cost ratio shown as n/a?</h3>
+<p>The ratio divides by the cost per policy. With no acquisition cost entered there is nothing to divide by.</p>
+<h3>What does payback policies mean?</h3>
+<p>It is the number of policies whose first-year commission would add up to the total acquisition cost. If it is higher than the policies written, the first year's commission did not cover the spend.</p>
+<h3>Why must years be a whole number?</h3>
+<p>Renewal commission is paid once per policy term, so the calculator counts whole years.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/cac-payback-calculator/">CAC payback calculator</a></li>
+  <li><a href="/policy-retention-rate-calculator/">Policy retention rate calculator</a></li>
+  <li><a href="/renewal-commission-calculator/">Renewal commission calculator</a></li>
+</ul>

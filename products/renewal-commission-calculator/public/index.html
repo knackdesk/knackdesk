@@ -1,0 +1,67 @@
+<!-- title: Renewal Commission Calculator -->
+<!-- description: Work out what an insurance book of business pays in renewal commission, the residuals over several years as retention compounds, and new business commission. -->
+<h1>Renewal Commission Calculator</h1>
+<p>Enter the number of policies in a book, the premium per policy, the renewal commission rate and the share of policies that renew each year. Add how many years to look ahead and, if you want to compare, the commission rate on new business. You get what the whole book would pay at renewal if every policy stayed, the renewal commission after one year of losses, the total residuals over the years you chose, the policies still in force at the end and the commission the same policies would pay as new business. It is built for owners and managers of independent insurance agencies and brokerages, and for individual producers who earn on their own book. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Renewal commission is the commission a carrier pays each time a policy renews, and residuals are the renewal commission a book keeps paying over the years as some policies fall away.</p>
+<p class="formula"><strong>Formula:</strong> annual book commission = policies × premium per policy × renewal commission % ÷ 100; first-year renewal = annual book commission × retention % ÷ 100; residuals over years = the sum, for each year n from 1 to the number of years, of annual book commission × (retention % ÷ 100)<sup>n</sup>; policies remaining = policies × (retention % ÷ 100)<sup>years</sup>; new business commission = policies × premium per policy × new business commission % ÷ 100.</p>
+
+<form class="tool" id="f">
+  <label>Policies in the book<br><input type="number" id="pol" min="0" step="1" value="400"></label>
+  <label>Annual premium per policy<br><input type="number" id="prem" min="0" step="any" value="1200"></label>
+  <label>Renewal commission, %<br><input type="number" id="ren" min="0" max="100" step="any" value="10"></label>
+  <label>Policies renewing each year, % (optional)<br><input type="number" id="ret" min="0" max="100" step="any" value="88"></label>
+  <label>Years to count (optional)<br><input type="number" id="yrs" min="1" step="1" value="3"></label>
+  <label>New business commission, % (optional)<br><input type="number" id="nb" min="0" max="100" step="any" value="15"></label>
+  <p><button class="primary" type="submit">Calculate renewal commission</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { renewalCommission } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const ret = $("ret").value === "" ? 100 : Number($("ret").value);
+    const yrs = $("yrs").value === "" ? 1 : Number($("yrs").value);
+    const r = renewalCommission({ policies: Number($("pol").value) || 0, averagePremium: Number($("prem").value) || 0, renewalCommissionPercent: Number($("ren").value) || 0, retentionPercent: ret, years: yrs, newBusinessCommissionPercent: Number($("nb").value) || 0 });
+    const note = r.annualBookCommission === 0 ? `<p>The book commission is 0 because the premium or the renewal commission rate is 0.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Annual book commission (no losses)</td><td>${fmt(r.annualBookCommission)}</td></tr><tr><td>First-year renewal commission</td><td><strong>${fmt(r.firstYearRenewal)}</strong></td></tr><tr><td>Residuals over the years counted</td><td>${fmt(r.residualsOverYears)}</td></tr><tr><td>Policies remaining at the end</td><td>${fmt(r.policiesRemainingAfterYears)}</td></tr><tr><td>Same policies as new business</td><td>${fmt(r.newBusinessCommission)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>A book of business is the set of policies, and the clients behind them, that an agency or a producer looks after and earns commission on. A producer is a licensed person who sells and services policies. Renewal commission is the commission paid when an existing policy renews for another term, as opposed to the commission paid when it is first written. Policies is the number of policies in the book today, from a book of business or policy count report in your agency management system.</p>
+<p>Premium per policy is the annual premium of one policy. Divide the total annual premium in force by the number of policies; the same report that gives the count will give the total. The renewal commission rate is the percentage of premium the carrier pays on renewal. It comes from your carrier commission statements or the carrier agreements themselves, and for a producer it may come from the producer compensation plan instead. If different carriers or lines pay different rates, either run the calculator once per carrier or line, or work out a single rate by dividing last year's renewal commission by last year's renewal premium. Commission structures, and what may be charged to clients, are set by carriers, contracts and your jurisdiction; the calculator applies the terms you enter.</p>
+<p>Policies renewing each year is the share of policies that are still in force a year later. Your own policy retention rate is the figure to use here; the <a href="/policy-retention-rate-calculator/">policy retention rate calculator</a> works it out from your counts. Years to count must be a whole number of 1 or more. The new business commission rate is optional and only used for the comparison line.</p>
+
+<h2>How residuals compound</h2>
+<p>Retention compounds year on year. If 88 percent of policies renew in the first year, then 88 percent of those renew in the second year, which is 88 percent of 88 percent of the original book, and so on. The book does not lose the same number of policies each year; it loses the same share of what is left. That is why the residuals line is a sum of shrinking amounts rather than the first-year renewal multiplied by the number of years.</p>
+<p>The policies remaining line shows the same compounding applied to the policy count. It is a fractional number because it is a projection, not a count; read it as roughly how many of today's policies would still be on the book after the years you chose, if the retention share held steady. New policies written during those years are not included. The residuals are only what today's book would keep paying on its own, which makes the figure useful for seeing what the current book is worth over time, separate from any new sales.</p>
+
+<h2>What the figures assume</h2>
+<p>The calculator assumes no premium change. Each renewal is paid on the same premium as today, at the same commission rate. In practice premiums move as carriers change rates, clients change cover and exposures grow or shrink, and commission rates can change when a carrier agreement is renegotiated. If you expect premiums to move, run the calculator again with a higher or lower premium per policy to see the range. The figures are also not discounted for the time value of money, and they are commission, not profit: the cost of servicing the book is not taken off.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 400 policies at 1,200 of premium each make 480,000 of premium. At a renewal commission of 10 percent, the whole book would pay 48,000 a year if every policy renewed. With 88 percent renewing, the first year's renewal commission is 48,000 × 0.88 = 42,240. Over three years the residuals add up to 42,240 + 37,171.20 + 32,710.66 = 112,121.86, and about 272.59 of the original 400 policies would still be in force. Written as new business at 15 percent, the same 400 policies would have paid 72,000 in their first year, which shows how much of the first-year commission a book gives up once it moves to renewal rates.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are the residuals less than the first-year renewal times the years?</h3>
+<p>Because the retention share is applied to what is left each year, so each year's renewal commission is smaller than the year before.</p>
+<h3>Why must years be a whole number?</h3>
+<p>Renewal commission is paid once per policy term, so the calculator counts whole years of renewals.</p>
+<h3>Does this include new policies written in later years?</h3>
+<p>No. It projects only the book you have today. Run it again with a larger policy count to include expected new business.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/policy-retention-rate-calculator/">Policy retention rate calculator</a></li>
+  <li><a href="/agent-commission-split-calculator/">Agent commission split calculator</a></li>
+  <li><a href="/commission-calculator/">Commission calculator</a></li>
+</ul>
