@@ -1,0 +1,71 @@
+<!-- title: Home Care Bill Rate Calculator -->
+<!-- description: Work out a home care bill rate per hour from caregiver pay, on-costs, paid time you cannot bill, monthly overhead and the margin you want to keep. -->
+<h1>Home Care Bill Rate Calculator</h1>
+<p>Enter what you pay a caregiver per hour, your on-costs, the paid time you cannot bill, your monthly overhead, the hours you bill clients each month and the margin you want to keep. You get the loaded pay rate, the labour cost and overhead behind each billable hour, the break-even bill rate, the bill rate that gives your chosen margin, and the margin each billed hour leaves. It is built for owners and managers of home care, domiciliary care, private-duty and companion care agencies, and for independent caregivers who run their own books and want a bill rate that covers the whole cost of an hour of care. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A home care bill rate is the price per hour the client pays, set so that it covers the caregiver's pay, the employer costs on that pay, the paid time that cannot be billed and a share of overhead, with a margin left over.</p>
+<p class="formula"><strong>Formula:</strong> loaded pay rate = pay rate × (1 + on-costs % ÷ 100); labour cost per billable hour = loaded pay rate × (1 + non-billable paid time % ÷ 100); overhead per billable hour = monthly overhead ÷ billable hours per month; cost per billable hour (break-even bill rate) = labour cost + overhead per billable hour; bill rate = cost per billable hour ÷ (1 − margin % ÷ 100); margin per hour = bill rate − cost per billable hour.</p>
+
+<form class="tool" id="f">
+  <label>Caregiver pay rate per hour<br><input type="number" id="pay" min="0" step="any" value="16"></label>
+  <label>On-costs as % of pay<br><input type="number" id="oncosts" min="0" step="any" value="22"></label>
+  <label>Paid time you cannot bill, as % of billable hours<br><input type="number" id="nonbill" min="0" step="any" value="10"></label>
+  <label>Overhead per month<br><input type="number" id="overhead" min="0" step="any" value="18000"></label>
+  <label>Billable hours per month<br><input type="number" id="hours" min="0" step="any" value="3200"></label>
+  <label>Margin on the bill rate, % (below 100)<br><input type="number" id="margin" min="0" max="99.99" step="any" value="25"></label>
+  <p><button class="primary" type="submit">Calculate bill rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { homeCareBillRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = homeCareBillRate({ caregiverPayRate: Number($("pay").value) || 0, onCostsPercent: Number($("oncosts").value) || 0, nonBillablePaidPercent: Number($("nonbill").value) || 0, overheadMonthly: Number($("overhead").value) || 0, billableHoursMonthly: Number($("hours").value) || 0, marginPercent: Number($("margin").value) || 0 });
+    const note = r.marginPerHour === 0 ? `<p>With a margin of 0 the bill rate equals the break-even bill rate: every billed hour covers its cost and leaves nothing over.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Loaded pay rate</td><td>${fmt(r.loadedPayRate)}</td></tr><tr><td>Labour cost per billable hour</td><td>${fmt(r.labourCostPerBillableHour)}</td></tr><tr><td>Overhead per billable hour</td><td>${fmt(r.overheadPerBillableHour)}</td></tr><tr><td>Break-even bill rate (cost per billable hour)</td><td>${fmt(r.costPerBillableHour)}</td></tr><tr><td>Bill rate</td><td><strong>${fmt(r.billRate)}</strong></td></tr><tr><td>Margin per billed hour</td><td>${orNa(r.marginPerHour, "n/a")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The pay rate is the gross hourly rate a caregiver earns for an hour of care, before any deductions on their side. The bill rate is the price per hour the client, or whoever funds the care, pays you. This calculator starts from the first and works out the second. Take the pay rate from your payroll system or the caregiver's contract. If caregivers are paid different rates, run the calculator once for each rate, or use a blended rate worked out from the hours on last month's timesheets.</p>
+<p>On-costs are the employer taxes, insurance and statutory costs that come on top of the pay rate because you employ the caregiver. Depending on where you operate, they can include employer payroll taxes, pension or retirement contributions, holiday pay that builds up as hours are worked, workers' compensation or employer liability insurance, and any other contribution the law requires. Your payroll provider or accountant can turn your last few pay runs into a single percentage of pay. Use that figure rather than a rule of thumb.</p>
+<p>Paid time you cannot bill covers the hours you pay a caregiver for that no client is charged for: travel between visits, mandatory training, supervision, team meetings and short gaps in a rota that you still pay. Enter it as a percentage of billable hours. To find it, take the paid hours from payroll and the billed hours from your scheduling software for the same month, subtract the billed hours from the paid hours, and divide the result by the billed hours. The <a href="/caregiver-utilization-calculator/">caregiver utilization calculator</a> breaks the same hours down further.</p>
+<p>Overhead per month is everything the business spends that is not caregiver pay: office rent, coordinators and managers, scheduling and care-planning software, phones, vehicles you run, insurance that is not tied to pay, registration or licensing fees, accounting and marketing. Take it from your monthly accounts. Billable hours per month is the number of client hours you invoiced in the same month, from your scheduling software or your invoices. The margin is the share of the bill rate you want left after every cost in the calculation.</p>
+
+<h2>How the bill rate is built</h2>
+<p>The calculator builds the rate in layers. First it adds on-costs to the pay rate to get the loaded pay rate: what one paid hour of a caregiver really costs you. In the example, a pay rate of 16 with 22 percent on-costs gives a loaded pay rate of 19.52.</p>
+<p>Next it spreads the paid time you cannot bill across the hours you do bill. If caregivers are paid for 10 percent more hours than you invoice, each billed hour has to carry that extra 10 percent of loaded pay. That brings the labour cost per billable hour to 21.47.</p>
+<p>Then it spreads overhead across billable hours. Overhead of 18,000 a month over 3,200 billed hours adds 5.63 to each hour. Labour and overhead together give a cost per billable hour of 27.10. That is the break-even bill rate: charge less and every hour of care loses money, charge exactly that and the business covers its costs with nothing to spare.</p>
+<p>Last, it adds the margin. The margin here is a share of the bill rate, not a percentage added to cost, so the calculator divides the cost by one minus the margin. With a 25 percent margin the bill rate comes to 36.13, and each billed hour leaves 9.03, which is 25 percent of 36.13.</p>
+
+<h2>Why the margin is taken on the bill rate</h2>
+<p>Adding 25 percent to a cost of 27.10 gives 33.88, and the margin on that price is only 20 percent of what the client pays. Dividing by one minus the margin instead makes the percentage you enter the share of the bill rate you keep, which is how margin appears in your accounts. If you think in markup on cost rather than margin on price, the <a href="/temp-staffing-margin-calculator/">temp staffing margin calculator</a> shows how the two relate for one rate.</p>
+<p>The margin is not profit. It still has to pay for anything you left out of overhead, for the hours you planned to bill but did not because a client cancelled or went into hospital, and for growth. Whether a given margin is enough depends on your own costs and plans, and the calculator does not say what it ought to be.</p>
+
+<h2>Keeping the rate up to date</h2>
+<p>Every input moves. Pay rates rise, on-costs change when the rules on employer contributions change, travel time grows when visits spread across a wider area, and overhead per hour falls as billed hours grow. Rerun the calculator when any of them changes and before each rate review with clients or funders.</p>
+<p>The billable hours figure has the biggest effect on overhead per hour. If you expect billed hours to grow or shrink, run the calculator with the hours you expect as well as the hours you billed last month, and compare the two bill rates. To price a whole package of visits for one client, carry the bill rate into the <a href="/care-plan-quote-calculator/">care plan quote calculator</a>.</p>
+<p>The calculator does not give clinical or care advice, and it does not tell you what rates to charge. It turns your own figures into the rate that covers them.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are billable hours of 0 rejected?</h3>
+<p>Overhead is spread across billable hours, so there has to be at least one hour to spread it over.</p>
+<h3>Why can the margin not be 100 percent?</h3>
+<p>A margin of 100 percent would mean none of the bill rate goes to cost, which no price can achieve. Enter a margin below 100.</p>
+<h3>Should travel time go in on-costs or in paid time I cannot bill?</h3>
+<p>In paid time you cannot bill. On-costs are employer taxes, insurance and statutory costs on pay; unbilled hours are hours of pay in their own right.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/caregiver-utilization-calculator/">Caregiver utilization calculator</a></li>
+  <li><a href="/care-plan-quote-calculator/">Care plan quote calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+</ul>

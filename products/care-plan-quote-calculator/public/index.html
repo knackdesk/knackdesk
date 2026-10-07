@@ -1,0 +1,69 @@
+<!-- title: Care Plan Quote Calculator -->
+<!-- description: Price a client's weekly care plan from hours, your bill rate, weekend uplift, overnight rate and mileage, as a weekly total and a total for the period. -->
+<h1>Care Plan Quote Calculator</h1>
+<p>Enter the hours of care a client's plan needs each week and your standard bill rate, then the weekend hours and your weekend uplift, any overnight hours and your overnight rate, the miles you charge for and your mileage rate, and the number of weeks to quote for. You get the cost of standard, weekend and overnight hours and mileage, the weekly total, the total for the period and the effective hourly rate across the whole plan. It is built for owners and managers of home care, domiciliary care, private-duty and companion care agencies, and for independent caregivers who run their own books and need to give a family or a funder a clear price. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A care plan quote is the price you give a client for the weekly pattern of care in their plan, built from your own rates for each kind of hour plus any mileage you charge.</p>
+<p class="formula"><strong>Formula:</strong> standard hours = hours per week − weekend hours − overnight hours; standard cost = standard hours × bill rate; weekend cost = weekend hours × bill rate × (1 + weekend uplift % ÷ 100); overnight cost = overnight hours × overnight rate; mileage cost = miles per week × mileage rate; weekly total = standard + weekend + overnight + mileage cost; period total = weekly total × weeks; effective hourly rate = weekly total ÷ hours per week.</p>
+
+<form class="tool" id="f">
+  <label>Hours of care per week, all kinds<br><input type="number" id="hours" min="0" step="any" value="30"></label>
+  <label>Standard bill rate per hour<br><input type="number" id="bill" min="0" step="any" value="36"></label>
+  <label>Of which weekend hours<br><input type="number" id="weekend" min="0" step="any" value="8"></label>
+  <label>Weekend uplift on the bill rate, %<br><input type="number" id="uplift" min="0" step="any" value="15"></label>
+  <label>Of which overnight hours<br><input type="number" id="night" min="0" step="any" value="0"></label>
+  <label>Overnight rate per hour<br><input type="number" id="nightrate" min="0" step="any" value="0"></label>
+  <label>Miles charged per week<br><input type="number" id="miles" min="0" step="any" value="40"></label>
+  <label>Mileage rate per mile<br><input type="number" id="mileage" min="0" step="any" value="0.5"></label>
+  <label>Weeks to quote for<br><input type="number" id="weeks" min="0" step="any" value="4"></label>
+  <p><button class="primary" type="submit">Calculate quote</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { carePlanQuote } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = carePlanQuote({ hoursPerWeek: Number($("hours").value) || 0, billRate: Number($("bill").value) || 0, weekendHours: Number($("weekend").value) || 0, weekendUpliftPercent: Number($("uplift").value) || 0, overnightHours: Number($("night").value) || 0, overnightRate: Number($("nightrate").value) || 0, milesPerWeek: Number($("miles").value) || 0, mileageRate: Number($("mileage").value) || 0, weeks: Number($("weeks").value) || 0 });
+    const note = r.effectiveHourlyRate === null ? `<p>There are no hours of care in the plan, so there is no hourly rate to show.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Standard hours per week</td><td>${fmt(r.standardHours)}</td></tr><tr><td>Standard cost per week</td><td>${fmt(r.standardCost)}</td></tr><tr><td>Weekend cost per week</td><td>${fmt(r.weekendCost)}</td></tr><tr><td>Overnight cost per week</td><td>${fmt(r.overnightCost)}</td></tr><tr><td>Mileage per week</td><td>${fmt(r.mileageCost)}</td></tr><tr><td>Weekly total</td><td><strong>${fmt(r.weeklyTotal)}</strong></td></tr><tr><td>Total for the period</td><td>${fmt(r.periodTotal)}</td></tr><tr><td>Effective hourly rate</td><td>${orNa(r.effectiveHourlyRate, "n/a (no hours)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Hours of care per week is the total in the client's care plan, all kinds of hour included: weekday, weekend and overnight. Take it from the care plan or the schedule you have drafted for the client. The weekend and overnight hours are part of that total, not extra to it; the calculator subtracts them to find the standard hours.</p>
+<p>The bill rate is the price per hour the client pays for a standard hour of care. It is different from the pay rate, which is what the caregiver earns per hour. Use the standard rate from your own price list or terms of business. If you have not set one, the <a href="/home-care-bill-rate-calculator/">home care bill rate calculator</a> works it out from your pay rate, on-costs (the employer taxes, insurance and statutory costs on top of pay), unbilled paid time, overhead and margin.</p>
+<p>The weekend uplift is the percentage your terms add to the bill rate for weekend hours. Overnight hours are priced at a separate rate per hour, because your terms may price waking or sleeping nights differently from day care; enter whatever rate your terms set, or leave both at 0 if the plan has no nights. Miles charged per week and the mileage rate cover travel you bill to the client, such as driving them to appointments or shopping. Leave them at 0 if you do not charge mileage. Weeks to quote for is the length of the period you want a total for: 4 for a four-week invoice cycle, 13 for a quarter, or the length of a short-term package.</p>
+<p>All the uplifts and rates are your own terms. The calculator does not suggest any, and they vary between providers and funders.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, a plan of 30 hours a week includes 8 weekend hours and no overnight hours, which leaves 22 standard hours. At a bill rate of 36 the standard hours cost 792 a week. The weekend hours carry a 15 percent uplift, so each costs 41.40 and the 8 hours cost 331.20. Forty miles at 0.50 a mile add 20. The weekly total is 1,143.20, and over 4 weeks the quote comes to 4,572.80.</p>
+<p>The effective hourly rate divides the weekly total by all the hours of care: 1,143.20 ÷ 30 gives 38.11. It is higher than the standard rate because of the weekend uplift and mileage. A family or funder comparing providers may look at an hourly figure, so it helps to know the blended rate your quote works out at, as well as the standard rate on your price list.</p>
+
+<h2>A quote, not an invoice</h2>
+<p>The result is a client-facing estimate of what the plan will cost if it runs as written. It is not an invoice. The amount you invoice depends on the visits that actually happen, so it will differ when a visit is cancelled, extended, moved to a weekend or added at short notice, and when the miles driven differ from the estimate. Your terms of business decide how cancellations, late changes and public holidays are charged; the calculator does not cover them.</p>
+<p>When you send the quote, show the parts as well as the total: the standard hours and rate, the weekend hours and uplift, any overnight hours and rate, and the mileage. A client who can see how the total is built can check it against their care plan, and it is easier to update when the plan changes. Say how long the quote is valid for and when your rates are next reviewed.</p>
+<p>If the plan is likely to change soon, for example after a hospital discharge or a review, run the calculator for each version of the plan and show the client both totals side by side. It is quicker than reworking a quote by hand, and the client can see exactly which part of the price moves when the hours, the weekend share or the mileage changes.</p>
+<p>The calculator does not give clinical or care advice and does not decide how many hours of care a client needs. That comes from the care assessment and the care plan. It prices the plan you enter.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are weekend and overnight hours above the weekly hours rejected?</h3>
+<p>Weekend and overnight hours are part of the weekly total, so together they cannot be more than it. Add them into the hours per week first.</p>
+<h3>What if an hour is both a weekend hour and an overnight hour?</h3>
+<p>Count it once, in whichever category your terms charge it under, so the hours are not priced twice.</p>
+<h3>Why does the effective hourly rate show n/a?</h3>
+<p>With 0 hours of care there is nothing to divide the weekly total by.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/home-care-bill-rate-calculator/">Home care bill rate calculator</a></li>
+  <li><a href="/client-hours-capacity-calculator/">Client hours capacity calculator</a></li>
+  <li><a href="/no-show-cost-calculator/">No-show cost calculator</a></li>
+</ul>

@@ -1,0 +1,68 @@
+<!-- title: Caregiver Utilization Calculator -->
+<!-- description: Find what share of a caregiver's paid hours you bill to clients, and what the unbilled hours for travel, training and gaps cost you each period. -->
+<h1>Caregiver Utilization Calculator</h1>
+<p>Enter the hours you paid a caregiver, or a whole team, for a period, the hours you billed to clients in the same period, and how many of the unbilled hours went on travel and on training. Add the pay rate if you want a cost. You get the utilization rate, the non-billable hours, the hours left over after travel and training, what the non-billable hours cost in pay, and the share of paid time that went on travel and on training. It is built for owners and managers of home care, domiciliary care, private-duty and companion care agencies, and for independent caregivers who run their own books and want to see where paid time goes. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Caregiver utilization is the share of the hours you pay caregivers for that you also bill to clients.</p>
+<p class="formula"><strong>Formula:</strong> utilization % = billable hours ÷ paid hours × 100; non-billable hours = paid hours − billable hours; other non-billable hours = non-billable hours − travel hours − training hours; non-billable cost = non-billable hours × pay rate; travel share % = travel hours ÷ paid hours × 100; training share % = training hours ÷ paid hours × 100.</p>
+
+<form class="tool" id="f">
+  <label>Paid hours in the period<br><input type="number" id="paid" min="0" step="any" value="160"></label>
+  <label>Billable hours in the same period<br><input type="number" id="billable" min="0" step="any" value="136"></label>
+  <label>Paid travel hours (not billed)<br><input type="number" id="travel" min="0" step="any" value="14"></label>
+  <label>Paid training hours (not billed)<br><input type="number" id="training" min="0" step="any" value="4"></label>
+  <label>Pay rate per hour (optional, for the cost)<br><input type="number" id="pay" min="0" step="any" value="16"></label>
+  <p><button class="primary" type="submit">Calculate utilization</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { caregiverUtilization } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = caregiverUtilization({ paidHours: Number($("paid").value) || 0, billableHours: Number($("billable").value) || 0, travelHours: Number($("travel").value) || 0, trainingHours: Number($("training").value) || 0, payRate: Number($("pay").value) || 0 });
+    const note = r.utilizationPercent === 100 ? `<p>Every paid hour was billed. Check that travel, training and supervision time are on the payroll, since they are part of the job.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Utilization</td><td><strong>${fmt(r.utilizationPercent)}%</strong></td></tr><tr><td>Non-billable hours</td><td>${fmt(r.nonBillableHours)}</td></tr><tr><td>Other non-billable hours (not travel or training)</td><td>${fmt(r.otherNonBillableHours)}</td></tr><tr><td>Cost of non-billable hours in pay</td><td>${fmt(r.nonBillableCost)}</td></tr><tr><td>Travel share of paid hours</td><td>${fmt(r.travelSharePercent)}%</td></tr><tr><td>Training share of paid hours</td><td>${orNa(r.trainingSharePercent, "n/a")}%</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Paid hours are all the hours you paid the caregiver for in the period: visits, travel between visits, training, supervision, team meetings and any gaps in a shift that you still pay. Take them from payroll. You can enter one caregiver's hours or the whole team's; the percentages work the same way either way.</p>
+<p>Billable hours are the hours you charged to clients for the same caregiver or team in the same period. Take them from your scheduling software or from the invoices you raised. Make sure both figures cover exactly the same dates, or the result will mix one week's pay with another week's billing.</p>
+<p>Travel hours are the paid hours spent getting from one visit to the next that no client is charged for. Your scheduling or electronic visit verification system may record them; if it does not, the gaps between the end of one visit and the start of the next on a caregiver's run are a reasonable place to start. Training hours are paid hours spent on induction, refresher courses and any learning the law or your own policy requires.</p>
+<p>The pay rate is the gross hourly rate the caregiver earns, before deductions. The bill rate, which this calculator does not need, is the price per hour the client pays. With the pay rate filled in, the calculator puts a cost on the unbilled hours. That cost is in pay only; it leaves out on-costs, the employer taxes, insurance and statutory costs that come on top of pay, so the full cost is higher.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, a caregiver paid for 160 hours billed 136 of them, so utilization is 85 percent. The other 24 hours were paid but not billed. Travel took 14 of them, which is 8.75 percent of paid time, and training took 4, which is 2.5 percent. That leaves 6 hours that were neither travel nor training: gaps in the rota, waiting time, cancelled visits that were still paid, or meetings. At a pay rate of 16, the 24 unbilled hours cost 384 in pay.</p>
+<p>The useful part is the split. A low utilization caused by training is a different problem from one caused by long journeys between visits, and both are different from hours lost to a rota with gaps in it. Training time is planned and has a purpose. Travel time can sometimes be cut by grouping visits by area. The other non-billable hours are the ones most worth a closer look, because nobody planned them.</p>
+
+<h2>Why 100 percent is not the target</h2>
+<p>A caregiver cannot be billed for every paid hour. Travel between clients, training, supervision and team time are part of the job and are paid, and in some places the law requires them to be paid. A utilization of 100 percent is more likely to mean that travel or training is going unpaid or unrecorded than that the rota is perfect. Check payroll before reading a very high figure as good news.</p>
+<p>So the calculator does not say what utilization you ought to reach. Compare the result with your own earlier periods, between areas or rota patterns, and before and after a change such as regrouping visits. A change in the trend tells you more than any single number.</p>
+
+<h2>Using the result in pricing</h2>
+<p>Every unbilled paid hour has to be paid for out of the bill rate on the hours you do bill. That is why the <a href="/home-care-bill-rate-calculator/">home care bill rate calculator</a> asks for paid time you cannot bill as a percentage of billable hours. To get it from this calculator, divide the non-billable hours by the billable hours and multiply by 100. In the example, 24 ÷ 136 × 100 gives about 17.65 percent.</p>
+<p>Utilization also sets how many clients your team can take on. Carry the utilization rate into the <a href="/client-hours-capacity-calculator/">client hours capacity calculator</a> to turn caregiver hours into the client hours you can staff.</p>
+<p>The calculator does not give clinical or care advice. It turns your own hours into a picture of where paid time goes.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are billable hours above paid hours rejected?</h3>
+<p>You cannot bill a client for more caregiver hours than you paid for in the same period. If your figures show that, the two reports probably cover different dates or different caregivers.</p>
+<h3>Why are travel and training hours above the non-billable hours rejected?</h3>
+<p>Travel and training here are unbilled paid hours, so together they cannot be more than paid hours minus billable hours. If you bill some travel to clients, leave that part out of the travel figure.</p>
+<h3>Can I use this for the whole team?</h3>
+<p>Yes. Enter the team's total paid, billable, travel and training hours for the period.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/home-care-bill-rate-calculator/">Home care bill rate calculator</a></li>
+  <li><a href="/client-hours-capacity-calculator/">Client hours capacity calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+</ul>

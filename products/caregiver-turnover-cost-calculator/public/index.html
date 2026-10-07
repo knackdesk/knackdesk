@@ -1,0 +1,69 @@
+<!-- title: Caregiver Turnover Cost Calculator -->
+<!-- description: Put a yearly cost on caregivers leaving, from recruiting spend, onboarding and training time, and the margin lost on the shifts left unfilled each time. -->
+<h1>Caregiver Turnover Cost Calculator</h1>
+<p>Enter how many caregivers you employ, how many left in the last year, what you spend recruiting each replacement, the hours of onboarding and training each new starter takes and what an hour of trainer time costs, the shift hours lost or covered at overtime while each post is empty, and the margin you make on a billable hour. You get your turnover rate, the cost of each leaver, the yearly cost of turnover, that cost spread across every caregiver, and what you would save if turnover halved. It is built for owners and managers of home care, domiciliary care, private-duty and companion care agencies, and for independent caregivers who run their own books and employ others. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Caregiver turnover cost is what it costs your business each year to replace the caregivers who leave, counting recruiting, onboarding and the margin lost on shifts nobody is there to cover.</p>
+<p class="formula"><strong>Formula:</strong> turnover % = leavers per year ÷ caregivers × 100; cost per leaver = recruiting cost per hire + onboarding hours × trainer cost per hour + unfilled hours per leaver × margin per billable hour; annual turnover cost = cost per leaver × leavers per year; cost per caregiver = annual turnover cost ÷ caregivers; saving if turnover halved = annual turnover cost ÷ 2.</p>
+
+<form class="tool" id="f">
+  <label>Caregivers employed<br><input type="number" id="carers" min="0" step="any" value="40"></label>
+  <label>Leavers in the last year<br><input type="number" id="leavers" min="0" step="any" value="24"></label>
+  <label>Recruiting cost per hire<br><input type="number" id="recruit" min="0" step="any" value="600"></label>
+  <label>Onboarding and training hours per new starter<br><input type="number" id="onboard" min="0" step="any" value="12"></label>
+  <label>Trainer cost per hour<br><input type="number" id="trainer" min="0" step="any" value="30"></label>
+  <label>Unfilled or overtime-covered shift hours per leaver<br><input type="number" id="unfilled" min="0" step="any" value="40"></label>
+  <label>Margin per billable hour<br><input type="number" id="margin" min="0" step="any" value="9"></label>
+  <p><button class="primary" type="submit">Calculate turnover cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { caregiverTurnoverCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = caregiverTurnoverCost({ caregivers: Number($("carers").value) || 0, leaversPerYear: Number($("leavers").value) || 0, recruitingCostPerHire: Number($("recruit").value) || 0, onboardingHours: Number($("onboard").value) || 0, trainerCostPerHour: Number($("trainer").value) || 0, unfilledHoursPerLeaver: Number($("unfilled").value) || 0, marginPerBillableHour: Number($("margin").value) || 0 });
+    const note = r.turnoverPercent > 100 ? `<p>A turnover rate above 100 percent means more caregivers left in the year than you employ at one time, so some posts were filled and lost more than once.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Turnover rate</td><td>${fmt(r.turnoverPercent)}%</td></tr><tr><td>Cost per leaver</td><td>${fmt(r.costPerLeaver)}</td></tr><tr><td>Annual turnover cost</td><td><strong>${fmt(r.annualTurnoverCost)}</strong></td></tr><tr><td>Cost per caregiver employed</td><td>${fmt(r.costPerCaregiver)}</td></tr><tr><td>Saving if turnover halved</td><td>${orNa(r.savingIfTurnoverHalved, "n/a")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Caregivers employed is the number of caregivers on your payroll. If the number moved during the year, use the mean of the headcount at the start and the end of the year, from payroll. Leavers in the last year is the number of caregivers who left for any reason in the same twelve months, from your HR records or payroll leavers list.</p>
+<p>Recruiting cost per hire is what you spend to bring in one replacement: job adverts, recruitment agency fees, background and criminal record checks, reference checks, uniforms and any sign-on payment. Take the year's total from your accounts and divide by the number of people you hired.</p>
+<p>Onboarding and training hours per new starter are the hours of induction, shadowing and mandatory training before a new caregiver can work alone, counting the trainer's or supervisor's time. Trainer cost per hour is what an hour of that time costs you, including on-costs, the employer taxes, insurance and statutory costs on top of pay. If the new starter is also paid for those hours, add their loaded pay to the trainer cost so both are counted.</p>
+<p>Unfilled hours per leaver are the shifts lost while a post is empty, or covered at overtime or by another agency, between the caregiver leaving and the replacement working alone. Your scheduling software shows visits that were dropped, handed back or covered by overtime in that gap. The margin per billable hour is what one billed hour of care leaves after its cost. It is the gap between the bill rate, what the client pays per hour, and the full cost of that hour, which starts with the pay rate, what the caregiver earns per hour. The <a href="/home-care-bill-rate-calculator/">home care bill rate calculator</a> gives it as the margin per billed hour.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, 24 of 40 caregivers left in a year, a turnover rate of 60 percent. Each leaver cost 600 to replace in recruiting, 360 in onboarding (12 hours at 30) and 360 in lost margin (40 unfilled hours at 9), so 1,320 in all. Across 24 leavers, turnover cost 31,680 in the year, or 792 for every caregiver employed. Halving turnover would save 15,840 a year.</p>
+<p>The cost per caregiver is a useful way to compare turnover with the things that might reduce it. If an improvement to pay, scheduling, travel or support would cost less per caregiver than turnover costs per caregiver, and would reduce the number of leavers, the sums are worth doing in more detail.</p>
+
+<h2>What the calculation leaves out</h2>
+<p>The figure is a floor rather than the full cost. It counts the costs you can find in your records and leaves out others that are harder to measure: the time managers spend interviewing and rearranging rotas, the overtime premium itself where shifts are covered rather than lost, clients who leave because they keep seeing new faces, and the time it takes a new caregiver to get to know a client's routine. If you can put a figure on any of these from your own records, add it to the recruiting cost per hire.</p>
+<p>The calculator also treats every leaver as replaced. If you chose not to replace someone because the work had gone, leave them out of the leavers figure, or the cost will be overstated.</p>
+
+<h2>Using the result</h2>
+<p>Run the calculator once a year with the same method, so the results are comparable from one year to the next. You can also run it for one area, one team or one contract type to see where turnover costs most. The saving if turnover halved is an illustration of scale, not a target: whether turnover can fall, and by how much, depends on why people leave.</p>
+<p>Turnover also reduces capacity while posts are empty. The <a href="/client-hours-capacity-calculator/">client hours capacity calculator</a> shows how many client hours you lose with one fewer caregiver. The calculator does not give clinical or care advice.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are 0 caregivers rejected?</h3>
+<p>The turnover rate and the cost per caregiver are both divided by the number of caregivers, so it has to be more than 0.</p>
+<h3>Where does the margin per billable hour come from?</h3>
+<p>From your own bill rate and costs. The home care bill rate calculator shows it as the margin per billed hour.</p>
+<h3>Can the turnover rate be above 100 percent?</h3>
+<p>Yes. If some posts were filled and lost more than once in the year, leavers can outnumber the caregivers you employ at one time.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/home-care-bill-rate-calculator/">Home care bill rate calculator</a></li>
+  <li><a href="/employee-turnover-cost-calculator/">Employee turnover cost calculator</a></li>
+  <li><a href="/caregiver-utilization-calculator/">Caregiver utilization calculator</a></li>
+</ul>

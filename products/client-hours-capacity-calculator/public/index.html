@@ -1,0 +1,68 @@
+<!-- title: Client Hours Capacity Calculator -->
+<!-- description: Find how many clients your caregivers can staff each week from their hours and utilization, how many hours are spare and the weekly revenue ceiling. -->
+<h1>Client Hours Capacity Calculator</h1>
+<p>Enter how many caregivers you have, the hours each one works in a week, the share of those hours you can bill, the weekly care hours per client across your clients, how many clients you have now and your bill rate. You get the paid and billable hours your team can cover, the most clients those hours can staff, the hours already committed, the spare hours and open client slots, and the weekly revenue now and at full capacity. It is built for owners and managers of home care, domiciliary care, private-duty and companion care agencies, and for independent caregivers who run their own books and want to know whether they can say yes to the next client. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Client hours capacity is the number of billable care hours your caregivers can deliver in a week, and the number of clients those hours can staff.</p>
+<p class="formula"><strong>Formula:</strong> paid capacity = caregivers × hours per caregiver per week; billable capacity = paid capacity × utilization % ÷ 100; maximum clients = whole clients that fit in billable capacity ÷ client hours per week; hours committed = current clients × client hours per week; spare hours = billable capacity − hours committed; open slots = maximum clients − current clients; weekly revenue ceiling = billable capacity × bill rate; current weekly revenue = hours committed × bill rate.</p>
+
+<form class="tool" id="f">
+  <label>Caregivers<br><input type="number" id="carers" min="0" step="any" value="12"></label>
+  <label>Paid hours per caregiver per week<br><input type="number" id="hours" min="0" step="any" value="32"></label>
+  <label>Utilization, % of paid hours you can bill (100 or less)<br><input type="number" id="util" min="0" max="100" step="any" value="85"></label>
+  <label>Care hours per client per week, across your clients<br><input type="number" id="client" min="0" step="any" value="20"></label>
+  <label>Current clients<br><input type="number" id="current" min="0" step="1" value="14"></label>
+  <label>Bill rate per hour (optional, for revenue)<br><input type="number" id="bill" min="0" step="any" value="36"></label>
+  <p><button class="primary" type="submit">Calculate capacity</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { clientHoursCapacity } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = clientHoursCapacity({ caregivers: Number($("carers").value) || 0, hoursPerCaregiverWeekly: Number($("hours").value) || 0, utilizationPercent: Number($("util").value) || 0, averageClientHoursWeekly: Number($("client").value) || 0, currentClients: Number($("current").value) || 0, billRate: Number($("bill").value) || 0 });
+    const note = r.spareHours < 0 ? `<p>Negative spare hours mean you are overcommitted: your clients' care plans add up to more hours than your caregivers can deliver, so some shifts cannot be staffed without overtime, agency cover or fewer clients.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Paid capacity, hours per week</td><td>${fmt(r.paidCapacity)}</td></tr><tr><td>Billable capacity, hours per week</td><td>${fmt(r.billableCapacity)}</td></tr><tr><td>Maximum clients</td><td><strong>${r.maxClients.toLocaleString()}</strong></td></tr><tr><td>Hours committed per week</td><td>${fmt(r.hoursCommitted)}</td></tr><tr><td>Spare hours per week</td><td>${fmt(r.spareHours)}</td></tr><tr><td>Open client slots</td><td>${r.openSlots.toLocaleString()}</td></tr><tr><td>Weekly revenue ceiling</td><td>${fmt(r.weeklyRevenueCeiling)}</td></tr><tr><td>Current weekly revenue</td><td>${orNa(r.currentWeeklyRevenue, "n/a")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Caregivers is the number of people on your rota who deliver care. If some work part time, you can either enter the headcount and the mean of their weekly hours, or enter 1 caregiver and the team's total weekly hours; both give the same capacity.</p>
+<p>Paid hours per caregiver per week are the hours each caregiver is contracted or rostered for, including travel, training and other paid time that is not billed. Take them from payroll or your rota. Leave out hours a caregiver will not be available for, such as planned holiday, if you are planning for a particular week.</p>
+<p>Utilization is the share of paid hours you can bill to clients. It allows for the travel between visits, training and gaps that are paid but not billed. Work it out from your own payroll and billing records with the <a href="/caregiver-utilization-calculator/">caregiver utilization calculator</a>. It cannot be above 100 percent, because you cannot bill more hours than you pay for.</p>
+<p>Care hours per client per week is the mean number of hours in your clients' care plans: add up the weekly hours in every current care plan and divide by the number of clients. Your scheduling software or the care plans themselves have the figures. Current clients is the number of clients you are serving now. The bill rate is the price per hour your clients pay. It is optional and only used for the revenue lines; the pay rate, what caregivers earn per hour, is not needed here.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, 12 caregivers working 32 hours a week give 384 paid hours. At 85 percent utilization, 326.4 of those hours can be billed. With clients receiving 20 hours of care a week each, that is room for 16 whole clients. The calculator rounds down, because a client whose hours cannot all be staffed is not a client you can take on.</p>
+<p>Fourteen current clients take 280 of the billable hours, which leaves 46.4 spare hours a week and 2 open client slots. At a bill rate of 36, the hours you deliver now bring in 10,080 a week, and full billable capacity would bring in 11,750.40. The gap between the two is the weekly revenue the spare hours could earn if you filled them.</p>
+
+<h2>When spare hours are negative</h2>
+<p>Negative spare hours mean you are overcommitted. Your clients' care plans add up to more billable hours than your caregivers can deliver at the utilization you entered. In practice, that shows up as shifts you cannot staff: visits covered at overtime, visits handed to another provider, shortened visits or calls to clients asking to move a time. A negative number of open slots says the same thing in clients rather than hours.</p>
+<p>If you see a negative result, check the inputs first. A utilization figure that is too low, or hours per caregiver that leave out regular overtime, will make capacity look smaller than it is. If the inputs are right, the result is telling you how many hours you need to recruit for, or how many hours of new care you cannot accept until you do.</p>
+
+<h2>Planning ahead</h2>
+<p>Capacity changes every time a caregiver joins or leaves, changes their hours or books holiday, and every time a client's care plan changes. Run the calculator with next month's expected rota before you accept a new client, and run it again with one fewer caregiver to see how much room you would have if someone left. To see what losing caregivers costs beyond the lost hours, use the <a href="/caregiver-turnover-cost-calculator/">caregiver turnover cost calculator</a>.</p>
+<p>The calculator treats every hour as interchangeable. Real rotas are not: a caregiver free on a weekday afternoon cannot cover a client who needs care at weekends, and a caregiver in one area cannot easily cover a visit in another. Treat the result as a ceiling and check the actual rota before committing to a new care plan. The calculator does not give clinical or care advice.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is a utilization above 100 percent rejected?</h3>
+<p>Utilization is billable hours as a share of paid hours, and you cannot bill more hours than you pay for.</p>
+<h3>Why are 0 caregivers or 0 client hours rejected?</h3>
+<p>With no caregivers there is no capacity to measure, and with 0 hours per client the number of clients that fit has no limit.</p>
+<h3>My clients receive very different hours. Does this still work?</h3>
+<p>Yes, as a guide. The mean across your clients gives the right total hours; check the rota for the exact fit.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/caregiver-utilization-calculator/">Caregiver utilization calculator</a></li>
+  <li><a href="/home-care-bill-rate-calculator/">Home care bill rate calculator</a></li>
+  <li><a href="/appointment-capacity-calculator/">Appointment capacity calculator</a></li>
+</ul>
