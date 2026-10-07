@@ -4,6 +4,7 @@ name: Commission vs Booth Rent Calculator
 lane: tool
 status: live
 category: pricing
+kits: salon-pricing-workbook
 reviewed: 2026-10-06
 headline: Commission vs Booth Rent Calculator: Which Pays More
 tagline: Compare take-home pay on commission with renting a booth or chair and find the monthly revenue where booth rent starts to pay more

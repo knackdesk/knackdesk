@@ -4,6 +4,7 @@ name: Booth Rent Calculator
 lane: tool
 status: live
 category: pricing
+kits: salon-pricing-workbook
 reviewed: 2026-10-06
 headline: Booth Rent Calculator: What Your Chair Costs and Earns
 tagline: Turn weekly rent, clients per week, average ticket, product cost and weeks worked into rent share, net income and break-even clients

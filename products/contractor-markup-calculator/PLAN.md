@@ -4,6 +4,7 @@ name: Contractor Markup Calculator
 lane: tool
 status: live
 category: pricing
+kits: trade-job-quote-workbook
 reviewed: 2026-10-01
 headline: Contractor Markup Calculator: Markup, Margin and Overhead
 tagline: Convert between markup and margin on a job, find the markup a target margin needs, and the markup that covers overhead and profit

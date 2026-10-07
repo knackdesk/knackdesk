@@ -4,6 +4,7 @@ name: Chair Utilization Calculator
 lane: tool
 status: live
 category: planning
+kits: dental-practice-numbers-workbook
 reviewed: 2026-10-06
 headline: Chair Utilization Calculator: Scheduled vs Available Hours
 tagline: Turn chairs, opening hours, days and scheduled hours into utilization, idle chair hours and the production booked, possible and unrealised

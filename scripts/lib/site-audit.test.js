@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSite } from "../build-site.js";
+import { parseFrontmatter } from "./frontmatter.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MAX_CROSS_SELL = 3;
@@ -85,5 +86,21 @@ describe("real site audit", () => {
       if (titles.has(t)) throw new Error(`duplicate title "${t}" on ${path} and ${titles.get(t)}`);
       titles.set(t, path);
     }
+  });
+  it("puts a tool's pinned kit first in its cross-sell block", () => {
+    const wrong = [];
+    const plan = (slug) => parseFrontmatter(readFileSync(join(root, "products", slug, "PLAN.md"), "utf8")).data;
+    for (const slug of products) {
+      const fm = plan(slug);
+      if (!fm.kits) continue;
+      const live = String(fm.kits).split(",").map((s) => s.trim()).filter((k) => existsSync(join(root, "products", k, "PLAN.md")) && plan(k).status === "live");
+      if (live.length === 0) continue;
+      const html = readFileSync(join(out, slug, "index.html"), "utf8");
+      const aside = html.split('<aside class="crosssell">')[1]?.split("</aside>")[0] || "";
+      const first = aside.match(/<strong>([^<]+)<\/strong>/)?.[1];
+      const want = plan(live[0]).name.replace(/&/g, "&amp;");
+      if (first !== want) wrong.push(`${slug}: first kit is "${first}", expected "${want}"`);
+    }
+    expect(wrong).toEqual([]);
   });
 });

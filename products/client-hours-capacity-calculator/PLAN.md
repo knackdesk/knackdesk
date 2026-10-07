@@ -4,6 +4,7 @@ name: Client Hours Capacity Calculator
 lane: tool
 status: live
 category: pricing
+kits: home-care-pricing-workbook, staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Client Hours Capacity Calculator: How Many Clients Fit
 tagline: Turn your caregivers' weekly hours and utilization into the number of clients you can staff, spare hours and weekly revenue

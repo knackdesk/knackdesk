@@ -4,6 +4,7 @@ name: Client Capacity Calculator
 lane: tool
 status: live
 category: pricing
+kits: bookkeeping-pricing-workbook
 reviewed: 2026-10-06
 headline: Client Capacity Calculator: How Many Clients Can You Take
 tagline: Turn monthly hours, admin time and hours per client into the most clients you can serve, your spare hours, open slots and revenue at capacity

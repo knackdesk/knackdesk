@@ -4,6 +4,7 @@ name: Placement Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Placement Fee Calculator: Margin on a Permanent Placement
 tagline: Turn a salary, fee percentage, recruiter hours, advertising and any split into the net fee, delivery cost, margin and net fee per recruiter hour on one permanent placement

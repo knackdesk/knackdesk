@@ -4,6 +4,7 @@ name: Table Turnover Calculator
 lane: tool
 status: live
 category: pricing
+kits: restaurant-numbers-workbook
 reviewed: 2026-10-06
 headline: Table Turnover Calculator: Turns, Covers and Revenue per Day
 tagline: Turn seats, opening hours, average dining time and how full you are into turns per seat, covers per day and revenue per day

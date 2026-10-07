@@ -4,6 +4,7 @@ name: Production per Hour Calculator
 lane: tool
 status: live
 category: planning
+kits: dental-practice-numbers-workbook
 reviewed: 2026-10-06
 headline: Production per Hour Calculator: Net Production and Profit
 tagline: Turn gross production, adjustments, hours and days into net production, production per hour and per day, and profit per hour after overhead

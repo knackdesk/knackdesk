@@ -4,6 +4,7 @@ name: Matter Budget Variance Calculator
 lane: tool
 status: live
 category: pricing
+kits: law-firm-pricing-workbook
 reviewed: 2026-10-07
 headline: Matter Budget Variance Calculator: Overruns and Write-Offs
 tagline: Compare a matter's budgeted hours and fees with what was recorded to see the overrun, the realized rate, the write-off against an agreed fee and the recovery

@@ -4,6 +4,7 @@ name: Salon Service Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: salon-pricing-workbook
 reviewed: 2026-10-06
 headline: Salon Service Price Calculator: Price Any Appointment
 tagline: Turn your overhead, income goal, billable hours, service time, product cost and margin into a price for any salon or appointment service

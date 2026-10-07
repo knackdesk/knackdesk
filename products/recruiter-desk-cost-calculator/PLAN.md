@@ -4,6 +4,7 @@ name: Recruiter Desk Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Recruiter Desk Cost Calculator: What a Desk Costs a Year
 tagline: Add up a recruiter's salary, benefits, tools, job boards and overhead into the yearly cost of the desk, then see cost per placement, desk profit and break-even placements

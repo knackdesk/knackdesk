@@ -4,6 +4,7 @@ name: MSP Per-User Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: msp-contract-pricing-workbook
 reviewed: 2026-10-06
 headline: MSP Per-User Price Calculator: Price Managed IT Per User
 tagline: Turn tool costs, support hours, loaded hourly cost and a target margin into a monthly price per user, with revenue and profit across all users

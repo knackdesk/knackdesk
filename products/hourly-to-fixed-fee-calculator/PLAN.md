@@ -4,6 +4,7 @@ name: Hourly to Fixed Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: bookkeeping-pricing-workbook
 reviewed: 2026-10-06
 headline: Hourly to Fixed Fee Calculator: Set a Fixed Monthly Fee
 tagline: Turn monthly hours and an hourly rate into a fixed monthly fee with a buffer, a commitment discount and a check on what an overrun costs you

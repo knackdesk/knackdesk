@@ -4,6 +4,7 @@ name: Cost per Ticket Calculator
 lane: tool
 status: live
 category: pricing
+kits: msp-contract-pricing-workbook
 reviewed: 2026-10-06
 headline: Cost per Ticket Calculator: What Each Support Ticket Costs
 tagline: Turn monthly tickets, technician cost, tools and overhead into the cost per ticket, labour cost per ticket, tickets per technician and hours spent on tickets

@@ -4,6 +4,7 @@ name: Cost per New Patient Calculator
 lane: tool
 status: live
 category: planning
+kits: dental-practice-numbers-workbook
 reviewed: 2026-10-06
 headline: Cost per New Patient Calculator: Marketing Cost and Value
 tagline: Turn marketing spend, new patients, first-year value, retention and years into cost per new patient, lifetime value, value-to-cost ratio and break-even new patients

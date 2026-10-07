@@ -4,6 +4,7 @@ name: Event Staffing Calculator
 lane: tool
 status: live
 category: pricing
+kits: event-catering-quote-workbook
 reviewed: 2026-10-06
 headline: Event Staffing Calculator: Servers Needed and Labour Cost
 tagline: Work out how many servers an event needs, the paid hours each one works and the total labour cost

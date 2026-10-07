@@ -4,6 +4,7 @@ name: Cost per Edited Image Calculator
 lane: tool
 status: live
 category: pricing
+kits: freelance-pricing-kit
 reviewed: 2026-10-06
 headline: Cost per Edited Image Calculator: Price Extra Photos Fairly
 tagline: Spread shoot and editing time over the images you deliver to find the cost per image and a price for extra photos

@@ -4,6 +4,7 @@ name: Prime Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: restaurant-numbers-workbook
 reviewed: 2026-10-06
 headline: Prime Cost Calculator: Food, Beverage and Labour vs Sales
 tagline: Add food, beverage and labour costs for a period and see each one, and the total prime cost, as a share of sales

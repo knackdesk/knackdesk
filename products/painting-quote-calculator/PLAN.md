@@ -4,6 +4,7 @@ name: Painting Quote Calculator
 lane: tool
 status: live
 category: pricing
+kits: trade-job-quote-workbook
 reviewed: 2026-10-01
 headline: Painting Quote Calculator: Paint, Labour and Price per Job
 tagline: Quote a painting job from wall area, coats, paint coverage and price, prep time, your productivity and labour rate, plus markup

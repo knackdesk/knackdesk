@@ -4,6 +4,7 @@ name: Fill Rate Calculator
 lane: tool
 status: live
 category: pricing
+kits: staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Fill Rate Calculator: Job Orders, Days to Fill, Funnel
 tagline: Turn job orders received and filled, days to fill, submittals and interviews into your fill rate and the conversion at each step of your own recruitment funnel

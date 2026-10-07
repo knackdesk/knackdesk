@@ -4,6 +4,7 @@ name: Call-Out Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: trade-job-quote-workbook
 reviewed: 2026-10-01
 headline: Call-Out Fee Calculator: Fee, Time on Site and Parts
 tagline: Total for a service visit from the call-out fee, the minutes it covers, time on site billed in increments, and parts at your markup

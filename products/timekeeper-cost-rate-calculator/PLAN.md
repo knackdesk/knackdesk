@@ -4,6 +4,7 @@ name: Timekeeper Cost Rate Calculator
 lane: tool
 status: live
 category: pricing
+kits: law-firm-pricing-workbook
 reviewed: 2026-10-07
 headline: Timekeeper Cost Rate Calculator: Cost of a Billable Hour
 tagline: Turn a timekeeper's salary, benefits, overhead share and billable hours into the cost of one billable hour, the margin at the bill rate and the hours needed to break even

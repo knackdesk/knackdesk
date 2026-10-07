@@ -4,6 +4,7 @@ name: Client Onboarding Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: msp-contract-pricing-workbook
 reviewed: 2026-10-06
 headline: Client Onboarding Fee Calculator: Price New Client Setup
 tagline: Turn onboarding hours, your rate, setup costs and a margin into a one-off onboarding fee, its cost spread per month and its share of the contract value

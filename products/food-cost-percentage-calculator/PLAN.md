@@ -4,6 +4,7 @@ name: Food Cost Percentage Calculator
 lane: tool
 status: live
 category: pricing
+kits: restaurant-numbers-workbook
 reviewed: 2026-10-06
 headline: Food Cost Percentage Calculator: Dish Cost, Price, Margin
 tagline: See what share of a menu price goes on ingredients, the gross profit per plate, and the price that hits a food cost percentage you choose

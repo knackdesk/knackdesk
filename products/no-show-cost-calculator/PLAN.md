@@ -4,6 +4,7 @@ name: No-Show Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: salon-pricing-workbook
 reviewed: 2026-10-06
 headline: No-Show Cost Calculator: What Missed Appointments Cost
 tagline: Turn appointments per week, no-show rate, average ticket, weeks worked and any no-show fee into lost and recovered revenue per year

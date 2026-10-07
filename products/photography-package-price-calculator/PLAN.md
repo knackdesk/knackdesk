@@ -4,6 +4,7 @@ name: Photography Package Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: freelance-pricing-kit
 reviewed: 2026-10-06
 headline: Photography Package Price Calculator: Hours, Products, Price
 tagline: Price a photography package from shoot and editing hours at your rate, travel and the products you mark up

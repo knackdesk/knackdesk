@@ -4,6 +4,7 @@ name: Photographer Day Rate Calculator
 lane: tool
 status: live
 category: pricing
+kits: freelance-pricing-kit
 reviewed: 2026-10-06
 headline: Photographer Day Rate Calculator: Income Goal to Day Rate
 tagline: Turn the income you want, your business costs and the shoot days you can book into a day rate, a half-day rate and the real hourly figure

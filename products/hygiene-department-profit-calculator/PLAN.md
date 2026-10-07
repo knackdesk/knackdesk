@@ -4,6 +4,7 @@ name: Hygiene Department Profit Calculator
 lane: tool
 status: live
 category: planning
+kits: dental-practice-numbers-workbook
 reviewed: 2026-10-06
 headline: Hygiene Department Profit Calculator for Dental Practices
 tagline: Turn hygiene production, hygienist wages, payroll costs, supplies, hours and an overhead share into department profit, margin and production and cost per hour

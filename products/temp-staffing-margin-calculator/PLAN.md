@@ -4,6 +4,7 @@ name: Temp Staffing Margin Calculator
 lane: tool
 status: live
 category: pricing
+kits: staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Temp Staffing Margin Calculator: Bill Rate, Markup, Margin
 tagline: Turn a temp worker's pay rate, on-costs and markup or bill rate into gross margin per hour, per week and over the whole assignment

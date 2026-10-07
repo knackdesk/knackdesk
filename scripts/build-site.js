@@ -102,13 +102,17 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
   const kitCategories = (data) => String(data.category || "").split(",").map((c) => c.trim()).filter(Boolean);
   // Up to three kits per page: kits that list the page's category first rank highest, then kits with fewer categories (more specific).
   const MAX_CROSS_SELL = 3;
-  const kitsFor = (category) => {
-    const matching = digital.filter(({ data }) => kitCategories(data).includes(category));
-    const pool = matching.length > 0 ? matching : digital;
+  // A tool may pin its own kits with `kits: slug, slug` in PLAN.md; pinned live kits come first, then the category ranking fills the rest.
+  const kitsFor = (category, preferred = "") => {
+    const pinned = String(preferred || "").split(",").map((s) => s.trim()).filter(Boolean).map((slug) => digital.find(({ data }) => data.slug === slug)).filter(Boolean);
+    const rest = digital.filter((item) => !pinned.includes(item));
+    const matching = rest.filter(({ data }) => kitCategories(data).includes(category));
+    const pool = matching.length > 0 ? matching : rest;
     const rank = (item) => { const cats = kitCategories(item.data); const i = cats.indexOf(category); return [i < 0 ? 99 : i, cats.length, item.data.name]; };
-    return [...pool].sort((a, b) => { const [ai, an, as] = rank(a), [bi, bn, bs] = rank(b); return ai - bi || an - bn || as.localeCompare(bs); }).slice(0, MAX_CROSS_SELL);
+    const ranked = [...pool].sort((a, b) => { const [ai, an, as] = rank(a), [bi, bn, bs] = rank(b); return ai - bi || an - bn || as.localeCompare(bs); });
+    return [...pinned, ...ranked].slice(0, MAX_CROSS_SELL);
   };
-  const crossSellFor = (category) => renderCrossSell(kitsFor(category));
+  const crossSellFor = (category, preferred) => renderCrossSell(kitsFor(category, preferred));
   const menu = renderMegaMenu(items);
   const footerKits = digital.map(({ data }) => ({ name: data.name, slug: data.slug }));
   const assetVersion = createHash("sha256").update(readFileSync(join(rootDir, "shared", "styles.css"))).digest("hex").slice(0, 10);
@@ -148,7 +152,7 @@ export async function buildSite({ rootDir, outDir, adsenseId = "" }) {
     cpSync(pub, join(outDir, data.slug), { recursive: true });
     const cat = categoryOf(data.category);
     const parent = cat ? { name: cat.heading, path: `/${cat.key}/` } : null;
-    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category), data, parent, menu, assetVersion, footerKits);
+    const d = wrapToolPage(join(outDir, data.slug, "index.html"), `/${data.slug}/`, adsenseId, crossSellFor(data.category, data.kits), data, parent, menu, assetVersion, footerKits);
     if (d) details[data.slug] = d;
   }
   const tools = items.filter(({ data }) => data.lane !== "digital");

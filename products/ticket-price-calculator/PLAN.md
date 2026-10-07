@@ -4,6 +4,7 @@ name: Ticket Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: event-catering-quote-workbook
 reviewed: 2026-10-06
 headline: Ticket Price Calculator: Break-Even and Target Ticket Price
 tagline: Find the ticket price that covers your event costs after ticketing fees, and the price that hits a profit target

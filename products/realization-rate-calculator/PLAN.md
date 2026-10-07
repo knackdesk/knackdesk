@@ -4,6 +4,7 @@ name: Realization Rate Calculator
 lane: tool
 status: live
 category: pricing
+kits: bookkeeping-pricing-workbook, law-firm-pricing-workbook
 reviewed: 2026-10-06
 headline: Realization Rate Calculator: Billing and Collection Rates
 tagline: Turn hours worked, a standard rate, the amount billed and the amount collected into billing, collection and overall realization and the rate you earned

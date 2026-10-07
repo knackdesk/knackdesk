@@ -4,6 +4,7 @@ name: Job Quote Calculator
 lane: tool
 status: live
 category: pricing
+kits: trade-job-quote-workbook
 reviewed: 2026-10-01
 headline: Job Quote Calculator: Materials, Labour, Overhead, Profit
 tagline: Price a job from materials, labour hours, subcontractors, an overhead allowance and the profit margin you want

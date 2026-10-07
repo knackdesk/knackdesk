@@ -4,6 +4,7 @@ name: Catering Price per Guest Calculator
 lane: tool
 status: live
 category: pricing
+kits: event-catering-quote-workbook
 reviewed: 2026-10-06
 headline: Catering Price per Guest Calculator: Cost, Margin, Quote
 tagline: Turn food cost per guest, staff hours, rentals and the margin you want into a total quote and a price per guest

@@ -4,6 +4,7 @@ name: Recipe Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: restaurant-numbers-workbook
 reviewed: 2026-10-06
 headline: Recipe Cost Calculator: Batch Cost, Cost per Portion, Waste
 tagline: Add up the ingredients in a recipe, allow for waste and trim, and divide by the portions it makes to get a cost per portion

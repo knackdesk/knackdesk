@@ -4,6 +4,7 @@ name: Caregiver Utilization Calculator
 lane: tool
 status: live
 category: pricing
+kits: home-care-pricing-workbook, staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Caregiver Utilization Calculator: Billable vs Paid Hours
 tagline: Turn a caregiver's paid, billable, travel and training hours into utilization and the cost of unbilled time

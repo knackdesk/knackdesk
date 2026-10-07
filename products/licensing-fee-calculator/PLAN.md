@@ -4,6 +4,7 @@ name: Licensing Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: freelance-pricing-kit
 reviewed: 2026-10-06
 headline: Licensing Fee Calculator: Usage, Territory and Exclusivity
 tagline: Scale a base licence fee by your own factors for duration, territory, media and exclusivity

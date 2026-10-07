@@ -4,6 +4,7 @@ name: Change Order Calculator
 lane: tool
 status: live
 category: pricing
+kits: trade-job-quote-workbook
 reviewed: 2026-10-01
 headline: Change Order Calculator: Price Extra Work, Revised Total
 tagline: Price added work on a contract with your markup and subcontractor markup, and see the revised contract total and the percentage change

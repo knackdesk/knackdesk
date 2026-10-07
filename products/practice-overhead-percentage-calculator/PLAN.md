@@ -4,6 +4,7 @@ name: Practice Overhead Percentage Calculator
 lane: tool
 status: live
 category: planning
+kits: dental-practice-numbers-workbook
 reviewed: 2026-10-06
 headline: Practice Overhead Percentage Calculator for Clinics
 tagline: Turn collections and running costs into total overhead, overhead percentage, profit before and after owner pay and profit margin

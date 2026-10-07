@@ -4,6 +4,7 @@ name: IT Support Contract Margin Calculator
 lane: tool
 status: live
 category: pricing
+kits: msp-contract-pricing-workbook
 reviewed: 2026-10-06
 headline: IT Support Contract Margin Calculator: Profit Per Contract
 tagline: Turn a monthly support fee, tool costs, labour hours and other costs into gross profit, margin, per-seat figures and the labour hours where the contract breaks even

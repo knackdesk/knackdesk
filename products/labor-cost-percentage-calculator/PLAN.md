@@ -4,6 +4,7 @@ name: Labor Cost Percentage Calculator
 lane: tool
 status: live
 category: pricing
+kits: restaurant-numbers-workbook
 reviewed: 2026-10-06
 headline: Labour Cost Percentage Calculator: Hours, Wages and Sales
 tagline: Check a staff schedule against projected sales: the labour cost, its share of sales, and the hours a target percentage allows

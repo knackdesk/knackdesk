@@ -4,6 +4,7 @@ name: Bookkeeping Package Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: bookkeeping-pricing-workbook
 reviewed: 2026-10-06
 headline: Bookkeeping Package Price Calculator: Monthly Fee and Rate
 tagline: Turn a base fee, transaction volume, bank accounts and add-ons into a monthly bookkeeping fee, an annual fee and the effective hourly rate it pays

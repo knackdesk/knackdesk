@@ -4,6 +4,7 @@ name: Home Care Bill Rate Calculator
 lane: tool
 status: live
 category: pricing
+kits: home-care-pricing-workbook, staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Home Care Bill Rate Calculator: Cost, Break-Even, Margin
 tagline: Turn a caregiver's pay rate, on-costs, unbilled paid time, overhead and target margin into a bill rate per hour

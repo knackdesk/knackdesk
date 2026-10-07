@@ -4,6 +4,7 @@ name: Print Markup Calculator
 lane: tool
 status: live
 category: pricing
+kits: freelance-pricing-kit
 reviewed: 2026-10-06
 headline: Print Markup Calculator: Lab Cost to Print Price and Margin
 tagline: Turn a lab cost and shipping into a print price by markup, or find the price that gives the margin you want

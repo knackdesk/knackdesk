@@ -4,6 +4,7 @@ name: Lock-Up Days Calculator
 lane: tool
 status: live
 category: pricing
+kits: law-firm-pricing-workbook
 reviewed: 2026-10-07
 headline: Lock-Up Days Calculator: WIP Days, Debtor Days and Cash
 tagline: Turn unbilled work in progress, unpaid bills and annual fees into WIP days, debtor days, total lock-up, the cash tied up and the cash freed per day of lock-up cut

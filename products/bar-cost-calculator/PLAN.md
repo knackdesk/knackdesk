@@ -4,6 +4,7 @@ name: Bar Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: event-catering-quote-workbook
 reviewed: 2026-10-06
 headline: Bar Cost Calculator: Drinks per Guest, Bartenders and Cost
 tagline: Estimate drinks for an event from guests and hours, split them into beer, wine and spirits, and cost the bar

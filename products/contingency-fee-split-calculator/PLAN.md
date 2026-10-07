@@ -4,6 +4,7 @@ name: Contingency Fee Split Calculator
 lane: tool
 status: live
 category: pricing
+kits: law-firm-pricing-workbook
 reviewed: 2026-10-07
 headline: Contingency Fee Split Calculator: Firm, Referral and Client
 tagline: Split a settlement into the firm's contingency fee, any referral share, case costs taken before or after the fee, the client's net and the firm's effective hourly rate

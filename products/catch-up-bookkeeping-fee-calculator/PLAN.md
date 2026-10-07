@@ -4,6 +4,7 @@ name: Catch-Up Bookkeeping Fee Calculator
 lane: tool
 status: live
 category: pricing
+kits: bookkeeping-pricing-workbook
 reviewed: 2026-10-06
 headline: Catch-Up Bookkeeping Fee Calculator: Quote Months Behind
 tagline: Turn the months behind, hours per month, hourly rate, setup fee and discount into a total catch-up quote and a cost per month of books

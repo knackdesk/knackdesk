@@ -4,6 +4,7 @@ name: Guarantee Rebate Reserve Calculator
 lane: tool
 status: live
 category: pricing
+kits: staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Guarantee Rebate Reserve Calculator: Plan for Fall-Offs
 tagline: Turn your placement fee, rebate terms and your own fall-off history into the rebate to expect per placement and the reserve to set aside each year

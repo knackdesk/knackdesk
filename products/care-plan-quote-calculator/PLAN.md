@@ -4,6 +4,7 @@ name: Care Plan Quote Calculator
 lane: tool
 status: live
 category: pricing
+kits: home-care-pricing-workbook, staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Care Plan Quote Calculator: Weekly and Period Care Cost
 tagline: Turn a client's weekly care hours, your bill rate, weekend uplift, overnight rate and mileage into a weekly and period quote

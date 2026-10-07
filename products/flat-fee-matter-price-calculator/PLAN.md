@@ -4,6 +4,7 @@ name: Flat Fee Matter Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: law-firm-pricing-workbook
 reviewed: 2026-10-07
 headline: Flat Fee Matter Price Calculator: Price a Fixed-Fee Matter
 tagline: Turn each grade's estimated hours and cost rate, disbursements, a scope contingency and a margin into a flat fee and the effective hourly rate it works out to

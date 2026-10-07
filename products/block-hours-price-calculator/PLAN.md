@@ -4,6 +4,7 @@ name: Block Hours Price Calculator
 lane: tool
 status: live
 category: pricing
+kits: msp-contract-pricing-workbook
 reviewed: 2026-10-06
 headline: Block Hours Price Calculator: Price Prepaid Support Hours
 tagline: Turn block hours, your rate, a prepay discount, expiry and expected unused hours into the block price, effective rates and the price per month

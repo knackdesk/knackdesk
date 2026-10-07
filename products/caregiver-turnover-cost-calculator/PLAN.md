@@ -4,6 +4,7 @@ name: Caregiver Turnover Cost Calculator
 lane: tool
 status: live
 category: pricing
+kits: home-care-pricing-workbook, staffing-agency-margin-workbook
 reviewed: 2026-10-07
 headline: Caregiver Turnover Cost Calculator: What Leavers Cost
 tagline: Turn caregiver leavers, recruiting spend, onboarding time and unfilled shifts into the yearly cost of turnover

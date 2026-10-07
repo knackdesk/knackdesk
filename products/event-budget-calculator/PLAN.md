@@ -4,6 +4,7 @@ name: Event Budget Calculator
 lane: tool
 status: live
 category: pricing
+kits: event-catering-quote-workbook
 reviewed: 2026-10-06
 headline: Event Budget Calculator: Lines, Per Guest Cost and Variance
 tagline: Add up event budget lines, see cost per guest, each line's share and how far you are under or over budget
