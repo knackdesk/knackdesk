@@ -804,3 +804,41 @@ Questions or a file that does not open: message us here or email hello@knackdesk
 
 This is a spreadsheet, not financial, tax or legal advice.
 ```
+
+### Insurance Agency Numbers Workbook
+
+**Price:** 14 USD
+**Title (127 chars):** Insurance Agency Spreadsheet | Policy Retention, Renewal Commission, Cost per Policy, Commission Splits | Excel & Google Sheets
+**Tags (13):** insurance agency, insurance agent, book of business, policy retention, renewal commission, commission split, agency owner, excel template, google sheets, insurance broker, producer tracker, agency kpi, commission tracker
+**File to upload:** products/insurance-agency-numbers-workbook/assets/insurance-agency-numbers-workbook.zip
+**Images, in order:** products/insurance-agency-numbers-workbook/assets/images/cover-etsy.png, products/insurance-agency-numbers-workbook/assets/images/sheet-1-book-by-line.png, products/insurance-agency-numbers-workbook/assets/images/sheet-2-producers.png, products/insurance-agency-numbers-workbook/assets/images/sheet-3-acquisition.png
+
+**Description:**
+
+```
+Insurance Agency Numbers Workbook: Know what your book keeps, what each producer brings in and what a new policy is worth. The Insurance Agency Numbers Workbook turns your lines, producers, months and splits into numbers you can act on:
+
+• Book by Line: policies at the start of the year, lapses, new business and average premium for each line give retention %, lapse %, net growth, the renewal commission on the retained book and the commission lost to lapses, with every line checked against your own target retention.
+• Producers: policies, premium, commission revenue credited and compensation paid give revenue per policy and each producer's compensation ratio against your own target, with revenue per producer and per employee on the Summary.
+• Acquisition: each month's marketing spend, lead costs and producer time give the cost per policy acquired, set against the lifetime commission a policy earns at your book's retention, with a value-to-cost ratio and payback policies.
+• Commission Splits: premium, carrier commission %, agent split % and a per-policy agency fee give gross commission, agent net, the agent's effective % of premium and agency net, totalled per producer.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks or valuation multiples
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-agency use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax, legal or licensing advice.
+```
