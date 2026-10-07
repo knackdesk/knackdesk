@@ -4,7 +4,7 @@ name: Agent Commission Split Calculator
 lane: tool
 status: live
 category: planning
-kits: small-business-finance-dashboard
+kits: insurance-agency-numbers-workbook, small-business-finance-dashboard
 reviewed: 2026-10-07
 headline: Agent Commission Split Calculator: Agent and Agency Shares
 tagline: Turn premium, carrier commission, agent split, policies and agency fee per policy into gross commission, agent and agency shares, agent net and the agent's effective percentage of premium

@@ -4,7 +4,7 @@ name: Revenue per Producer Calculator
 lane: tool
 status: live
 category: planning
-kits: small-business-finance-dashboard
+kits: insurance-agency-numbers-workbook, small-business-finance-dashboard
 reviewed: 2026-10-07
 headline: Revenue per Producer Calculator: Agency Productivity
 tagline: Turn annual commission revenue, producers, support staff, producer pay and new business revenue into revenue per producer and per employee and the compensation and new business ratios

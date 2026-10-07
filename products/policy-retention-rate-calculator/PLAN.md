@@ -4,7 +4,7 @@ name: Policy Retention Rate Calculator
 lane: tool
 status: live
 category: planning
-kits: small-business-finance-dashboard
+kits: insurance-agency-numbers-workbook, small-business-finance-dashboard
 reviewed: 2026-10-07
 headline: Policy Retention Rate Calculator: Lapse Rate and Growth
 tagline: Turn policies at start, policies lost, new policies and commission per policy into retention rate, lapse rate, net growth and commission kept and lost

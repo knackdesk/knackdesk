@@ -4,7 +4,7 @@ name: Cost per Policy Acquired Calculator
 lane: tool
 status: live
 category: planning
-kits: small-business-finance-dashboard
+kits: insurance-agency-numbers-workbook, small-business-finance-dashboard
 reviewed: 2026-10-07
 headline: Cost per Policy Acquired Calculator: Payback and Value
 tagline: Turn marketing spend, lead costs, producer time, policies written, commission, retention and years into cost per policy, lifetime commission, value-to-cost ratio and payback policies

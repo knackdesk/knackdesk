@@ -4,7 +4,7 @@ name: Renewal Commission Calculator
 lane: tool
 status: live
 category: planning
-kits: small-business-finance-dashboard
+kits: insurance-agency-numbers-workbook, small-business-finance-dashboard
 reviewed: 2026-10-07
 headline: Renewal Commission Calculator: Book Residuals Over Years
 tagline: Turn policies, premium, renewal and new business commission rates, retention and years into book commission, first-year renewal, residuals and policies remaining
