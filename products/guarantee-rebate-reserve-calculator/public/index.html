@@ -1,0 +1,66 @@
+<!-- title: Guarantee Rebate Reserve Calculator -->
+<!-- description: Work out how much of each placement fee to set aside for guarantee rebates from your own fall-off rate and rebate terms, per placement and per year. -->
+<h1>Guarantee Rebate Reserve Calculator</h1>
+<p>Enter your placement fee, the length of your guarantee period, the share of placements that have fallen off in your own history, the share of the fee you refund when that happens and the placements you make in a year. You get the rebate to expect on each placement, the fee you can expect to keep, the reserve as a percentage of the fee, the total to set aside for the year and the fees you can expect to keep over the year. It is built for owners and managers of recruitment and staffing agencies, and for independent recruiters, who offer a rebate or refund guarantee on permanent placements. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A guarantee rebate reserve is money you set aside from placement fees to cover the refunds you will owe when some placed candidates leave inside the guarantee period.</p>
+<p class="formula"><strong>Formula:</strong> expected rebate per placement = fee × rebate % ÷ 100 × fall-off % ÷ 100; net expected fee = fee − expected rebate per placement; reserve % of fee = rebate % × fall-off % ÷ 100; annual reserve = expected rebate per placement × placements per year; annual net fees = net expected fee × placements per year.</p>
+
+<form class="tool" id="f">
+  <label>Placement fee<br><input type="number" id="fee" min="0" step="any" value="16000"></label>
+  <label>Guarantee period in days<br><input type="number" id="days" min="0" step="1" value="90"></label>
+  <label>Expected fall-off rate, % of placements<br><input type="number" id="falloff" min="0" max="100" step="any" value="8"></label>
+  <label>Share of the fee refunded on a fall-off, %<br><input type="number" id="rebate" min="0" max="100" step="any" value="100"></label>
+  <label>Placements per year<br><input type="number" id="placements" min="0" step="any" value="20"></label>
+  <p><button class="primary" type="submit">Calculate reserve</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { guaranteeRebateReserve } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = guaranteeRebateReserve({ placementFee: Number($("fee").value) || 0, guaranteeDays: Number($("days").value) || 0, expectedFallOffPercent: Number($("falloff").value) || 0, rebatePercent: Number($("rebate").value) || 0, placementsPerYear: Number($("placements").value) || 0 });
+    $("out").innerHTML = `<table><tr><td>Guarantee period</td><td>${r.guaranteeDays} days</td></tr><tr><td>Expected rebate per placement</td><td><strong>${fmt(r.expectedRebatePerPlacement)}</strong></td></tr><tr><td>Net expected fee per placement</td><td>${fmt(r.netExpectedFee)}</td></tr><tr><td>Reserve as % of fee</td><td>${fmt(r.reservePercentOfFee)}%</td></tr><tr><td>Reserve for the year</td><td>${orNa(r.annualReserve, "n/a")}</td></tr><tr><td>Net expected fees for the year</td><td>${fmt(r.annualNetFees)}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>A placement is a permanent hire: a candidate your agency introduced has started a job with your client, and the client owes you a fee. The placement fee is the fee on one placement, after any share paid to a split partner. If your fees vary, use the fee per placement over the last year from your fee ledger, or run the calculator once for each fee level.</p>
+<p>The guarantee period is the number of days after the start date during which you promise a rebate or refund if the placement does not last. It is written in your client terms of business. The calculator does not use it in the arithmetic; it shows it next to the result so that the reserve and the period it covers sit together. A longer guarantee means more of your placements are still inside it at any time, and your fall-off history over that same length of period is what to enter below.</p>
+<p>A fall-off is a placed candidate leaving, or being let go, inside the guarantee period, so that the client can claim a rebate. The expected fall-off rate is the share of your placements that fell off in the past. Work it out from your own records: count the placements over a period that is long enough for every guarantee to have expired, count how many fell off, divide and multiply by 100. Your fee ledger shows the credit notes you issued, and your applicant tracking system shows candidates whose placement ended early. Use your own history, not a figure from somewhere else, because your clients, sectors and screening are your own.</p>
+<p>The rebate percentage is the share of the fee you refund when a fall-off happens. Your terms of business set it. Some terms refund the whole fee, some refund a share that falls the longer the candidate stayed, and some offer a free replacement instead of money back. If yours is a sliding scale, use the share you refunded on fall-offs in your history, divided by the fees on those placements. If you replace rather than refund, enter 0 here and count the replacement work as recruiter time instead.</p>
+<p>Placements per year is the number of permanent placements you expect to make in the year, from your plan or last year's fee ledger.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a fee of 16,000 with a full refund and a fall-off rate of 8 percent gives an expected rebate of 1,280 per placement. That is 8 percent of the fee, and the fee you can expect to keep is 14,720. Over 20 placements a year, the reserve to set aside is 25,600, and the fees you can expect to keep come to 294,400.</p>
+<p>If your terms refund half the fee instead of all of it, the expected rebate halves to 640 per placement, and the net expected fee rises to 15,360. Changing the rebate terms moves the reserve as directly as the fall-off rate does.</p>
+
+<h2>A reserve is money set aside, not a cost on every placement</h2>
+<p>The expected rebate per placement is not a cost that every placement incurs. On the placements that do not fall off, you keep the whole fee. The ones that do fall off cost you the full rebate. The reserve spreads that risk across all placements, so that when a fall-off does happen the refund comes out of money you already put aside, not out of this month's cash.</p>
+<p>In practice, that means moving the reserve percentage of each fee into a separate account or a ledger line when the fee is paid, and releasing it once the guarantee period on that placement has expired. If your fall-offs over the year come in below the reserve, the extra is income you can release. If they come in above it, your fall-off rate has risen and the reserve percentage needs updating. The <a href="/cash-runway-calculator/">cash runway calculator</a> helps you see how a run of refunds would affect your cash.</p>
+
+<h2>Keeping the fall-off rate honest</h2>
+<p>The reserve is only as good as the fall-off rate you enter. Recalculate it from your own records at least once a year, and after any change that could move it, such as a new sector, a new client or a change to how candidates are screened. Keep the definition the same each time: count a fall-off only when it triggered a rebate under your terms, so the rate matches the money you actually refund. The calculator does not say what fall-off rate or reserve is right; it works from the figures you give it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the fall-off rate rejected above 100?</h3>
+<p>It is a share of placements, so it cannot be more than all of them. The same applies to the rebate percentage.</p>
+<h3>Does the guarantee period change the result?</h3>
+<p>Not directly. It is shown with the result. Its effect comes through the fall-off rate, which you measure over the same period.</p>
+<h3>Is the reserve a tax figure?</h3>
+<p>No. It is a planning figure. Ask your accountant how refunds and provisions are treated where you operate.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/placement-fee-calculator/">Placement fee calculator</a></li>
+  <li><a href="/cash-runway-calculator/">Cash runway calculator</a></li>
+  <li><a href="/recruiter-desk-cost-calculator/">Recruiter desk cost calculator</a></li>
+</ul>

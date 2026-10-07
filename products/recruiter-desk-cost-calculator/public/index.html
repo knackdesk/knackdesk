@@ -1,0 +1,68 @@
+<!-- title: Recruiter Desk Cost Calculator -->
+<!-- description: Add up what one recruiter desk costs a year in salary, benefits, tools and overhead, then see cost per placement, desk profit and break-even placements. -->
+<h1>Recruiter Desk Cost Calculator</h1>
+<p>Enter a recruiter's annual salary, benefits and on-costs as a percentage of salary, what you spend on tools and job boards for that desk each year, the share of office and management overhead it carries, the placements the desk makes in a year and the net fee per placement. You get the loaded salary, the total cost of the desk, the cost of each placement, the fee income, the desk profit, the number of placements the desk needs to cover its costs and how much fee income each unit of cost brings back. It is built for owners and managers of recruitment and staffing agencies, and for independent recruiters, who want to know what a desk really costs before they hire, set targets or price a placement. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Recruiter desk cost is everything it takes to keep one recruiter working for a year, from salary and on-costs to software, job boards and a fair share of the office.</p>
+<p class="formula"><strong>Formula:</strong> loaded salary = salary × (1 + benefits % ÷ 100); total desk cost = loaded salary + tools and job boards + overhead allocation; cost per placement = total desk cost ÷ placements per year; revenue = placements per year × net fee per placement; desk profit = revenue − total desk cost; break-even placements = total desk cost ÷ net fee per placement; revenue per unit of cost = revenue ÷ total desk cost.</p>
+
+<form class="tool" id="f">
+  <label>Recruiter annual salary<br><input type="number" id="salary" min="0" step="any" value="55000"></label>
+  <label>Benefits and on-costs as % of salary<br><input type="number" id="benefits" min="0" step="any" value="20"></label>
+  <label>Tools and job boards per year<br><input type="number" id="tools" min="0" step="any" value="9000"></label>
+  <label>Overhead allocated to the desk per year<br><input type="number" id="overhead" min="0" step="any" value="18000"></label>
+  <label>Placements per year<br><input type="number" id="placements" min="0" step="any" value="18"></label>
+  <label>Net fee per placement (optional)<br><input type="number" id="fee" min="0" step="any" value="12000"></label>
+  <p><button class="primary" type="submit">Calculate desk cost</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { recruiterDeskCost } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = recruiterDeskCost({ recruiterSalary: Number($("salary").value) || 0, benefitsPercent: Number($("benefits").value) || 0, toolsAndJobBoardsAnnual: Number($("tools").value) || 0, overheadAllocationAnnual: Number($("overhead").value) || 0, placementsPerYear: Number($("placements").value) || 0, averageNetFee: Number($("fee").value) || 0 });
+    const note = r.deskProfit < 0 ? `<p>A negative desk profit means the desk costs more to run than the fees it brings in over the year.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Loaded salary</td><td>${fmt(r.loadedSalary)}</td></tr><tr><td>Total desk cost</td><td><strong>${fmt(r.totalDeskCost)}</strong></td></tr><tr><td>Cost per placement</td><td>${fmt(r.costPerPlacement)}</td></tr><tr><td>Fee income</td><td>${fmt(r.revenue)}</td></tr><tr><td>Desk profit</td><td>${fmt(r.deskProfit)}</td></tr><tr><td>Break-even placements</td><td>${orNa(r.breakEvenPlacements, "n/a (no net fee entered)")}</td></tr><tr><td>Fee income per 1 of cost</td><td>${fmt(r.revenuePerCostUnit)}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The salary is the recruiter's base annual salary from payroll or the employment contract. Leave out commission here, because commission depends on the placements the desk makes; if you want to include it, add your own estimate of a year's commission to the salary figure. A placement means a candidate your desk introduced who has started a job with a client and earned a fee.</p>
+<p>Benefits and on-costs cover the employer taxes, insurance and statutory costs on top of salary, plus any benefits you pay for: pension or retirement contributions, health cover, and similar items. Your payroll reports and benefit provider invoices give you the total for a year. Divide it by the salary and multiply by 100 to get the percentage.</p>
+<p>Tools and job boards are the yearly cost of the software and subscriptions this desk uses: the seat on your applicant tracking system, CRM, job board licences, professional networking subscriptions, phone and video tools, and background check credits if they are not passed on to clients. Your supplier invoices and card statements list them. Where one subscription covers several recruiters, divide it fairly between the desks that use it.</p>
+<p>Overhead allocation is the desk's share of the costs that keep the agency running but are not tied to one recruiter: rent, utilities, the accounts and compliance function, management time, insurance, marketing and the hardware the recruiter uses. Add up those costs from your profit and loss account and divide by the number of desks, or use a split that reflects how much of the space and support each desk takes.</p>
+<p>Placements per year is the number of placements the desk completes in a year, from your applicant tracking system or your fee ledger. For a new desk, use the number you are planning for. The net fee per placement is the fee your agency keeps on a placement after any split with another agency, averaged over that desk's placements for the year. Your fee ledger gives you the total net fees; divide by the number of placements.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a salary of 55,000 plus 20 percent in benefits and on-costs gives a loaded salary of 66,000. Add 9,000 in tools and job boards and 18,000 in overhead, and the desk costs 93,000 a year. Spread over 18 placements, each one costs 5,166.67 to produce. At a net fee of 12,000, the desk brings in 216,000 and makes a profit of 123,000. It needs 7.75 placements to cover its costs, and every 1 spent on the desk brings back 2.32 in fees.</p>
+<p>Break-even placements is the figure to watch through the year. A desk that has passed it is paying for itself; a desk that is well short of it by mid-year needs a look at the pipeline, the fee level or the costs. Because it is a fraction, round it up when you set a target: 7.75 placements means eight to clear costs.</p>
+
+<h2>Turning desk cost into a cost per hour</h2>
+<p>The <a href="/placement-fee-calculator/">placement fee calculator</a> asks for a recruiter cost per hour, so that it can work out what the time on one placement cost you. That figure comes straight from this page. Take the total desk cost and divide it by the working hours a recruiter has in a year. Use your own figure for those hours: contracted hours per week times working weeks, less annual leave and public holidays. In the example, divide the total desk cost of 93,000 by your own count of working hours, and the answer is the cost per hour to enter there.</p>
+<p>That rate covers every hour, including time spent on job orders that never fill, so it is the full cost of an hour of recruiter time rather than just the salary. Using it in the placement fee calculator stops placement margins from looking better than they are.</p>
+
+<h2>When the desk profit is negative</h2>
+<p>A negative desk profit means the fees the desk brings in do not cover what it costs. For a new recruiter in their first months that can be expected, because costs start on day one and fees only come in once placements start. For an established desk, the inputs show where to look: too few placements, a low net fee after splits, or tools and overhead that have grown faster than income. The calculator does not set a target; compare the result with your other desks and with the same desk over time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are placements per year rejected when I enter 0?</h3>
+<p>Cost per placement divides by the number of placements, so it has to be more than 0. For a brand new desk, enter the number you are planning for.</p>
+<h3>Why are break-even placements shown as n/a?</h3>
+<p>They divide the desk cost by the net fee. With no net fee entered there is nothing to divide by.</p>
+<h3>Should I include commission?</h3>
+<p>You can. Add your estimate of a year's commission to the salary, and the cost per placement will include it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/placement-fee-calculator/">Placement fee calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/fill-rate-calculator/">Fill rate calculator</a></li>
+</ul>

@@ -1,0 +1,70 @@
+<!-- title: Placement Fee Calculator -->
+<!-- description: Work out the fee on a permanent placement from salary and fee percentage, less any split, recruiter time and advertising, with margin and hourly rate. -->
+<h1>Placement Fee Calculator</h1>
+<p>Enter the annual salary of the candidate you placed, your fee percentage, the recruiter hours the placement took, what an hour of recruiter time costs you, what you spent on advertising and any share of the fee paid to a split partner. You get the gross fee, the split, the net fee, the cost of delivering the placement, the margin on it and what the fee earned per recruiter hour. It is built for owners and managers of recruitment and staffing agencies, and for independent recruiters, who want to see what one permanent placement actually leaves them. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A placement fee is the amount a client pays your agency when a candidate you introduced starts a permanent job with them, worked out as a percentage of the candidate's first-year salary or set as a flat amount.</p>
+<p class="formula"><strong>Formula:</strong> gross fee = annual salary × fee % ÷ 100; split fee = gross fee × split % ÷ 100; net fee = gross fee − split fee; delivery cost = recruiter hours × recruiter cost per hour + advertising; margin on placement = net fee − delivery cost; margin % = margin on placement ÷ net fee × 100; effective hourly rate = net fee ÷ recruiter hours.</p>
+
+<form class="tool" id="f">
+  <label>Annual salary of the placed candidate<br><input type="number" id="salary" min="0" step="any" value="80000"></label>
+  <label>Fee percentage of salary<br><input type="number" id="fee" min="0" max="100" step="any" value="20"></label>
+  <label>Recruiter hours spent on the placement<br><input type="number" id="hours" min="0" step="any" value="35"></label>
+  <label>Recruiter cost per hour<br><input type="number" id="cost" min="0" step="any" value="45"></label>
+  <label>Advertising costs for the role (optional)<br><input type="number" id="ads" min="0" step="any" value="300"></label>
+  <label>Share of the fee paid to a split partner, % (optional)<br><input type="number" id="split" min="0" max="100" step="any" value="0"></label>
+  <p><button class="primary" type="submit">Calculate placement fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { placementFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = placementFee({ annualSalary: Number($("salary").value) || 0, feePercent: Number($("fee").value) || 0, recruiterHours: Number($("hours").value) || 0, recruiterCostPerHour: Number($("cost").value) || 0, advertisingCosts: Number($("ads").value) || 0, splitPercent: Number($("split").value) || 0 });
+    const note = r.marginOnPlacement < 0 ? `<p>A negative margin means this placement cost more to deliver than the fee your agency kept.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Gross fee</td><td>${fmt(r.grossFee)}</td></tr><tr><td>Paid to split partner</td><td>${fmt(r.splitFee)}</td></tr><tr><td>Net fee</td><td>${fmt(r.netFee)}</td></tr><tr><td>Delivery cost</td><td>${fmt(r.deliveryCost)}</td></tr><tr><td>Margin on placement</td><td><strong>${fmt(r.marginOnPlacement)}</strong></td></tr><tr><td>Margin</td><td>${fmt(r.marginPercent)}%</td></tr><tr><td>Net fee per recruiter hour</td><td>${orNa(r.effectiveHourlyRate, "n/a (no recruiter hours entered)")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>A placement here means a permanent hire: a candidate your agency introduced has accepted a job with your client and started, and the client owes you a fee for it. The annual salary is the candidate's base salary for the first year as written in the offer letter. Your client terms of business say whether the fee is worked out on base salary alone or on a wider package that includes guaranteed bonus, car allowance or other benefits. Enter whichever figure your terms use, so the gross fee matches the invoice you send.</p>
+<p>The fee percentage is the rate agreed with this client for this role. It comes from your signed terms of business or from the email in which the client accepted your rate. If the rate is a flat fee rather than a percentage, divide the flat fee by the salary and multiply by 100 to get the percentage to enter.</p>
+<p>Recruiter hours are the hours your team spent on this placement from the day the job order arrived to the day the candidate started. A job order is the vacancy a client has asked you to fill. Count briefing calls, sourcing, screening, interviews, reference checks, offer management and the follow-up calls in the first weeks. Your applicant tracking system may log activity against the job, and timesheets or calendar entries fill the gaps. If nobody records time, an honest estimate is still more useful than leaving the field at 0.</p>
+<p>Recruiter cost per hour is what an hour of a recruiter's time costs your agency, not what the recruiter is paid per hour. The <a href="/recruiter-desk-cost-calculator/">recruiter desk cost calculator</a> works it out for you: take the total desk cost it shows and divide it by the working hours a recruiter has in a year, using your own figure for those hours. That figure includes salary, employer costs, tools, job boards and a share of overheads, so it is the full cost of keeping that desk running.</p>
+<p>Advertising costs are the money spent on this one role: paid job board slots, sponsored posts or a targeted campaign. Subscriptions that cover every role you work on are already inside the desk cost, so leave them out here to avoid counting them twice.</p>
+<p>The split percentage is the share of the gross fee you pay to another agency or a split partner who supplied the candidate or the client. Your split agreement sets it. Leave it at 0 when the whole fee is yours.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, a salary of 80,000 at a fee of 20 percent gives a gross fee of 16,000. Nothing is split, so the net fee is also 16,000. Thirty-five hours of recruiter time at 45 an hour costs 1,575, and with 300 of advertising the placement cost 1,875 to deliver. That leaves a margin of 14,125 on the placement, which is 88.28 percent of the net fee. Spread over 35 hours, the net fee earned 457.14 per recruiter hour.</p>
+<p>The net fee per recruiter hour is the figure to compare across your own placements. Two placements with the same fee can look very different once you see that one took 15 hours and the other took 60. When you look back over a quarter, the placements with the lowest figure show you which clients, roles or briefs take the most time for the money.</p>
+
+<h2>One placement, not the whole desk</h2>
+<p>This calculator looks at a single placement. The margin it shows is what that placement contributes after the time and advertising it used. It is not the profit of the desk or the agency. A recruiter also spends time on job orders that are never filled, on candidates who drop out at offer stage and on business development that brings in next year's clients. None of that time belongs to this placement, but it still has to be paid for out of the fees from the placements that do complete.</p>
+<p>That is why a high margin on one placement can sit alongside a desk that only just covers its costs. To see the desk as a whole, use the recruiter desk cost calculator, which sets the full annual cost of a recruiter against the number of placements and the fee per placement you enter.</p>
+
+<h2>When the margin is negative</h2>
+<p>A negative margin means the hours and advertising cost more than the fee your agency kept. It can happen with a low salary, a low fee percentage, a large split or a search that ran far longer than planned. The inputs show which one. If the hours are the cause, look at whether the brief changed during the search or whether the client took a long time to give interview feedback. If the split is the cause, the arrangement may still be worth it for the relationship it brings, but it is worth knowing the cost.</p>
+<p>The calculator does not say what fee or margin you ought to aim for. That depends on your own costs, clients and market, so compare the result with your other placements and with the same client over time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is the net fee per recruiter hour shown as n/a?</h3>
+<p>It divides the net fee by recruiter hours. When hours is 0 or left empty, there is nothing to divide by, so the calculator leaves it out.</p>
+<h3>Does this include the rebate if the candidate leaves?</h3>
+<p>No. It shows the fee as invoiced. The <a href="/guarantee-rebate-reserve-calculator/">guarantee rebate reserve calculator</a> works out how much to set aside for refunds within the guarantee period.</p>
+<h3>Should I include sales tax?</h3>
+<p>No. Use the fee before any sales tax, because the tax is passed on and is not income to your agency.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/recruiter-desk-cost-calculator/">Recruiter desk cost calculator</a></li>
+  <li><a href="/guarantee-rebate-reserve-calculator/">Guarantee rebate reserve calculator</a></li>
+  <li><a href="/commission-calculator/">Commission calculator</a></li>
+</ul>

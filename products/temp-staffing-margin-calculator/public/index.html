@@ -1,0 +1,69 @@
+<!-- title: Temp Staffing Margin Calculator -->
+<!-- description: Find the gross margin on a temp worker from pay rate, on-costs and markup or bill rate, per hour, per week and over the whole of the assignment. -->
+<h1>Temp Staffing Margin Calculator</h1>
+<p>Enter what you pay a temporary worker per hour, your on-costs as a percentage of pay, and either your markup or the bill rate the client pays. Add the hours per week and the length of the assignment. You get the bill rate used, the loaded cost per hour, the gross margin per hour and as a percentage of the bill rate, what you bill each week, the margin each week and the margin over the whole assignment. It is built for owners and managers of recruitment and staffing agencies, and for independent recruiters, who supply temporary or contract workers and want to know what each assignment leaves after paying the worker. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Temp staffing margin is the part of each hour you bill a client that is left after paying the temporary worker and the employer costs that come with their pay.</p>
+<p class="formula"><strong>Formula:</strong> bill rate used = bill rate if entered, otherwise pay rate × (1 + markup % ÷ 100); loaded cost per hour = pay rate × (1 + on-costs % ÷ 100); gross margin per hour = bill rate used − loaded cost per hour; gross margin % = gross margin per hour ÷ bill rate used × 100; bill per week = bill rate used × hours per week; margin per week = gross margin per hour × hours per week; margin for assignment = margin per week × weeks.</p>
+
+<form class="tool" id="f">
+  <label>Pay rate per hour to the worker<br><input type="number" id="pay" min="0" step="any" value="20"></label>
+  <label>On-costs as % of pay<br><input type="number" id="oncosts" min="0" step="any" value="18"></label>
+  <label>Markup on pay rate, %<br><input type="number" id="markup" min="0" step="any" value="55"></label>
+  <label>Bill rate per hour (optional, overrides markup; leave 0 to use markup)<br><input type="number" id="bill" min="0" step="any" value="0"></label>
+  <label>Hours per week<br><input type="number" id="hours" min="0" step="any" value="40"></label>
+  <label>Weeks on assignment<br><input type="number" id="weeks" min="0" step="any" value="12"></label>
+  <p><button class="primary" type="submit">Calculate margin</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { tempStaffingMargin } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = tempStaffingMargin({ payRate: Number($("pay").value) || 0, onCostsPercent: Number($("oncosts").value) || 0, markupPercent: Number($("markup").value) || 0, billRate: Number($("bill").value) || 0, hoursPerWeek: Number($("hours").value) || 0, weeks: Number($("weeks").value) || 0 });
+    const note = r.grossMarginPerHour < 0 ? `<p>A negative margin means each hour the worker is on assignment costs you more in pay and on-costs than the client pays for it.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Bill rate used</td><td>${fmt(r.billRateUsed)}</td></tr><tr><td>Loaded cost per hour</td><td>${fmt(r.loadedCostPerHour)}</td></tr><tr><td>Gross margin per hour</td><td><strong>${fmt(r.grossMarginPerHour)}</strong></td></tr><tr><td>Gross margin</td><td>${fmt(r.grossMarginPercent)}%</td></tr><tr><td>Bill per week</td><td>${fmt(r.billPerWeek)}</td></tr><tr><td>Margin per week</td><td>${fmt(r.marginPerWeek)}</td></tr><tr><td>Margin for the assignment</td><td>${orNa(r.marginForAssignment, "n/a")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The pay rate is the gross hourly rate you pay the temporary worker, before any deductions from their side. It is on the assignment confirmation you issued to the worker and in your payroll system. If the worker is paid different rates for overtime or unsocial hours, run the calculator once for each rate, or use a blended rate that matches the hours your timesheets show.</p>
+<p>On-costs are the employer taxes, insurance and statutory costs that come on top of the pay rate because you, not the client, employ the worker. Depending on where you operate, they can include employer payroll taxes, pension or retirement contributions, holiday pay that accrues while the worker is on assignment, workers' compensation or employer liability insurance, and any other contribution the law requires. Your payroll provider or accountant can give you the total for one hour of pay as a percentage. Use your own figure, worked out from your last few pay runs, rather than a rule of thumb.</p>
+<p>The markup is the percentage you add to the pay rate to reach the bill rate. If your client terms of business quote a markup, enter it here and leave the bill rate at 0. If the terms instead quote a fixed bill rate per hour, enter that bill rate and the markup is ignored. The calculator shows which bill rate it used, so you can check it against your invoice.</p>
+<p>Hours per week are the hours the worker is expected to bill each week on this assignment, from the client's booking or your timesheets. Weeks on assignment is the length of the booking. For an open-ended booking, pick a period you want to look at, such as a quarter.</p>
+
+<h2>Markup and margin are not the same number</h2>
+<p>Markup and margin both describe the gap between what you pay and what you bill, but they measure it against different things, and mixing them up is one of the easiest ways to misread an assignment. Markup is measured on the pay rate: it is how much you add to the pay rate, as a percentage of the pay rate. Margin is measured on the bill rate: it is how much of what the client pays is left after costs, as a percentage of the bill rate.</p>
+<p>Because the bill rate is always larger than the pay rate when there is any markup at all, the same gap gives a smaller margin percentage than markup percentage. And markup is added to the pay rate alone, while the real cost of the worker includes on-costs. So a markup can look comfortable while the margin after on-costs is much thinner. In the example, a 55 percent markup on a pay rate of 20 gives a bill rate of 31. The worker costs 23.60 per hour once 18 percent of on-costs are added, so the gross margin is 7.40 per hour, which is 23.87 percent of the bill rate. The 55 and the 23.87 describe the same assignment.</p>
+<p>When you agree terms with a client, be clear which number you are talking about. A client who hears a margin figure may think it is your markup, and the other way round. The <a href="/markup-margin-calculator/">markup and margin calculator</a> converts one into the other for any price and cost.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, the bill rate is 31 per hour and the loaded cost is 23.60, which leaves 7.40 of gross margin for every hour worked. At 40 hours a week you bill the client 1,240 and keep 296 of it as gross margin. Over a 12-week assignment, the margin comes to 3,552.</p>
+<p>That figure is gross margin. It pays for the consultants who find the workers, run payroll and manage the client, and for the rest of your overheads. It is not profit. Compare it across your own assignments and clients to see which ones carry the business and which ones barely cover the worker.</p>
+
+<h2>When the margin is negative</h2>
+<p>A negative gross margin means the client pays less per hour than the worker costs you once on-costs are added. It can show up when a bill rate was agreed without allowing for on-costs, when on-costs rose after the terms were signed, or when the worker is paid a higher rate for overtime that the client is billed at the standard rate. Check the overtime terms in your contract and the on-cost percentage from your latest payroll before the next rate review.</p>
+<p>The calculator does not say what markup or margin you ought to charge. That depends on your costs, your clients and the work, so compare the result with your other assignments over time.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why is my pay rate rejected?</h3>
+<p>The bill rate and on-costs are worked out from the pay rate, so it has to be more than 0.</p>
+<h3>What if I enter both a markup and a bill rate?</h3>
+<p>The bill rate wins. Set it to 0 to have the calculator work out the bill rate from the markup.</p>
+<h3>Does this include the consultant's time?</h3>
+<p>No. It covers the worker's pay and on-costs only. Consultant time comes out of the gross margin.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/employee-cost-calculator/">Employee cost calculator</a></li>
+  <li><a href="/placement-fee-calculator/">Placement fee calculator</a></li>
+</ul>

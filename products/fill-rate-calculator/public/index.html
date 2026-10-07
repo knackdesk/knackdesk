@@ -1,0 +1,67 @@
+<!-- title: Fill Rate Calculator -->
+<!-- description: Work out your recruitment fill rate from job orders received and filled, plus days to fill, submittals per fill and interview conversion for one period. -->
+<h1>Fill Rate Calculator</h1>
+<p>Enter the job orders your desk or agency received in a period, how many of them you filled, the total days those fills took, the candidates you submitted and the interviews clients held. You get the fill rate, the orders left unfilled, the days to fill per filled order, the submittals it took per fill, and the share of submittals that turned into interviews and of interviews that turned into fills. It is built for owners and managers of recruitment and staffing agencies, and for independent recruiters, who want to see their own funnel in numbers. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Fill rate is the share of the job orders you took on in a period that ended with a candidate you supplied starting the job.</p>
+<p class="formula"><strong>Formula:</strong> fill rate % = job orders filled ÷ job orders received × 100; unfilled orders = received − filled; days to fill per fill = total days to fill ÷ filled; submittals per fill = candidates submitted ÷ filled; submittal to interview % = interviews ÷ candidates submitted × 100; interview to fill % = filled ÷ interviews × 100.</p>
+
+<form class="tool" id="f">
+  <label>Job orders received in the period<br><input type="number" id="received" min="0" step="1" value="40"></label>
+  <label>Job orders filled<br><input type="number" id="filled" min="0" step="1" value="26"></label>
+  <label>Total days to fill, across all filled orders (optional)<br><input type="number" id="days" min="0" step="any" value="806"></label>
+  <label>Candidates submitted to clients (optional)<br><input type="number" id="submitted" min="0" step="1" value="130"></label>
+  <label>Interviews held (optional)<br><input type="number" id="interviews" min="0" step="1" value="65"></label>
+  <p><button class="primary" type="submit">Calculate fill rate</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { fillRate } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = fillRate({ jobOrdersReceived: Number($("received").value) || 0, jobOrdersFilled: Number($("filled").value) || 0, totalDaysToFill: Number($("days").value) || 0, candidatesSubmitted: Number($("submitted").value) || 0, interviews: Number($("interviews").value) || 0 });
+    const pct = (n, why) => (n === null ? why : `${fmt(n)}%`);
+    $("out").innerHTML = `<table><tr><td>Fill rate</td><td><strong>${fmt(r.fillRatePercent)}%</strong></td></tr><tr><td>Unfilled orders</td><td>${fmt(r.unfilledOrders)}</td></tr><tr><td>Days to fill per filled order</td><td>${orNa(r.averageDaysToFill, "n/a (no orders filled)")}</td></tr><tr><td>Submittals per fill</td><td>${orNa(r.submittalsPerFill, "n/a (no orders filled)")}</td></tr><tr><td>Submittal to interview</td><td>${pct(r.submittalToInterviewPercent, "n/a (no candidates submitted)")}</td></tr><tr><td>Interview to fill</td><td>${pct(r.interviewToFillPercent, "n/a (no interviews entered)")}</td></tr></table>`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>A job order is a vacancy a client has asked you to fill, whether it is a permanent role or a temporary booking. Job orders received is the number of job orders you accepted in the period you are looking at, such as a quarter or a year. Your applicant tracking system lists them by the date they were opened. Count only the orders you agreed to work on; enquiries you turned down never entered your funnel.</p>
+<p>Job orders filled is how many of those same orders ended with a candidate you supplied accepting and starting. Keep the two counts to the same set of orders. An order opened in the last week of the period may still be open when the period ends, so either look back at a period that is long enough closed for most orders to have resolved, or accept that recent orders will drag the fill rate down until they close.</p>
+<p>Total days to fill is the sum, across every filled order, of the days from the date the order was opened to the date the offer was accepted. If your applicant tracking system reports days open per job, export the filled orders and add the column up. If your system records the start date instead of the offer date, use that, and use it every time so the figure stays comparable.</p>
+<p>Candidates submitted is the number of candidate profiles you sent to clients for those job orders. Interviews is the number of first interviews clients held with your candidates. Both come from the activity reports in your applicant tracking system. Leave either at 0 if you do not track it, and the figures that depend on it are left out.</p>
+
+<h2>Reading the result</h2>
+<p>With the example figures, 26 of 40 job orders were filled, a fill rate of 65 percent, and 14 were left unfilled. The 806 days across the 26 fills mean each filled order took 31 days to fill. You submitted 130 candidates, which is 5 submittals per fill. Clients interviewed 65 of them, so 50 percent of submittals became interviews, and 26 fills from 65 interviews means 40 percent of interviews became a fill.</p>
+<p>Each ratio points at a different part of the work. The fill rate says how much of the work you take on turns into fees. Days to fill says how long the money takes to arrive and how long a client waits. Submittals per fill and the two conversion rates show where candidates drop out: before the client sees them as worth meeting, or after the interview.</p>
+
+<h2>Your funnel, over one period</h2>
+<p>All of these figures are your own, from your own applicant tracking system, for one period. The calculator does not set a target and does not compare you with anyone else. Different desks, sectors, contract types and clients produce very different funnels, so the useful comparison is with yourself: the same desk last quarter, or one client against another.</p>
+<p>When you compare periods, keep the definitions the same. Count the same kind of orders, measure days to fill from the same starting point, and count only first interviews. Change any of those and the numbers move for reasons that have nothing to do with how well the desk is working.</p>
+
+<h2>Using the ratios</h2>
+<p>A low fill rate alongside an interview to fill rate that holds steady against your earlier periods can mean the desk takes on more orders than it can work properly, or accepts orders from clients who also brief other agencies. Look at which orders went unfilled and whether they had anything in common: the client, the salary level, the location or the date they arrived.</p>
+<p>A high number of submittals per fill, with a low submittal to interview rate, points at the shortlist. Either the brief was not clear, or candidates are being sent before they are properly screened. A low interview to fill rate points later in the process: offers declined, counter-offers, or candidates who were not prepared for the interview. The <a href="/recruiter-desk-cost-calculator/">recruiter desk cost calculator</a> shows what each placement costs, which tells you what it is worth to improve any of these steps.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why are some figures shown as n/a?</h3>
+<p>They divide by orders filled, submittals or interviews. When that figure is 0 or left empty, there is nothing to divide by, so the calculator leaves them out.</p>
+<h3>Why can filled orders not be more than received orders?</h3>
+<p>Filled orders are part of the orders received in the same period, so they cannot be more. If you filled orders opened in an earlier period, include them in received as well.</p>
+<h3>Should temporary bookings count?</h3>
+<p>They can, but keep them apart from permanent roles if you want to compare like with like.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/recruiter-desk-cost-calculator/">Recruiter desk cost calculator</a></li>
+  <li><a href="/placement-fee-calculator/">Placement fee calculator</a></li>
+  <li><a href="/utilization-rate-calculator/">Utilization rate calculator</a></li>
+</ul>
