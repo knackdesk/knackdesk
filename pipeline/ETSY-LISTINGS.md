@@ -410,3 +410,397 @@ Questions or a file that does not open: message us here or email hello@knackdesk
 
 This is a spreadsheet, not financial, tax or legal advice.
 ```
+
+## Listings added 2026-10-07
+
+Ten kits released after the first pack. Same settings as above. Use the square `cover-etsy.png` as the first image (Etsy crops 16:9 covers), then the three sheet shots. Every workbook has seven sheets, was recalculated with zero formula errors and is already live on Polar; the zip is the same file.
+
+
+### Event & Catering Quote Workbook
+
+**Price:** 12 USD
+**Title (126 chars):** Catering Quote Spreadsheet | Event Pricing, Price per Guest, Bar Estimate, Staffing & Deposit | Excel & Google Sheets Template
+**Tags (13):** catering quote, event pricing, catering template, price per guest, bar calculator, event planner, catering business, excel template, google sheets, wedding catering, event budget, caterer spreadsheet, quote template
+**File to upload:** products/event-catering-quote-workbook/assets/event-catering-quote-workbook.zip
+**Images, in order:** products/event-catering-quote-workbook/assets/images/cover-etsy.png, products/event-catering-quote-workbook/assets/images/sheet-1-quote.png, products/event-catering-quote-workbook/assets/images/sheet-2-bar.png, products/event-catering-quote-workbook/assets/images/sheet-3-events.png
+
+**Description:**
+
+```
+Event & Catering Quote Workbook: Stop guessing event prices. The Event & Catering Quote Workbook turns guests, hours and your menu into a price that hits your margin:
+
+• Quote: menu cost per guest, rentals and other costs, servers and bartenders from your staffing ratios, then total cost, price at your target margin, price per guest, deposit and balance due.
+• Bar: a drinks estimate from guests and hours, split by beer, wine and spirits with your cost per serving, with a check that the shares add up.
+• Events: log every event's quoted price against actual food, staffing, bar and rental costs to see profit, margin and what is still outstanding.
+• Summary: quoted total, profit, margin, average price per guest and how many events fell below your target margin.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Restaurant Numbers Workbook
+
+**Price:** 14 USD
+**Title (127 chars):** Restaurant Spreadsheet | Recipe Costing, Food Cost %, Menu Pricing, Prime Cost & Labor Tracker | Excel & Google Sheets Template
+**Tags (13):** recipe costing, food cost calculator, menu pricing, restaurant template, prime cost, restaurant costing, cafe business, labor cost tracker, excel template, google sheets, food truck, restaurant profit, menu engineering
+**File to upload:** products/restaurant-numbers-workbook/assets/restaurant-numbers-workbook.zip
+**Images, in order:** products/restaurant-numbers-workbook/assets/images/cover-etsy.png, products/restaurant-numbers-workbook/assets/images/sheet-1-recipes.png, products/restaurant-numbers-workbook/assets/images/sheet-2-menu.png, products/restaurant-numbers-workbook/assets/images/sheet-3-weekly-p-l.png
+
+**Description:**
+
+```
+Restaurant Numbers Workbook: Know what every plate earns. The Restaurant Numbers Workbook connects your recipes, menu prices, weekly sales and staff hours in one file:
+
+• Recipes and menu: cost each recipe line by line with your waste allowance, then see each dish's food cost %, gross profit and the price that hits your target food cost.
+• Weekly P&L: log sales, food, beverage and labour cost each week to get prime cost %, food cost %, labour % and operating margin, with running totals.
+• Labour: staff hours and wages with payroll taxes added, labour % against projected sales and how many hours you are over or under your target.
+• Summary: blended food cost %, best margin dish, the dish to re-price first, latest prime cost % and covers per week from your seats and turns.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Salon & Appointment Pricing Workbook
+
+**Price:** 12 USD
+**Title (128 chars):** Salon Pricing Spreadsheet | Service Price Calculator, Booth Rent vs Commission, No-Show Tracker | Excel & Google Sheets Template
+**Tags (13):** salon pricing, hair stylist, booth rent, salon template, service pricing, beauty business, barber shop, lash tech, esthetician, excel template, google sheets, salon spreadsheet, no show tracker
+**File to upload:** products/salon-pricing-workbook/assets/salon-pricing-workbook.zip
+**Images, in order:** products/salon-pricing-workbook/assets/images/cover-etsy.png, products/salon-pricing-workbook/assets/images/sheet-1-service-menu.png, products/salon-pricing-workbook/assets/images/sheet-2-booth-vs-commission.png, products/salon-pricing-workbook/assets/images/sheet-3-weekly-log.png
+
+**Description:**
+
+```
+Salon & Appointment Pricing Workbook: Know what every appointment has to earn. The Salon & Appointment Pricing Workbook turns your overhead, income goal and hours into prices you can defend:
+
+• Service menu: a target hourly rate from your own overhead and income goal, then each service's time cost, floor price, suggested price and the gap to what you charge today.
+• Booth vs commission: monthly take-home under each model at your revenue, a plain verdict, the break-even revenue and five what-if revenue scenarios.
+• Weekly log: appointments, no-shows and late cancellations each week with no-show rate, lost revenue, fees recovered and net, plus totals and a 4-week average.
+• Capacity and summary: how many appointments fit your week, your revenue ceiling, services priced below floor and your best and worst margin services.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Bookkeeping Practice Pricing Workbook
+
+**Price:** 14 USD
+**Title (124 chars):** Bookkeeping Pricing Spreadsheet | Package Fee Builder, Catch-Up Quotes, Client Capacity, Realization | Excel & Google Sheets
+**Tags (13):** bookkeeping pricing, bookkeeper template, accounting firm, package pricing, fixed fee, bookkeeping business, client pricing, excel template, google sheets, realization rate, tax preparer, pricing calculator, practice management
+**File to upload:** products/bookkeeping-pricing-workbook/assets/bookkeeping-pricing-workbook.zip
+**Images, in order:** products/bookkeeping-pricing-workbook/assets/images/cover-etsy.png, products/bookkeeping-pricing-workbook/assets/images/sheet-1-package-builder.png, products/bookkeeping-pricing-workbook/assets/images/sheet-2-catch-up-quotes.png, products/bookkeeping-pricing-workbook/assets/images/sheet-3-capacity.png
+
+**Description:**
+
+```
+Bookkeeping Practice Pricing Workbook: Know what every client file has to earn. The Bookkeeping Practice Pricing Workbook turns your overhead, income goal and hours into monthly fees you can defend:
+
+• Package builder: a cost-recovery hourly rate from your own overhead and income goal, then each client's package fee from transactions, accounts and add-ons, an hourly-equivalent fee with a scope buffer, the recommended fee and the gap to what you charge today.
+• Catch-up quotes: months behind × hours per month at your rate or your own, plus setup fee and discount, with the quote total and the per-month figure.
+• Capacity: usable hours after admin time, how many clients they hold, spare hours, open client slots and revenue at capacity.
+• Realization log and summary: billing, collection and overall realization each month with write-offs and uncollected, plus clients below recommended, the revenue uplift and your highest and lowest effective rate clients.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### MSP Contract Pricing Workbook
+
+**Price:** 14 USD
+**Title (123 chars):** MSP Pricing Spreadsheet | Per-User Contract Pricing, Margin by Client, Cost per Ticket, Block Hours | Excel & Google Sheets
+**Tags (13):** msp pricing, managed services, it services pricing, per user pricing, it support business, contract margin, cost per ticket, excel template, google sheets, msp template, it consultant, service contract, tech business
+**File to upload:** products/msp-contract-pricing-workbook/assets/msp-contract-pricing-workbook.zip
+**Images, in order:** products/msp-contract-pricing-workbook/assets/images/cover-etsy.png, products/msp-contract-pricing-workbook/assets/images/sheet-1-tool-stack.png, products/msp-contract-pricing-workbook/assets/images/sheet-2-contracts.png, products/msp-contract-pricing-workbook/assets/images/sheet-3-tickets.png
+
+**Description:**
+
+```
+MSP Contract Pricing Workbook: Know what every support contract has to earn. The MSP Contract Pricing Workbook turns your technicians, overhead and tool stack into contract prices you can defend:
+
+• Loaded hourly cost and tool stack: salaries, payroll taxes and benefits, productive hours and overhead become the true cost of a technician hour; per-user and per-device tools are shared across contracts by users and devices, fixed tools kept apart.
+• Contract margins: each client's shared and dedicated tool cost, labour, total cost, gross profit and margin %, cost and fee per user, the price per user at your target margin and the support hours a contract can absorb before it loses money.
+• Cost per ticket: tickets closed and average minutes each month against technician, tool and overhead cost, with labour cost per ticket, tickets per technician and the share of productive hours spent on tickets.
+• Blocks, onboarding and summary: block hours quotes with the effective rate on hours actually used, onboarding fees from hours, setup costs and margin with their share of the contract, plus contracts below target and your most and least profitable clients.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Dental Practice Numbers Workbook
+
+**Price:** 14 USD
+**Title (129 chars):** Dental Practice Spreadsheet | Overhead %, Production per Hour, Hygiene Profit, Chair Utilization | Excel & Google Sheets Template
+**Tags (13):** dental practice, dental office, practice management, overhead calculator, hygiene production, dentist business, dental spreadsheet, excel template, google sheets, chair utilization, new patient cost, clinic finance, dental kpi
+**File to upload:** products/dental-practice-numbers-workbook/assets/dental-practice-numbers-workbook.zip
+**Images, in order:** products/dental-practice-numbers-workbook/assets/images/cover-etsy.png, products/dental-practice-numbers-workbook/assets/images/sheet-1-monthly-p-l.png, products/dental-practice-numbers-workbook/assets/images/sheet-2-provider-production.png, products/dental-practice-numbers-workbook/assets/images/sheet-3-hygiene.png
+
+**Description:**
+
+```
+Dental Practice Numbers Workbook: Know what your practice really earns, chair by chair and hour by hour. The Dental Practice Numbers Workbook turns your monthly figures into the numbers that run a practice:
+
+• Monthly P&L and overhead %: gross production, adjustments and collections give net production and collection rate; wages loaded with payroll taxes plus rent, supplies and lab, marketing and other overhead give overhead % of collections, with owner pay kept separate so you see profit before and after it against your own target.
+• Provider production and hygiene: each dentist's net production, production per hour and per day, overhead per provider hour and profit per hour; the hygiene department's loaded wages, total cost, profit, margin % and production and cost per hour against your target margin.
+• Chairs and new patients: scheduled against available chair hours gives utilization %, idle hours and the production those empty hours leave on the table; marketing spend and new patients give cost per new patient, lifetime value, value-to-cost ratio and break-even new patients.
+• Summary: year-to-date collections, overhead % against target, profit before and after owner pay, best and worst month, production per provider hour, hygiene margin, chair utilization, cost per new patient and the months overhead ran above target.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Law Firm Pricing Workbook
+
+**Price:** 14 USD
+**Title (127 chars):** Law Firm Pricing Spreadsheet | Timekeeper Cost Rates, Flat Fee Pricer, Matter Budgets, Lock-Up | Excel & Google Sheets Template
+**Tags (13):** law firm, legal pricing, flat fee, attorney template, law practice, matter budget, timekeeper rate, excel template, google sheets, solo attorney, legal billing, contingency fee, lawyer spreadsheet
+**File to upload:** products/law-firm-pricing-workbook/assets/law-firm-pricing-workbook.zip
+**Images, in order:** products/law-firm-pricing-workbook/assets/images/cover-etsy.png, products/law-firm-pricing-workbook/assets/images/sheet-1-timekeepers.png, products/law-firm-pricing-workbook/assets/images/sheet-2-flat-fee-pricer.png, products/law-firm-pricing-workbook/assets/images/sheet-3-matter-tracker.png
+
+**Description:**
+
+```
+Law Firm Pricing Workbook: Know what every hour and every matter has to earn. The Law Firm Pricing Workbook turns your people, overhead and matters into fees you can defend:
+
+• Timekeeper cost rates: salary or draw, benefits and payroll taxes, billable hours and an equal share of firm overhead become the true cost of each timekeeper's hour, with margin per hour, margin % against the bill rate and the break-even hours a year.
+• Flat fee pricer: partner, associate and paralegal hours at the average cost rate per role, a scope contingency and disbursements give the flat fee at your own target margin, its effective hourly rate and the gap to what you charge today.
+• Matter tracker: budget against actual hours and fees for hourly, flat and contingency matters, with variance %, realized rate, write-offs, recovery % and an over or under budget flag on every matter.
+• Lock-up, contingency and summary: WIP days, debtor days, lock-up days and locked-up cash month by month; contingency fees split into gross fee, referral fee, net fee to the firm and net to the client; plus under-priced flat fees, matters over budget and the uplift at the computed fee.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Staffing Agency Margin Workbook
+
+**Price:** 14 USD
+**Title (130 chars):** Staffing Agency Spreadsheet | Placement Fee Margin, Temp Markup & Bill Rate, Desk Cost, Fill Rate | Excel & Google Sheets Template
+**Tags (13):** staffing agency, recruitment agency, recruiter template, placement fee, temp staffing, bill rate calculator, agency margin, excel template, google sheets, recruiting business, fill rate, desk cost, hr template
+**File to upload:** products/staffing-agency-margin-workbook/assets/staffing-agency-margin-workbook.zip
+**Images, in order:** products/staffing-agency-margin-workbook/assets/images/cover-etsy.png, products/staffing-agency-margin-workbook/assets/images/sheet-1-perm-placements.png, products/staffing-agency-margin-workbook/assets/images/sheet-2-temp-assignments.png, products/staffing-agency-margin-workbook/assets/images/sheet-3-desk-performance.png
+
+**Description:**
+
+```
+Staffing Agency Margin Workbook: Know what every desk, placement and temp hour has to earn. The Staffing Agency Margin Workbook turns your recruiters, overhead, placements and assignments into margins you can see:
+
+• Desk cost per recruiter: salaries, benefits and payroll taxes, tools, job boards and overhead become a desk cost per recruiter and a cost per hour, with the break-even placements each recruiter needs a year.
+• Perm placements: fee % of salary, split fees, recruiter hours at your own cost per hour and advertising give the net fee, delivery cost, margin and margin % on every placement, with a flag for the ones below your own threshold.
+• Temp assignments: pay rate, on-costs and markup, or a bill rate you agreed, give the loaded cost, gross margin per hour, margin % on bill and the margin over the whole assignment, with the thinnest assignment picked out.
+• Desk performance and rebate reserve: job orders, fill rate, days to fill, submittals per fill, gross margin and desk profit month by month; plus a reserve for each placement under guarantee with what is still held, released and paid back.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Home Care Agency Pricing Workbook
+
+**Price:** 14 USD
+**Title (131 chars):** Home Care Agency Spreadsheet | Bill Rate Calculator, Service Rates, Caregiver Utilization, Care Plan Quotes | Excel & Google Sheets
+**Tags (13):** home care agency, home care business, caregiver agency, bill rate, senior care, private duty, care plan quote, excel template, google sheets, domiciliary care, agency pricing, caregiver schedule, healthcare business
+**File to upload:** products/home-care-pricing-workbook/assets/home-care-pricing-workbook.zip
+**Images, in order:** products/home-care-pricing-workbook/assets/images/cover-etsy.png, products/home-care-pricing-workbook/assets/images/sheet-1-service-rates.png, products/home-care-pricing-workbook/assets/images/sheet-2-caregivers.png, products/home-care-pricing-workbook/assets/images/sheet-3-clients-quotes.png
+
+**Description:**
+
+```
+Home Care Agency Pricing Workbook: Know what every care hour costs and what every client has to pay. The Home Care Agency Pricing Workbook turns your caregivers, overhead, service levels and clients into rates you can defend:
+
+• Cost per billable hour: caregiver pay, on-costs, paid travel and training time and six lines of monthly overhead become a cost per billable hour and a default bill rate at your own target margin.
+• Service rates: pay rate, on-costs % and margin % for companion, personal care, dementia care, respite, live-in and your own levels give the bill rate each one needs, the margin per hour and the gap to what you charge today, with under-priced levels counted.
+• Caregivers and care plan quotes: paid, billable, travel and training hours give each caregiver's utilization against your own target; each client's hours, weekend and overnight hours and mileage give a weekly and period quote and the effective hourly rate.
+• Capacity and turnover: billable capacity at your target utilization against hours committed to active clients, spare hours and revenue ceiling; plus leavers, hires, recruiting, onboarding and unfilled hours month by month with turnover % and turnover cost.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
+
+
+### Interior Design Pricing Workbook
+
+**Price:** 12 USD
+**Title (131 chars):** Interior Design Pricing Spreadsheet | Design Fee Builder, Hourly vs Percentage, Procurement Markup | Excel & Google Sheets Template
+**Tags (13):** interior design, interior designer, design fee, procurement markup, decorator template, design studio, project budget, excel template, google sheets, design business, client budget, fee calculator, design template
+**File to upload:** products/interior-design-pricing-workbook/assets/interior-design-pricing-workbook.zip
+**Images, in order:** products/interior-design-pricing-workbook/assets/images/cover-etsy.png, products/interior-design-pricing-workbook/assets/images/sheet-1-fee-builder.png, products/interior-design-pricing-workbook/assets/images/sheet-2-procurement.png, products/interior-design-pricing-workbook/assets/images/sheet-3-room-fees.png
+
+**Description:**
+
+```
+Interior Design Pricing Workbook: Know the rate your studio needs and what every project should cost the client. The Interior Design Pricing Workbook turns your income goal, overhead, projects, rooms and purchases into fees you can defend:
+
+• Hourly rate you need: your income goal, six lines of annual overhead and the hours you can actually bill become the hourly rate you need, with room to type your own rate and price every sheet at it.
+• Fee Builder: concept, development and documentation hours, site visits and contingency give each project's design fee, compared side by side with a percentage fee on the client's budget: which pays more, its implied hourly rate and a flag for quotes below your minimum.
+• Procurement and room fees: retail price, trade discount, markup and freight give your cost, the client price, gross profit, margin % and the client's saving against retail; per-room hours with a complexity uplift give flat room fees, totalled per project with your minimum fee applied.
+• Budget Plan: split each client's total budget into design fee, furniture, construction and contingency and see what is left, with over-allocated budgets flagged and counted on the Summary.
+
+WHAT YOU GET
+• One .xlsx workbook with seven sheets (opens in Excel 2010+, Google Sheets via File > Import, Apple Numbers)
+• A short README
+• Blue cells are inputs, black cells are formulas; nothing is locked
+• Formulas only, no macros, nothing to enable
+• Every formula in the workbook was recalculated and checked for errors before release
+• The targets in the workbook are yours to set; it contains no industry benchmarks
+
+HOW IT WORKS
+Download the zip after purchase, unzip, open the workbook, start on the Start Here sheet. Enter your own figures in the blue cells and the rest updates.
+
+LICENCE
+Personal or single-business use. Please do not resell or redistribute the file.
+
+SUPPORT
+Questions or a file that does not open: message us here or email hello@knackdesk.com. Free online calculators for the same topics are at knackdesk.com.
+
+This is a spreadsheet, not financial, tax or legal advice.
+```
