@@ -4,7 +4,7 @@ name: Design Project Budget Allocation Calculator
 lane: tool
 status: live
 category: pricing
-kits: freelance-pricing-kit
+kits: interior-design-pricing-workbook, freelance-pricing-kit
 reviewed: 2026-10-07
 headline: Design Project Budget Allocation Calculator: Plan the Split
 tagline: Split a client's design project budget into design fee, furniture, construction and contingency

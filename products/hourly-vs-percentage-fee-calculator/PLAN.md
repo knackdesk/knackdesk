@@ -4,7 +4,7 @@ name: Hourly vs Percentage Fee Calculator
 lane: tool
 status: live
 category: pricing
-kits: freelance-pricing-kit
+kits: interior-design-pricing-workbook, freelance-pricing-kit
 reviewed: 2026-10-07
 headline: Hourly vs Percentage Fee Calculator: Find the Break-Even
 tagline: Compare a percentage-of-budget design fee with billing by the hour and see the break-even hours

@@ -23,3 +23,4 @@ Refreshed by `npm run polar:sales`. Amounts in USD.
 | law-firm-pricing-workbook | digital | 2026-10-07 | https://buy.polar.sh/polar_cl_d0doXG41OLxOByQVtjUdokqkOGhThffekrXW00xkqTg | 14.00 | 0 | 0.00 | 0.00 |
 | staffing-agency-margin-workbook | digital | 2026-10-07 | https://buy.polar.sh/polar_cl_FCWmR09gYEyk27YIIRtkeWTVIpwNq92KP4lG11teQZZ | 14.00 | 0 | 0.00 | 0.00 |
 | home-care-pricing-workbook | digital | 2026-10-07 | https://buy.polar.sh/polar_cl_oqw0lThar2Ww98E12YUwwpCGaIhJAih1QzeIE2cvNXK | 14.00 | 0 | 0.00 | 0.00 |
+| interior-design-pricing-workbook | digital | 2026-10-07 | https://buy.polar.sh/polar_cl_Zp04RUJN0wpDZZKtjGOCK9GanB04KkAqvwZB71oajXo | 12.00 | 0 | 0.00 | 0.00 |

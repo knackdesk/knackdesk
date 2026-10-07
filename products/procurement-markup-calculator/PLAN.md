@@ -4,7 +4,7 @@ name: Procurement Markup Calculator
 lane: tool
 status: live
 category: pricing
-kits: freelance-pricing-kit
+kits: interior-design-pricing-workbook, freelance-pricing-kit
 reviewed: 2026-10-07
 headline: Procurement Markup Calculator: Trade Cost to Client Price
 tagline: Turn a retail price, your trade discount, markup and freight into a client price and margin

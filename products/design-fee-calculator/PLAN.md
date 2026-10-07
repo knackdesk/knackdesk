@@ -4,7 +4,7 @@ name: Interior Design Fee Calculator
 lane: tool
 status: live
 category: pricing
-kits: freelance-pricing-kit
+kits: interior-design-pricing-workbook, freelance-pricing-kit
 reviewed: 2026-10-07
 headline: Interior Design Fee Calculator: Price Your Hours by Phase
 tagline: Turn concept, development and documentation hours plus site visits into a design fee

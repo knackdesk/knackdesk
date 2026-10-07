@@ -4,7 +4,7 @@ name: Per-Room Flat Fee Calculator
 lane: tool
 status: live
 category: pricing
-kits: freelance-pricing-kit
+kits: interior-design-pricing-workbook, freelance-pricing-kit
 reviewed: 2026-10-07
 headline: Per-Room Flat Fee Calculator: Price Design Work by the Room
 tagline: Turn rooms, hours per room, a complexity uplift and site visits into a flat design fee with a minimum
