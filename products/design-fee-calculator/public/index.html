@@ -1,0 +1,70 @@
+<!-- title: Interior Design Fee Calculator -->
+<!-- description: Price an interior design project from your hours for concept, design development, documentation and site visits, your hourly rate and a revision contingency. -->
+<h1>Interior Design Fee Calculator</h1>
+<p>Enter the hours you expect to spend on each phase of a design project, the number of site visits and how long each one takes, your hourly rate and a contingency percentage. You get the total hours, the hours spent on site, the base fee, the contingency amount and the design fee to quote. It is built for interior designers, decorators and small design studios, and it works the same way for architects and landscape designers who price a project from their own hours. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A design fee is the price you charge a client for the design work on a project, built here from the hours you expect each phase to take, your hourly rate and a contingency for revisions.</p>
+<p class="formula"><strong>Formula:</strong> site visit hours = site visits × hours per visit; total hours = concept hours + design development hours + documentation hours + site visit hours; base fee = total hours × hourly rate; contingency = base fee × contingency % ÷ 100; design fee = base fee + contingency.</p>
+
+<form class="tool" id="f">
+  <label>Concept hours<br><input type="number" id="concept" min="0" step="any" value="20"></label>
+  <label>Design development hours<br><input type="number" id="development" min="0" step="any" value="30"></label>
+  <label>Documentation hours<br><input type="number" id="documentation" min="0" step="any" value="25"></label>
+  <label>Number of site visits<br><input type="number" id="visits" min="0" step="any" value="6"></label>
+  <label>Hours per site visit, travel included<br><input type="number" id="pervisit" min="0" step="any" value="2"></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="110"></label>
+  <label>Contingency for revisions, %<br><input type="number" id="contingency" min="0" step="any" value="10"></label>
+  <p><button class="primary" type="submit">Calculate fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { designFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = designFee({ conceptHours: Number($("concept").value) || 0, developmentHours: Number($("development").value) || 0, documentationHours: Number($("documentation").value) || 0, siteVisits: Number($("visits").value) || 0, hoursPerVisit: Number($("pervisit").value) || 0, hourlyRate: Number($("rate").value) || 0, contingencyPercent: Number($("contingency").value) || 0 });
+    const note = r.contingencyAmount === 0 ? `<p>There is no contingency in this fee, so any revisions beyond the hours you entered are not covered.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Total hours</td><td>${orNa(r.totalHours, "n/a")}</td></tr><tr><td>Of which site visit hours</td><td>${fmt(r.siteVisitHours)}</td></tr><tr><td>Base fee</td><td>${fmt(r.baseFee)}</td></tr><tr><td>Contingency</td><td>${fmt(r.contingencyAmount)}</td></tr><tr><td>Design fee to quote</td><td><strong>${fmt(r.designFee)}</strong></td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>The phases in the fee</h2>
+<p>The calculator splits the design work into three studio phases and the time you spend on site. Concept is the first stage: the brief meeting, measuring up, mood boards, early space plans and the first presentation to the client. Design development takes the concept the client chose and makes it real: the final layout, the selection of furniture, fixtures and finishes, lighting, sample boards and the changes that come out of the client's comments. Documentation is the work that lets other people price and build the scheme: drawings, elevations, schedules of finishes, specifications and the notes a contractor or joiner needs.</p>
+<p>Site visits are counted separately because they are easy to forget and easy to count. Enter the number of visits you expect and the hours each takes, with travel included if you charge for travel time. The calculator multiplies the two and adds the result to the studio hours, and it shows the site visit hours on their own line so you can state them in the proposal.</p>
+<p>Your phases may have different names, or you may split the work more finely. That does not matter to the arithmetic. What matters is that every hour you expect to spend is in one of the boxes, once.</p>
+
+<h2>Where to find your hours</h2>
+<p>The best source for the hours is your own time tracking from past projects of a similar scope. Look at what each phase actually took, not what you quoted for it. If you do not track time yet, start on the next project, even roughly, because the second fee you price this way will be far better than the first. Past project records also help: the number of drawings you produced, the number of presentation meetings and the number of site visits that a project of this size needed.</p>
+<p>The scope for this project comes from the client's brief: the rooms involved, whether there is construction or only furnishing, how many decisions the client wants to be part of, and how far the site is from your studio. A brief that leaves the scope open is a reason to ask more questions before you price, not a reason to guess.</p>
+<p>The hourly rate is your own. If you have not worked one out, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> builds it from the income you need, your costs and the hours you can bill in a year.</p>
+
+<h2>What the contingency is for</h2>
+<p>The contingency covers revisions you know will come but cannot count yet: a client who changes their mind about a fabric after seeing it in daylight, a contractor query that needs a revised drawing, a supplier who discontinues a piece you specified, an extra meeting with a partner who missed the first presentation. You cannot list these at the start, but your records will tell you that some of them happen on nearly every project.</p>
+<p>To set the percentage, compare the hours you quoted with the hours you logged on past projects. If projects have run over, the gap is a guide to the contingency that would have covered it. The figure is your judgement, based on your own work; the calculator does not suggest one. Showing the contingency as a single line, rather than padding each phase, makes the fee easier to explain, and it gives you a clear figure to point to when a client asks what happens if they want changes.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, the studio phases take 20 + 30 + 25 = 75 hours. Six site visits at 2 hours each add 12 hours, so the total is 87 hours. At a rate of 110 the base fee is 9,570. A 10 percent contingency adds 957, and the design fee to quote is 10,527.</p>
+<p>When you present the fee, show the phases and the site visits as well as the total. A client who can see how the fee is built is less likely to push back on it, and you can agree in advance what happens if the scope grows: more rooms, more site visits or more rounds of revisions than the contingency covers. Say how many revision rounds and site visits the fee includes, and how extra ones are charged.</p>
+<p>The fee here is for design work only. It does not include the money you make or spend buying furniture, fixtures and finishes on the client's behalf, which is called procurement. If you charge for that, the <a href="/procurement-markup-calculator/">procurement markup calculator</a> works out the client price and your margin on each piece. To split the fee into stage payments, use the <a href="/deposit-split-calculator/">deposit split calculator</a>.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Should travel time go into the hours per visit?</h3>
+<p>Include it if you charge for travel time, and leave it out if you do not. Either way, say which in the proposal.</p>
+<h3>Why is an hourly rate of 0 rejected?</h3>
+<p>The fee is hours times your rate, so a rate of 0 gives a fee of 0. Enter the rate you charge.</p>
+<h3>Why does it say "Enter at least some hours."?</h3>
+<p>All the phase hours and site visit hours add up to 0, so there is nothing to price.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/hourly-vs-percentage-fee-calculator/">Hourly vs percentage fee calculator</a></li>
+  <li><a href="/per-room-flat-fee-calculator/">Per-room flat fee calculator</a></li>
+  <li><a href="/hourly-rate-calculator/">Hourly rate calculator</a></li>
+</ul>

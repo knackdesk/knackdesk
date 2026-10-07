@@ -1,0 +1,66 @@
+<!-- title: Procurement Markup Calculator -->
+<!-- description: Work out the client price, gross profit and margin on furniture you buy for clients, from retail price, trade discount, markup and freight, with retail savings. -->
+<h1>Procurement Markup Calculator</h1>
+<p>Enter the retail price of a piece, the trade discount your supplier gives you, your markup, or the client price if you have already set one, and the freight and handling you pay. You get your cost, the price the client pays, your gross profit and margin on the piece, and what the client saves against buying it at retail. It is built for interior designers, decorators and small design studios who buy furniture, fixtures and finishes for their clients. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> Procurement is buying furniture, fixtures and finishes on the client's behalf, and the procurement markup is what you add to your own cost to set the price the client pays.</p>
+<p class="formula"><strong>Formula:</strong> your cost = retail price × (1 − trade discount % ÷ 100); client price = the client price you entered, or your cost × (1 + markup % ÷ 100) when none is entered; gross profit = client price − your cost − freight and handling; margin = gross profit ÷ client price × 100; savings against retail = retail price − client price.</p>
+
+<form class="tool" id="f">
+  <label>Retail price of the piece<br><input type="number" id="retail" min="0" step="any" value="2000"></label>
+  <label>Your trade discount, %<br><input type="number" id="discount" min="0" max="100" step="any" value="30"></label>
+  <label>Your markup on cost, %<br><input type="number" id="markup" min="0" step="any" value="25"></label>
+  <label>Client price, if already set (0 to work it out)<br><input type="number" id="client" min="0" step="any" value="0"></label>
+  <label>Freight and handling you pay<br><input type="number" id="freight" min="0" step="any" value="60"></label>
+  <p><button class="primary" type="submit">Calculate price</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { procurementMarkup } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = procurementMarkup({ retailPrice: Number($("retail").value) || 0, tradeDiscountPercent: Number($("discount").value) || 0, markupPercent: Number($("markup").value) || 0, clientPrice: Number($("client").value) || 0, freightAndHandling: Number($("freight").value) || 0 });
+    const notes = (r.savingsVsRetail < 0 ? `<p>The client price is above the retail price, so the client pays ${fmt(-r.savingsVsRetail)} more than they would buying the piece at retail.</p>` : "") + (r.grossProfit < 0 ? `<p>Your cost plus freight and handling is more than the client price, so this piece loses money.</p>` : "") + (r.clientPriceUsed === 0 ? `<p>The client price is 0, so there is no margin to show.</p>` : "");
+    $("out").innerHTML = `<table><tr><td>Your cost after trade discount</td><td>${fmt(r.yourCost)}</td></tr><tr><td>Client price</td><td><strong>${fmt(r.clientPriceUsed)}</strong></td></tr><tr><td>Gross profit after freight and handling</td><td>${fmt(r.grossProfit)}</td></tr><tr><td>Margin on the client price</td><td>${orNa(r.marginPercent, "n/a")}%</td></tr><tr><td>Client saves against retail</td><td>${fmt(r.savingsVsRetail)}</td></tr></table>${notes}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The retail price is the price anyone can pay for the piece, from the supplier's published price list or the showroom tag. A trade discount is the reduction a supplier gives to trade buyers such as designers, off that retail price. It is set by your trade account with each supplier, so take it from your account terms or the trade price list they send you. Discounts differ between suppliers and between product lines, so look up the one that applies to this piece.</p>
+<p>The markup is the percentage you add to your cost to set the client price. It is your own figure, set in your contract or your terms of business. If you have already agreed a price with the client, or you want to test one, enter it as the client price and the calculator uses it instead of the markup. Leave the client price at 0 to work the price out from the markup.</p>
+<p>Freight and handling is what you pay to get the piece to the client and do not bill separately: delivery, receiving and inspection at a warehouse, storage while the room is finished, and the cost of getting it up the stairs. Take it from the supplier's quote and your receiver's invoice. If you bill freight to the client as a separate line, leave it at 0 here.</p>
+
+<h2>Markup on cost and margin on price</h2>
+<p>Markup and margin are both percentages of the same profit, measured against different figures. Markup is profit as a share of your cost; margin is profit as a share of the price the client pays. In the example, a retail price of 2,000 with a 30 percent trade discount gives a cost of 1,400. A 25 percent markup adds 350, for a client price of 1,750. Before freight, 350 is 25 percent of the cost but only 20 percent of the price.</p>
+<p>Freight then comes out of the profit. Sixty of freight and handling leaves a gross profit of 290, which is 16.57 percent of the client price. That is the figure that pays for the time you spend sourcing, ordering, chasing and checking deliveries, so it is worth knowing for each order, not only the markup on the invoice. The <a href="/markup-margin-calculator/">markup and margin calculator</a> converts between the two for any price.</p>
+
+<h2>Savings against retail</h2>
+<p>The last line shows what the client saves compared with buying the same piece at retail themselves. In the example the client pays 1,750 for a piece that retails at 2,000, so they save 250, and you still make a profit, because your trade discount is larger than your markup.</p>
+<p>Negative savings mean the client pays more than retail. That happens when your markup on cost adds more than your trade discount took off. Enter a client price of 1,900 instead and the client still saves 100, while your gross profit rises to 440. Raise the price above 2,000 and the savings line turns negative. Whether that is acceptable depends on your contract and on what you have told the client; your contract may promise prices at or below retail, or it may charge for the service of sourcing whatever the retail price. The calculator does not decide; it shows the number so you can check it before you send a quote.</p>
+
+<h2>Using it on a whole order</h2>
+<p>Run the calculator piece by piece when the discounts differ, or enter totals for the order when one supplier gives the same discount on everything. Keep the freight for each delivery with the pieces it carries, so a single heavy item does not make the rest of the order look more profitable than it is.</p>
+<p>Procurement profit is separate from your design fee. If you price design work by the hour or the phase, the <a href="/design-fee-calculator/">interior design fee calculator</a> covers that part. When you are planning how much of the client's budget goes to furniture, the <a href="/project-budget-allocation-calculator/">design project budget allocation calculator</a> splits it.</p>
+
+<h2>Frequently asked questions</h2>
+<h3>Why does a client price replace the markup?</h3>
+<p>When you enter a client price, the markup has nothing left to decide, so the calculator uses the price you set and works out the profit and margin from it.</p>
+<h3>What if my gross profit is negative?</h3>
+<p>Freight and handling are more than the difference between your cost and the client price. Raise the price, bill freight separately or check the trade discount.</p>
+<h3>Why is a trade discount above 100 percent rejected?</h3>
+<p>A discount above 100 percent would mean the supplier pays you to take the piece, which is a typing error.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/markup-margin-calculator/">Markup and margin calculator</a></li>
+  <li><a href="/print-markup-calculator/">Print markup calculator</a></li>
+  <li><a href="/project-budget-allocation-calculator/">Design project budget allocation calculator</a></li>
+</ul>

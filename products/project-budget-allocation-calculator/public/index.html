@@ -1,0 +1,68 @@
+<!-- title: Design Project Budget Allocation Calculator -->
+<!-- description: Split a client's design project budget into the design fee, furniture, construction and contingency, and see what is left or how far the plan is over budget. -->
+<h1>Design Project Budget Allocation Calculator</h1>
+<p>Enter the client's total budget for a design project and the percentage you plan to set aside for the design fee, furniture, construction and contingency. You get the amount for each line, the share and amount allocated so far, and what is left, or how far the plan goes over. It is built for interior designers, decorators and small design studios, and for architects and landscape designers who plan a client's budget with them at the start of a project. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A budget allocation splits the client's total project budget into the amounts set aside for the design fee, furniture, construction and contingency, so both of you can see where the money goes before it is spent.</p>
+<p class="formula"><strong>Formula:</strong> each line = total budget × its % ÷ 100, for the design fee, furniture, construction and contingency; allocated % = the sum of the four percentages; allocated amount = the sum of the four amounts; remaining = total budget − allocated amount.</p>
+
+<form class="tool" id="f">
+  <label>Total project budget<br><input type="number" id="budget" min="0" step="any" value="100000"></label>
+  <label>Design fee, % of budget<br><input type="number" id="design" min="0" max="100" step="any" value="12"></label>
+  <label>Furniture, fixtures and finishes, % of budget<br><input type="number" id="furniture" min="0" max="100" step="any" value="45"></label>
+  <label>Construction and installation, % of budget<br><input type="number" id="construction" min="0" max="100" step="any" value="33"></label>
+  <label>Contingency, % of budget<br><input type="number" id="contingency" min="0" max="100" step="any" value="8"></label>
+  <p><button class="primary" type="submit">Allocate budget</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { projectBudgetAllocation } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = projectBudgetAllocation({ totalBudget: Number($("budget").value) || 0, designFeePercent: Number($("design").value) || 0, furniturePercent: Number($("furniture").value) || 0, constructionPercent: Number($("construction").value) || 0, contingencyPercent: Number($("contingency").value) || 0 });
+    const note = r.remaining < 0 ? `<p>The plan is over-allocated: the four lines add up to ${fmt(r.allocatedPercent)}% of the budget, ${fmt(-r.remaining)} more than the client has. Reduce one or more lines, or agree a larger budget.</p>` : r.remaining > 0 ? `<p>${fmt(r.remaining)} of the budget is not yet allocated to any line.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Design fee</td><td>${fmt(r.designFee)}</td></tr><tr><td>Furniture, fixtures and finishes</td><td>${fmt(r.furniture)}</td></tr><tr><td>Construction and installation</td><td>${fmt(r.construction)}</td></tr><tr><td>Contingency</td><td>${fmt(r.contingency)}</td></tr><tr><td>Allocated, % of budget</td><td>${orNa(r.allocatedPercent, "n/a")}%</td></tr><tr><td>Allocated amount</td><td>${fmt(r.allocatedAmount)}</td></tr><tr><td>Remaining</td><td><strong>${fmt(r.remaining)}</strong></td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each line covers</h2>
+<p>The total budget is the whole amount the client is prepared to spend on the project, taken from the client's brief or from the figure you agree at the first meeting. Ask whether it includes your fee and any sales tax, because a budget that does not include them is a smaller budget than it sounds.</p>
+<p>The design fee is what you charge for the design work. If you have already priced it, divide your fee by the budget to get the percentage; the <a href="/design-fee-calculator/">interior design fee calculator</a> builds the fee from your hours. Furniture, fixtures and finishes covers everything the client will buy for the rooms: furniture, lighting, rugs, window treatments, tiles, paint and hardware. If you buy them on the client's behalf, which is called procurement, the prices you charge come from your trade cost and markup, and the <a href="/procurement-markup-calculator/">procurement markup calculator</a> works those out. Construction and installation covers the trades: builders, joiners, electricians, plumbers, decorators and the people who hang and fit. Contingency is money held back for what nobody can see at the start: a wall that needs more work once it is opened up, a delivery that is damaged, a piece that goes up in price.</p>
+
+<h2>The splits are your plan, not a rule</h2>
+<p>The percentages are your own plan for this project, not a rule and not a figure the calculator recommends. A project that keeps the existing kitchen and refurnishes four rooms puts most of the money into furniture; a project that moves walls puts most of it into construction. The right split comes from the client's brief, the quotes you have from contractors and suppliers, and your records from past projects of a similar scope. When you have real quotes, use them: divide each quote by the budget to get its percentage, and let the calculator show what is left.</p>
+<p>The contingency is easy to cut when money is tight, and hard to do without later. Set it from your own records of how far past projects moved from their first budget, and say to the client what it is for, so it is not treated as spare money.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, a budget of 100,000 is split 12 percent to the design fee, 45 to furniture, 33 to construction and 8 to contingency. That gives 12,000, 45,000, 33,000 and 8,000. The four lines add up to 98 percent, or 98,000, and 2,000 is left unallocated. You can leave it as a buffer, move it into the contingency or put it towards a line the client cares most about.</p>
+
+<h2>When the plan is over-allocated</h2>
+<p>If the percentages add up to more than 100, the remaining figure turns negative and the page shows a note under the table. A negative remainder means the plan spends more than the client has. There are only three ways to fix it: reduce a line, take something out of the scope, or agree a larger budget with the client. The calculator shows by how much the plan is over, which is the figure to bring to that conversation.</p>
+
+<h2>Using it with the client</h2>
+<p>Share the split at the start of the project and revisit it at each stage: after the concept, when contractor quotes come in, and before the main furniture order. Each time, enter what has changed and check the remaining figure. A client who has seen the budget split from the beginning is less surprised when one line has to give way to another, and you have a written record of what was agreed. To build a quote for your own work from hours, pass-through expenses and a contingency allowance, use the <a href="/project-budget-calculator/">project budget calculator</a>.</p>
+
+<h2>Where the figures come from</h2>
+<p>Each percentage is easier to trust when it is built from a real number. For the design fee, use the fee you have quoted. For furniture, add up the pieces on your first selection, at the client prices you would charge. For construction, use the contractor quotes or, before you have them, your records from a past project with a similar scope. Divide each figure by the total budget and enter the result. The contingency is the one line with no quote behind it, so set it from your own records of past projects.</p>
+<h2>Frequently asked questions</h2>
+<h3>Do the percentages have to add up to 100?</h3>
+<p>No. Below 100, the rest shows as remaining. Above 100, the plan is over-allocated and the remaining figure is negative.</p>
+<h3>Why is a percentage above 100 rejected?</h3>
+<p>A single line cannot take more than the whole budget, so a figure above 100 is a typing error.</p>
+<h3>Why is a total budget of 0 rejected?</h3>
+<p>There is nothing to split. Enter the client's budget for the project.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/project-budget-calculator/">Project budget calculator</a></li>
+  <li><a href="/design-fee-calculator/">Interior design fee calculator</a></li>
+  <li><a href="/procurement-markup-calculator/">Procurement markup calculator</a></li>
+</ul>

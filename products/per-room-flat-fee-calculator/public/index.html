@@ -1,0 +1,68 @@
+<!-- title: Per-Room Flat Fee Calculator -->
+<!-- description: Price a design project as a flat fee per room from your hours per room, hourly rate, a complexity uplift and site visit hours, with your minimum fee as a floor. -->
+<h1>Per-Room Flat Fee Calculator</h1>
+<p>Enter the number of rooms in the project, the hours a room takes you, your hourly rate, an uplift for complexity, the hours you expect to spend on site and the minimum fee you take on a project. You get the total hours, the fee your hours add up to, the flat fee to quote, whether your minimum applied and the fee per room. It is built for interior designers, decorators and small design studios, and it works the same way for architects and landscape designers who quote a fixed fee per space or garden area. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A per-room flat fee is a fixed design fee quoted for each room in a project, worked out here from the hours a room takes you and your hourly rate, with a minimum fee as a floor.</p>
+<p class="formula"><strong>Formula:</strong> base hours = rooms × hours per room; hours with uplift = base hours × (1 + complexity uplift % ÷ 100); total hours = hours with uplift + site visit hours; computed fee = total hours × hourly rate; flat fee = the larger of the computed fee and the minimum fee; fee per room = flat fee ÷ rooms.</p>
+
+<form class="tool" id="f">
+  <label>Number of rooms<br><input type="number" id="rooms" min="0" step="any" value="3"></label>
+  <label>Hours per room<br><input type="number" id="perroom" min="0" step="any" value="12"></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="110"></label>
+  <label>Complexity uplift on room hours, %<br><input type="number" id="uplift" min="0" step="any" value="10"></label>
+  <label>Site visit hours for the project<br><input type="number" id="site" min="0" step="any" value="4"></label>
+  <label>Your minimum project fee<br><input type="number" id="minimum" min="0" step="any" value="2500"></label>
+  <p><button class="primary" type="submit">Calculate flat fee</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { perRoomFlatFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = perRoomFlatFee({ rooms: Number($("rooms").value) || 0, hoursPerRoom: Number($("perroom").value) || 0, hourlyRate: Number($("rate").value) || 0, complexityUpliftPercent: Number($("uplift").value) || 0, siteVisitHours: Number($("site").value) || 0, minimumFee: Number($("minimum").value) || 0 });
+    const note = r.minimumApplied ? `<p>The fee your hours add up to is below your minimum fee, so the flat fee is the minimum.</p>` : "";
+    $("out").innerHTML = `<table><tr><td>Total hours</td><td>${fmt(r.totalHours)}</td></tr><tr><td>Fee from your hours</td><td>${fmt(r.computedFee)}</td></tr><tr><td>Flat fee to quote</td><td><strong>${fmt(r.flatFee)}</strong></td></tr><tr><td>Minimum fee applied</td><td>${r.minimumApplied ? "Yes" : "No"}</td></tr><tr><td>Fee per room</td><td>${orNa(r.feePerRoom, "n/a")}</td></tr></table>${note}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>Rooms is the number of rooms in the scope: the living room, the main bedroom, the hall, each counted once. Hours per room is the time a room takes you from first ideas to the finished scheme, including the presentation, the selections, the drawings and the revisions. The best source is your time tracking from past projects. Divide the hours you logged on a past project by the rooms it covered, and look at a few projects to see how far the figure moves.</p>
+<p>The complexity uplift adds a percentage to the room hours for work that takes longer than a plain room: built-in joinery, a kitchen or bathroom with plumbing and tiling, a period property with awkward walls, or a client who wants to see every option. It is your judgement, based on your records, and the calculator does not suggest one. Leave it at 0 if the rooms are straightforward.</p>
+<p>Site visit hours are the hours on site for the whole project, travel included if you charge for it. They are added once, after the uplift, because a visit often covers several rooms. The minimum fee is the smallest fee you will take on a project, to cover the meetings, admin and travel that come with any job however small. Leave it at 0 if you have none. The hourly rate is your own; the <a href="/hourly-rate-calculator/">hourly rate calculator</a> works one out from your income target and costs.</p>
+
+<h2>Why quote a flat fee per room</h2>
+<p>A flat fee tells the client the price before the work starts, and a per-room fee lets them see how the price changes when they add or drop a room. A client comparing designers can read it at a glance, and it avoids the conversation about tracking hours. The cost is that you carry the risk of the hours: if a room takes longer than you planned, the fee stays the same. Building the fee from your own hours, with an uplift for the harder rooms, is what keeps that risk small.</p>
+
+<h2>Reading the result</h2>
+<p>In the example, 3 rooms at 12 hours each take 36 hours. A 10 percent uplift adds 3.6 hours, for 39.6, and 4 hours on site bring the total to 43.6 hours. At a rate of 110 the fee from your hours is 4,796. That is above the minimum of 2,500, so the minimum does not apply and the flat fee is 4,796, or 1,598.67 per room.</p>
+<p>Now take a single room at 8 hours, with no uplift and no site visits, at the same rate and a minimum of 1,500. The fee from those hours is 880, which is below the minimum, so the flat fee is 1,500 and the page says so under the table. The minimum is doing its job: a one-room project still needs a first meeting, a measure, a presentation and the admin, and the room hours alone do not pay for them.</p>
+<p>The fee per room divides the flat fee by the number of rooms. Quote it to the client as the price of each extra room only if the extra room would take the same hours. A room that needs joinery or plumbing is better priced on its own.</p>
+
+<h2>When rooms are not alike</h2>
+<p>If the project mixes simple and complex rooms, run the calculator once for each kind. Price the bedrooms with no uplift, the kitchen and bathrooms with the uplift you use for wet rooms, then add the fees together. Put the site visit hours and the minimum in only one of the runs so they are not counted twice. Set out in the proposal what each room fee covers, how many revision rounds are included and how extra work is charged.</p>
+<p>The flat fee covers design work. Buying furniture, fixtures and finishes for the client is procurement, and it is priced separately; the <a href="/procurement-markup-calculator/">procurement markup calculator</a> covers it.</p>
+
+<p>Write the fee per room and the rooms it covers into the proposal, so that when the client adds a room halfway through, you both know what it costs.</p>
+<h2>Frequently asked questions</h2>
+<h3>What if my rooms take different amounts of time?</h3>
+<p>Run the calculator for each kind of room and add the fees, entering the site visit hours and minimum fee in one run only.</p>
+<h3>Why are 0 rooms rejected?</h3>
+<p>The fee is priced per room, so with no rooms there is nothing to price and no fee per room to show.</p>
+<h3>Why is an hourly rate of 0 rejected?</h3>
+<p>The fee is built from hours times your rate, so a rate of 0 gives a fee of 0. Enter the rate you charge.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/design-fee-calculator/">Interior design fee calculator</a></li>
+  <li><a href="/hourly-vs-percentage-fee-calculator/">Hourly vs percentage fee calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+</ul>

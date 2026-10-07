@@ -1,0 +1,69 @@
+<!-- title: Hourly vs Percentage Fee Calculator -->
+<!-- description: Compare a design fee set as a percentage of the project budget with billing by the hour, with the implied hourly rate, an overrun test and the break-even hours. -->
+<h1>Hourly vs Percentage Fee Calculator</h1>
+<p>Enter the project budget your percentage applies to, your percentage fee, the hours you estimate the design work will take, your hourly rate and an overrun percentage to test. You get the fee under each model, the difference between them, the hourly rate the percentage fee works out at, the hourly fee if the hours run over, and the break-even hours where the two models pay the same. It is built for interior designers, decorators and small design studios, and for architects and landscape designers who are deciding how to charge for a project. Nothing is sent anywhere.</p>
+<p class="definition"><strong>In one sentence:</strong> A percentage fee is a design fee set as a share of the project budget, while an hourly fee is the hours you work times your rate, and this calculator compares the two on the same project.</p>
+<p class="formula"><strong>Formula:</strong> percentage fee = project budget × percentage fee % ÷ 100; hourly fee = estimated hours × hourly rate; difference = percentage fee − hourly fee; implied hourly rate = percentage fee ÷ estimated hours; hourly fee at overrun = estimated hours × (1 + overrun % ÷ 100) × hourly rate; break-even hours = percentage fee ÷ hourly rate.</p>
+
+<form class="tool" id="f">
+  <label>Project budget the percentage applies to<br><input type="number" id="budget" min="0" step="any" value="120000"></label>
+  <label>Your percentage fee, %<br><input type="number" id="pct" min="0" max="100" step="any" value="15"></label>
+  <label>Estimated hours of design work<br><input type="number" id="hours" min="0" step="any" value="150"></label>
+  <label>Your hourly rate<br><input type="number" id="rate" min="0" step="any" value="110"></label>
+  <label>Overrun to test, % more hours<br><input type="number" id="overrun" min="0" step="any" value="20"></label>
+  <p><button class="primary" type="submit">Compare fees</button></p>
+  <div id="out" aria-live="polite"></div>
+</form>
+
+<script type="module">
+import { hourlyVsPercentageFee } from "./calc.js";
+const $ = (id) => document.getElementById(id);
+const showError = (el, msg) => { const p = document.createElement("p"); p.className = "error"; p.textContent = msg; el.replaceChildren(p); };
+const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const orNa = (n, why) => (n === null ? why : fmt(n));
+$("f").addEventListener("submit", (e) => {
+  e.preventDefault();
+  try {
+    const r = hourlyVsPercentageFee({ projectBudget: Number($("budget").value) || 0, percentageFee: Number($("pct").value) || 0, estimatedHours: Number($("hours").value) || 0, hourlyRate: Number($("rate").value) || 0, overrunPercent: Number($("overrun").value) || 0 });
+    const which = r.difference > 0 ? `<p>At your estimated hours, the percentage fee pays ${fmt(r.difference)} more than billing by the hour.</p>` : r.difference < 0 ? `<p>At your estimated hours, billing by the hour pays ${fmt(-r.difference)} more than the percentage fee.</p>` : `<p>At your estimated hours, the two models pay the same.</p>`;
+    const notes = (r.impliedHourlyRate === null ? `<p>There are no estimated hours, so there is no implied hourly rate to show.</p>` : "") + (r.breakEvenHours === null ? `<p>The hourly rate is 0, so hourly billing never reaches the percentage fee and there are no break-even hours.</p>` : "");
+    $("out").innerHTML = `<table><tr><td>Percentage fee</td><td><strong>${fmt(r.percentageFeeAmount)}</strong></td></tr><tr><td>Hourly fee at estimated hours</td><td><strong>${fmt(r.hourlyFeeAmount)}</strong></td></tr><tr><td>Difference (percentage minus hourly)</td><td>${fmt(r.difference)}</td></tr><tr><td>Implied hourly rate of the percentage fee</td><td>${orNa(r.impliedHourlyRate, "n/a (no hours)")}</td></tr><tr><td>Hourly fee if hours run over</td><td>${fmt(r.hourlyFeeAtOverrun)}</td></tr><tr><td>Break-even hours</td><td>${orNa(r.breakEvenHours, "n/a (no hourly rate)")}</td></tr></table>${which}${notes}`;
+  } catch (err) { showError($("out"), err.message); }
+});
+</script>
+
+<h2>What each input means</h2>
+<p>The project budget is the amount your percentage applies to. Your contract decides what that is: it may be the construction cost, the cost of furniture, fixtures and finishes, or the whole project spend. Take the figure from the client's brief or from the budget you agreed with them, and make sure it is the same figure your contract names.</p>
+<p>The percentage fee is your own. The calculator does not suggest one. Estimated hours are the hours you expect the design work to take, from concept to the last site visit. The most reliable source is your time tracking from past projects of a similar scope; if you price by phase, the <a href="/design-fee-calculator/">interior design fee calculator</a> adds up the phases for you. The hourly rate is the rate you charge, or would charge, for this work. If you need to work one out, the <a href="/hourly-rate-calculator/">hourly rate calculator</a> builds it from your income target, costs and billable hours.</p>
+<p>The overrun is a test, not a forecast. Enter the extra share of hours you want to see priced: what happens if the project takes 10, 20 or 50 percent longer than you estimated. Your own records of quoted against logged hours are the place to look for how far past projects ran over.</p>
+
+<h2>How the two models behave</h2>
+<p>A percentage fee rises with the budget, while the hours may not. A client who chooses a more expensive sofa does not take more of your time to choose it, but the percentage fee goes up with the price. In the other direction, a modest budget spread over many rooms with many small decisions can take as many hours as a large one, and the percentage fee does not follow the work. An hourly fee tracks the work and ignores the spend.</p>
+<p>That gives each model a different risk. With a percentage fee you carry the risk of the hours: if the project drags on, the fee stays put. With an hourly fee the client carries it, and they do not know the final fee until the work is done. Some clients prefer one, some the other, and the choice is part of your proposal. The calculator does not choose for you; it shows what each choice is worth on this project.</p>
+
+<h2>Break-even hours</h2>
+<p>The break-even hours are the hours at which hourly billing equals the percentage fee. Below them, the percentage fee pays more. Above them, the hourly model pays more. In the example, the percentage fee is 18,000 and the hourly rate is 110, so the break-even is 18,000 ÷ 110 = 163.64 hours. The estimate is 150 hours, which leaves 13.64 hours of headroom before the percentage fee starts to pay less than your rate.</p>
+<p>The overrun line shows what happens beyond that point. A 20 percent overrun takes the 150 hours to 180, and at 110 an hour the hourly fee would be 19,800: 1,800 more than the percentage fee. If your records show projects of this kind often run over, that line is the one to look at.</p>
+
+<h2>Reading the implied hourly rate</h2>
+<p>The implied hourly rate divides the percentage fee by your estimated hours. In the example, 18,000 ÷ 150 gives 120, which is above your rate of 110, so at the estimate the percentage fee pays you more per hour. The implied rate falls as the hours rise: at 180 hours the same fee works out at 100 an hour. Run the calculator again with the higher hours to see it.</p>
+<p>If the budget changes during the project, run it again with the new figure. A percentage fee moves with the budget, so a cut in spend cuts your fee even when the work stays the same.</p>
+
+<h2>Combining the two</h2>
+<p>You do not have to pick one model outright. A percentage fee can carry a cap on the hours it includes, with hours beyond the cap billed at your rate. An hourly fee can carry a not-to-exceed figure the client can plan around. The break-even hours are a sensible place to start either conversation, because they show the point where the two models stop paying the same. Whatever you agree, write the budget figure, the hours and the rate into the contract, so both of you are working from the same numbers.</p>
+<h2>Frequently asked questions</h2>
+<h3>Which budget figure do I enter?</h3>
+<p>The one your contract applies the percentage to. If the contract is not signed yet, use the budget from the client's brief and run it again when the budget is agreed.</p>
+<h3>Why does the break-even show n/a?</h3>
+<p>With an hourly rate of 0, hourly billing never adds up to anything, so there are no hours at which it equals the percentage fee.</p>
+<h3>Why is a percentage fee above 100 rejected?</h3>
+<p>A fee of more than the whole budget is almost always a typing error, so the calculator stops and asks you to check it.</p>
+<h3>Is my data stored?</h3>
+<p>No. Everything runs in your browser.</p>
+
+<h2>Related tools</h2>
+<ul>
+  <li><a href="/design-fee-calculator/">Interior design fee calculator</a></li>
+  <li><a href="/per-room-flat-fee-calculator/">Per-room flat fee calculator</a></li>
+  <li><a href="/hourly-to-fixed-fee-calculator/">Hourly to fixed fee calculator</a></li>
+</ul>
