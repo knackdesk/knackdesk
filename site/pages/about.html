@@ -1,21 +1,40 @@
 <!-- title: About -->
-<!-- description: Who makes Knackdesk, how the tools are built and checked, and how to report an error. -->
+<!-- description: What Knackdesk is, how its free calculators and paid workbooks are built and tested, why it shows no benchmarks, and how to report an error. -->
 <h1>About Knackdesk</h1>
-<p>Knackdesk is a small independent studio, run since 2026 by a software engineer based in Croatia. It makes free, single-purpose calculators for freelancers, contractors and small businesses, and a few spreadsheet kits for the people who want the same calculations in one workbook.</p>
+<p>Knackdesk publishes free, single-purpose calculators and a small range of paid spreadsheet workbooks for freelancers, contractors and small businesses. This page explains what the site is, how each tool and workbook is made and checked, and how to tell us when something is wrong. The detailed testing rules are on the <a href="/methodology/">methodology page</a>.</p>
 
-<h2>What the tools are</h2>
-<p>Each tool answers one practical question you meet when running a small business: when an invoice is due, what a late fee comes to, what to charge per hour or per day, the difference between markup and margin, how long your cash will last, how many working days sit between two dates, and similar. Every tool runs entirely in your browser. There is no account to create, and nothing you type is sent to a server or stored.</p>
+<h2>What Knackdesk is</h2>
+<p>The site has 130 free calculators. Each one answers a single practical question that comes up when you run a small business: when an invoice falls due, what a late fee comes to, what to charge per hour or per project, the difference between markup and margin, how long your cash will last, what a new hire costs in full, and similar. Alongside them sit 21 paid workbooks and kits that put a related set of calculations into one spreadsheet, and 15 free guides that walk through the numbers for a particular kind of business.</p>
+<p>The tools are written for people who do their own pricing and bookkeeping: freelancers, sole traders, small agencies, trades, clinics, salons, caterers, landlords and similar owners. They assume you know your own figures and want the arithmetic done correctly and explained.</p>
+<p>Some things are left out on purpose. There are no accounts and no sign-ups. Nothing you type into a calculator is stored or sent anywhere; the calculation runs in your browser. And the site does not present published benchmarks as targets you should hit, for the reasons set out below.</p>
 
-<h2>How they are built and checked</h2>
-<p>The arithmetic behind every tool lives in a small, separate module that is covered by automated unit tests, including edge cases such as zero values, weekends, rounding and invalid input. Each formula is checked against worked examples before a tool is published, and the formula is written out on the tool's page so you can verify the result yourself. Pages carry a "last reviewed" date showing when the content and formulas were last checked.</p>
+<h2>How a calculator is made</h2>
+<p>Every calculator starts as a small, self-contained function that takes your inputs and returns a result. That function is covered by automated unit tests before the page is written. The tests include a worked example whose answer has been calculated by hand, checks on the default values, and checks that impossible inputs such as negative amounts are rejected with a clear message rather than producing a number.</p>
+<p>The page around the calculator follows a fixed pattern. It defines the term being calculated in plain words, prints the formula so you can repeat the sum yourself, and explains how to read the result. It has a short set of frequently asked questions, links to related calculators, and a "last reviewed" date showing when the content and formula were last checked.</p>
 
-<h2>Found an error?</h2>
-<p>If a result looks wrong, or an explanation is unclear, please email <a href="mailto:hello@knackdesk.com">hello@knackdesk.com</a> with the tool, the numbers you entered and what you expected. Corrections are made quickly and the page's review date is updated.</p>
+<h2>How the workbooks are made</h2>
+<p>The paid workbooks are built by a script rather than by hand, so the same layout rules apply to every sheet. Input cells are shown in blue text and formula cells in black, so you can see at a glance which cells are yours to change.</p>
+<p>Before a workbook is released, every formula in it is recalculated in LibreOffice and the result is checked for errors. The release requires zero formula errors. Key results are then spot-checked against hand arithmetic using the sample figures in the file. The workbooks contain formulas only. There are no macros and no scripts, so opening a workbook never asks you to enable code.</p>
+
+<h2>Why there are no industry benchmarks</h2>
+<p>Many sites tell you what a business like yours should earn, charge or spend. Knackdesk does not publish industry benchmarks as targets. Published figures of this kind vary by country, by year, by the size of business surveyed and by whoever collected them, and they are often quoted without a source. A number that is right for one market can be badly wrong for another.</p>
+<p>Instead, each page shows the arithmetic and works with your own figures. Where a calculation needs a number you may not have to hand, such as your utilisation rate, your food cost or your client churn, the page tells you where to find your own figure: your accounting software, your timesheets, your bank statements or your booking system.</p>
+
+<h2>How pages are kept current</h2>
+<p>Each calculator and guide carries a reviewed date. When a formula, an explanation or a related link changes, the page is checked again and the date is updated.</p>
+<p>Before every release, an automated audit builds the site and checks the real output. It fails the build if any internal link points to a page that does not exist, if a calculator page is missing its definition, formula, privacy answer or related tools, if two pages share a title, or if the sitemap lists a page that was not built. The calculator tests run in the same step, and the site is not published if any of them fail.</p>
+<p>A research log is updated every week. It records which pages people reach and which searches lead to the site, and it is read before deciding which calculator, guide or workbook to build or improve next.</p>
+
+<h2>How to report an error</h2>
+<p>If a result looks wrong or an explanation is unclear, please use the <a href="/contact/">contact page</a>. It helps most if you include the page address, the exact inputs you entered, the result you saw and the result you expected. We recheck the arithmetic against the tests, fix the page if it is wrong, add a test for the case you found, and update the reviewed date.</p>
 
 <h2>Not advice</h2>
-<p>The tools do arithmetic and explain common conventions. They are not legal, tax or financial advice, and rules differ between countries and contracts. For anything important, check the figures with a qualified adviser.</p>
+<p>The tools do arithmetic and explain common conventions. They are not legal, tax or financial advice, and rules differ between jurisdictions and contracts. For anything important, check the figures with a qualified adviser.</p>
 
-<h2>How the site is funded</h2>
-<p>The tools are free and will stay free. The site is supported by sales of the spreadsheet kits, which are sold and delivered through Polar, and by advertising on some pages.</p>
-
-<p>Questions or a tool you wish existed? See the <a href="/contact/">contact page</a>.</p>
+<h2>What is free and what is paid</h2>
+<ul>
+<li>Free: all 130 calculators, with no account and no limit on use.</li>
+<li>Free: the <a href="/guides/">guides</a>, which explain the numbers behind specific kinds of business.</li>
+<li>Paid: the <a href="/kits/">workbooks and kits</a>, sold and delivered through Polar, for people who want the calculations in a single spreadsheet they can keep.</li>
+<li>Some pages may show advertising in future, which would help keep the calculators free.</li>
+</ul>
