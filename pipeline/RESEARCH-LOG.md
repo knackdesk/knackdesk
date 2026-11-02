@@ -469,3 +469,132 @@ polar kits (ledger):
   interior-design-pricing-workbook     12.00  0      0.00
   insurance-agency-numbers-workbook    14.00  0      0.00
 ```
+
+## 2026-11-02
+
+```
+search console querys 2026-10-03..2026-10-30: 
+  query                                                        clicks  impr   ctr    pos
+  move out prorated rent calculator                            1      9      11.1%  74.1
+  "dental office expenses percentages" breakdown -filetype:pdf 0      4      0.0%   8.8
+  "dental office expenses percentages" explained -filetype:pdf 0      3      0.0%   8.7
+  0.10 of an hour                                              0      1      0.0%   14.0
+  0.40 of an hour                                              0      1      0.0%   8.0
+  0.67 of an hour                                              0      1      0.0%   48.0
+  1 6 of an hour in decimal                                    0      1      0.0%   61.0
+  1 hour 18 min in decimal                                     0      1      0.0%   31.0
+  1 hour 23 minutes in decimal                                 0      1      0.0%   24.0
+  1 hour 29 minutes in decimal                                 0      1      0.0%   54.0
+  1 hour 36 minutes in decimal                                 0      1      0.0%   77.0
+  1 hour and half in decimal                                   0      2      0.0%   57.5
+  1 hour in decimal                                            0      1      0.0%   7.0
+  1 hour in decimals                                           0      1      0.0%   70.0
+  1 hr and 20 mins in decimal                                  0      1      0.0%   54.0
+  1.5 hours in decimal                                         0      1      0.0%   64.0
+  10 30 to 4pm is how much hours in decimal                    0      1      0.0%   9.0
+  10 hours 4 minutes in decimal                                0      1      0.0%   53.0
+  10 hours and 35 minutes in decimal                           0      1      0.0%   40.0
+  10 raise to -3                                               0      1      0.0%   10.0
+  10 year business loan calculator                             0      1      0.0%   83.0
+  11 month rent agreement date calculator                      0      1      0.0%   51.0
+  1400 plus vat                                                0      2      0.0%   10.5
+  1600 plus vat                                                0      2      0.0%   8.5
+  192 plus vat                                                 0      1      0.0%   5.0
+
+search console pages 2026-10-03..2026-10-30: 
+  page                                                         clicks  impr   ctr    pos
+  /                                                            2      21     9.5%   15.3
+  /prorated-rent-calculator/                                   2      193    1.0%   40.4
+  /about/                                                      1      9      11.1%  16.3
+  /contact/                                                    1      5      20.0%  27.0
+  /effective-hourly-rate/                                      1      46     2.2%   16.8
+  /price-increase-calculator/                                  1      103    1.0%   31.1
+  /procurement-markup-calculator/                              1      18     5.6%   9.6
+  /profit-per-order-calculator/                                1      60     1.7%   13.2
+  /appointment-capacity-calculator/                            0      38     0.0%   8.3
+  /bar-cost-calculator/                                        0      36     0.0%   11.4
+  /billable-hours-calculator/                                  0      166    0.0%   61.2
+  /blended-rate-calculator/                                    0      59     0.0%   43.3
+  /block-hours-price-calculator/                               0      4      0.0%   23.5
+  /bookkeeping-package-price-calculator/                       0      31     0.0%   57.0
+  /booth-rent-calculator/                                      0      22     0.0%   43.3
+  /break-even-calculator/                                      0      30     0.0%   45.9
+  /break-even-roas-calculator/                                 0      376    0.0%   73.9
+  /business-loan-calculator/                                   0      41     0.0%   63.1
+  /cac-payback-calculator/                                     0      43     0.0%   73.8
+  /call-out-fee-calculator/                                    0      34     0.0%   54.7
+  /cap-rate-calculator/                                        0      5      0.0%   43.6
+  /care-plan-quote-calculator/                                 0      3      0.0%   7.3
+  /caregiver-turnover-cost-calculator/                         0      1      0.0%   11.0
+  /cash-on-cash-return-calculator/                             0      9      0.0%   76.4
+  /cash-runway-calculator/                                     0      16     0.0%   50.3
+  inspected 10/159 (82s)
+  inspected 20/159 (146s)
+  inspected 30/159 (211s)
+  inspected 40/159 (274s)
+  inspected 50/159 (338s)
+  inspected 60/159 (401s)
+  inspected 70/159 (464s)
+  inspected 80/159 (526s)
+  inspected 90/159 (589s)
+  inspected 100/159 (652s)
+  inspected 110/159 (714s)
+  inspected 120/159 (777s)
+  inspected 130/159 (840s)
+  inspected 140/159 (903s)
+  inspected 150/159 (965s)
+  inspected 159/159 (1022s)
+
+index coverage (URL Inspection, 159 sitemap urls): 150 indexed
+  150  Submitted and indexed
+    8  Discovered - currently not indexed
+    1  timeout
+  not indexed (9):
+    /  timeout
+    /guides/rental-property-numbers-explained/  Discovered - currently not indexed
+    /discount-calculator/  Discovered - currently not indexed
+    /early-payment-discount/  Discovered - currently not indexed
+    /extra-payment-calculator/  Discovered - currently not indexed
+    /net-profit-margin-calculator/  Discovered - currently not indexed
+    /print-markup-calculator/  Discovered - currently not indexed
+    /profit-split-calculator/  Discovered - currently not indexed
+    /revenue-goal-calculator/  Discovered - currently not indexed
+  rich result problems (1):
+    /kits/  PASS 42 issue(s)
+
+cloudflare page views, last 28 days: 
+  /                                                            50
+  /property/                                                   20
+  /inventory-turnover-calculator/                              10
+  /guides/                                                     10
+  /etsy-fee-calculator/                                        10
+  /contractor-markup-calculator/                               10
+  /free-shipping-threshold-calculator/                         10
+  /ltv-calculator/                                             10
+  /reorder-point-calculator/                                   10
+  /billable-hours-calculator/                                  10
+
+polar kits (ledger):
+  slug                                 price  units  gross
+  freelancer-finance-kit               12.00  1      0.00
+  freelance-pricing-kit                9.00   0      0.00
+  landlord-rent-tracker                12.00  0      0.00
+  saas-metrics-dashboard               14.00  0      0.00
+  online-seller-profit-tracker         12.00  0      0.00
+  team-cost-planner                    14.00  0      0.00
+  agency-quote-profit-tracker          14.00  0      0.00
+  small-business-finance-dashboard     14.00  0      0.00
+  loan-lease-comparison-workbook       12.00  0      0.00
+  trade-job-quote-workbook             12.00  0      0.00
+  event-catering-quote-workbook        12.00  0      0.00
+  restaurant-numbers-workbook          14.00  0      0.00
+  salon-pricing-workbook               12.00  0      0.00
+  bookkeeping-pricing-workbook         14.00  0      0.00
+  msp-contract-pricing-workbook        14.00  0      0.00
+  dental-practice-numbers-workbook     14.00  0      0.00
+  law-firm-pricing-workbook            14.00  0      0.00
+  staffing-agency-margin-workbook      14.00  0      0.00
+  home-care-pricing-workbook           14.00  0      0.00
+  interior-design-pricing-workbook     12.00  0      0.00
+  insurance-agency-numbers-workbook    14.00  0      0.00
+```
