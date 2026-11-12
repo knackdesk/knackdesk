@@ -5,3 +5,4 @@ dist/
 products/*/dist.zip
 .venv/
 .claude/
+indexnow-urls.txt

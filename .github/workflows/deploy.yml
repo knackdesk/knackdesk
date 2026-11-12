@@ -26,6 +26,14 @@ jobs:
       - run: npm run build
         env:
           ADSENSE_CLIENT_ID: ${{ vars.ADSENSE_CLIENT_ID }}
+      - name: IndexNow changed pages
+        run: node scripts/indexnow-diff.js indexnow-urls.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-urls
+          path: indexnow-urls.txt
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -51,9 +59,13 @@ jobs:
       - run: npm run build
         env:
           ADSENSE_CLIENT_ID: ${{ vars.ADSENSE_CLIENT_ID }}
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: indexnow-urls
       - name: IndexNow
         continue-on-error: true
-        run: node scripts/indexnow.js
+        run: node scripts/indexnow.js --urls-file indexnow-urls.txt
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
       - name: Search Console sitemap
